@@ -1,0 +1,292 @@
+.depiction-info {
+    margin: 14px 14px 0px 14px;
+    background: #ffffff;
+    border: 1px solid #e4eaee;
+    border-radius: 2px;
+
+    .title {
+        height: 36px;
+        border-bottom: 1px solid #ebeff1;
+        margin: 0 58px 0 40px;
+
+        &::before {
+            content: "";
+            position: relative;
+            left: -41px;
+            top: 10px;
+            border-left: 2px solid #00c187;
+        }
+
+        h3 {
+            font-size: 14px;
+            color: #22262e;
+            line-height: 0px;
+        }
+
+        .operation {
+            width: 50px;
+            height: 20px;
+            background: #F9FAFC;
+            border: 1px solid #E1E7ED;
+            border-radius: 1px;
+            line-height: 20px;
+            text-align: center;
+            margin-top: 8px;
+            margin-left: 10px;
+            float: right;
+            cursor: pointer;
+
+            &.urge {
+                background: #00C187;
+
+                p {
+                    color: #FFFFFF;
+                }
+            }
+
+            &.revoke {
+                background: #D89D00;
+
+                p {
+                    color: #FFFFFF;
+                }
+            }
+
+            &.select {
+                width: 30px;
+                margin-right: 0px;
+
+                i {
+                    display: inline-block;
+                    margin-bottom: 2px;
+                    background: url(../../assets/images/icon-select.png) no-repeat;
+                    width: 18px;
+                    height: 8px;
+                }
+            }
+
+            p {
+                font-size: 12px;
+                color: #4F5A64;
+            }
+        }
+    }
+
+    .content {
+        padding-top: 5px;
+        padding-left: 40px;
+
+        .content-select {
+            width: 300px;
+        }
+
+        .content-row-select {
+            margin-top: 10px;
+
+            &.content-row-bottom {
+                margin-bottom: 20px;
+            }
+
+            .linkman-explain {
+                position: absolute;
+                color: #a3b1b9;
+                font-size: 12px;
+                padding: 10px 0 0 64px;
+            }
+
+            .content-textarea {
+                width: 300px;
+                margin-left: 65px;
+            }
+
+            .content-label {
+                position: absolute;
+                top: 8px;
+            }
+        }
+
+        .content-row-explain {
+            font-size: 12px;
+            line-height: 12px;
+            margin-bottom: 25px;
+
+            &.content-row-first {
+                margin-top: 16px;
+                margin-bottom: 15px;
+            }
+
+            &.content-row-bottom {
+                margin-bottom: 20px;
+            }
+
+            .img-preview {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 50px;
+                height: 50px;
+                margin-left: 6px;
+                margin-right: 10px;
+                background: #ffffff;
+                border: 1px solid #e1e7ed;
+
+                &:hover {
+                    .img-del {
+                        display: block;
+                    }
+                }
+
+                .img-del {
+                    opacity: 0.62;
+                    background: #7a7a7a;
+                    width: 50px;
+                    height: 15px;
+                    position: absolute;
+                    bottom: 1px;
+                    display: none;
+
+                    p {
+                        font-size: 10px;
+                        color: #ffffff;
+                        text-align: center;
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            .img-add {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 50px;
+                height: 50px;
+                margin-left: 6px;
+                margin-right: 10px;
+                background: #ffffff;
+                border: 1px solid #e1e7ed;
+                cursor: pointer;
+            }
+        }
+
+        .content-row-img {
+            font-size: 12px;
+            line-height: 12px;
+            display: flex;
+
+            label {
+                line-height: 30px;
+            }
+        }
+
+        .content-table {
+            width: 100%
+        }
+
+        .tab-operation {
+            color: #00C187;
+            cursor: pointer;
+            display: inline-block;
+
+            &+.tab-operation {
+                margin-left: 8px;
+            }
+        }
+
+        .file-add {
+            color: #6ba1eb;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .file-preview {
+            display: inline-block;
+            margin-right: 20px;
+
+            .file-name {
+                float: left;
+                margin-right: 5px;
+                cursor: pointer;
+            }
+
+            .file-del {
+                color: #6ba1eb;
+                cursor: pointer;
+            }
+        }
+
+        .file-explain {
+            margin: 10px 0px 0px 63px;
+            color: #a3b1b9;
+        }
+
+        label {
+            color: #4f5a64;
+            display: inline-block;
+            width: 48px;
+            font-size: 12px;
+            margin-right: 12px;
+            text-align: right;
+        }
+
+        span {
+            font-size: 12px;
+            color: #737e84;
+        }
+
+
+
+
+        .content-page {
+            width: 100%;
+            float: right;
+            margin-top: 15px;
+
+            .total-count {
+                float: left;
+
+                p {
+                    font-size: 12px;
+                    color: #929CA2;
+                }
+            }
+
+            .page-frist {
+                box-sizing: border-box;
+                float: right;
+                width: 38px;
+                font-size: 12px;
+                height: 22px;
+                text-align: center;
+                line-height: 22px;
+                background: #F9FAFC;
+                border: 1px solid #E1E7ED;
+                cursor: pointer;
+
+                p {
+                    font-size: 12px;
+                    color: #929CA2;
+                }
+            }
+
+            .page-size {
+                float: right;
+
+                label {
+                    font-size: 12px;
+                    color: #929CA2;
+                    width: 24px;
+                    margin-left: 13px;
+                    margin-right: 6px;
+                }
+
+                .page-select {
+                    width: 50px;
+                }
+            }
+
+            .my-el-page {
+                float: right;
+            }
+        }
+    }
+}

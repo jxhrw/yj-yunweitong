@@ -1,0 +1,314 @@
+.dialog-urge {
+    .dialog-main {
+        margin-top: -30px;
+        padding: 10px 0 20px 0;
+        border-top: 1px solid #EBEFF1;
+
+        .dialog-label {
+            float: left;
+            font-size: 12px;
+            margin-right: 8px;
+            width: 48px;
+            text-align: right;
+            line-height: 28px;
+            position: relative;
+
+            span {
+                position: absolute;
+                color: red;
+                left: -7px;
+            }
+        }
+
+        .revoke-reason {
+            margin-bottom: 13px;
+        }
+
+        .dialog-content {
+            background: #F9FAFC;
+            border: 1px solid #E1E7ED;
+        }
+
+        .dialog-select {
+            width: 280px;
+        }
+
+        .dialog-textarea {
+            &.height100 {
+                /deep/ .el-textarea__inner {
+                    height: 100px;
+                }
+            }
+        }
+
+        /deep/ .el-input__inner,
+        /deep/ .el-textarea__inner {
+            border-radius: 0;
+            background: #F9FAFC;
+            border: 1px solid #E1E7ED;
+        }
+
+        /deep/ .el-textarea__inner {
+            resize: none;
+        }
+
+        /deep/ .el-input__suffix {
+            border-left: 1px solid #E1E7ED;
+        }
+
+        .upload-demo {
+            display: flex;
+            width: 290px;
+            // height: 80px;
+            // overflow-y: auto;
+
+            /deep/ .el-upload {
+                width: 48px;
+                height: 48px;
+                line-height: 56px;
+                border-style: solid;
+                background-color: #fff;
+                border-radius: 0;
+            }
+
+            .ms-files {
+                display: inline-block;
+                overflow: hidden;
+                width: 48px;
+                height: 48px;
+                box-sizing: border-box;
+                border: 1px solid #d8d9da;
+                position: relative;
+                margin-right: 8px;
+
+                &:hover {
+                    .ms-actions {
+                        display: flex;
+                    }
+                }
+
+                .el-image {
+                    width: 48px;
+                    height: 48px;
+
+                    .el-image__error {
+                        font-size: 12px;
+                    }
+                }
+
+                .ms-actions {
+                    position: absolute;
+                    width: 100%;
+                    height: 16px;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.3);
+                    display: none;
+
+                    .ms-delete {
+                        color: #fff;
+                        font-size: 12px;
+                        line-height: 16px;
+                        transform: scale(0.8);
+                        white-space: nowrap;
+                        cursor: pointer;
+                    }
+                }
+
+                .icon-file {
+                    width: 48px;
+                    height: 48px;
+
+                    &.file-doc {
+                        background: url('../../assets/images/file-word.png') no-repeat center/32px;
+                    }
+
+                    &.file-xls {
+                        background: url('../../assets/images/file-execl.png') no-repeat center/32px;
+                    }
+
+                    &.file-other {
+                        background: url('../../assets/images/file-file.png') no-repeat center/32px;
+                    }
+                }
+
+            }
+        }
+
+        .mt-list {
+            &.mt-list-scroll {}
+
+            li {
+                display: flex;
+                justify-content: space-between;
+                text-align: center;
+                align-items: center;
+                font-size: 12px;
+                margin-bottom: 10px;
+            }
+
+            .mtl1 {
+                width: 45%;
+                box-sizing: border-box;
+                padding: 0 5px;
+            }
+
+            .mtl2 {
+                width: 20%;
+                box-sizing: border-box;
+                padding: 0 5px;
+            }
+
+            .mtl3 {
+                width: 20%;
+                box-sizing: border-box;
+                padding: 0 5px;
+            }
+
+            .mtl5 {
+                width: 10%;
+                box-sizing: border-box;
+                padding: 0 5px;
+
+                /deep/ .el-upload {
+                    width: 48px;
+                    height: 28px;
+                    line-height: 32px;
+                    border-style: solid;
+                    background-color: #fff;
+                    border-radius: 0;
+
+                    .el-icon-plus {
+                        font-size: 20px;
+                    }
+                }
+
+                .ms-files {
+                    display: inline-block;
+                    overflow: hidden;
+                    width: 48px;
+                    height: 28px;
+                    box-sizing: border-box;
+                    border: 1px solid #d8d9da;
+                    position: relative;
+                    margin-right: 8px;
+
+                    &:hover {
+                        .ms-actions {
+                            display: flex;
+                        }
+                    }
+
+                    .el-image {
+                        width: 48px;
+                        height: 28px;
+
+                        .el-image__error {
+                            font-size: 12px;
+                        }
+                    }
+
+                    .ms-actions {
+                        position: absolute;
+                        width: 100%;
+                        height: 16px;
+                        bottom: 0;
+                        background: rgba(0, 0, 0, 0.3);
+                        display: none;
+
+                        .ms-delete {
+                            color: #fff;
+                            font-size: 12px;
+                            line-height: 16px;
+                            transform: scale(0.8);
+                            white-space: nowrap;
+                            cursor: pointer;
+                        }
+                    }
+
+                    .icon-file {
+                        width: 48px;
+                        height: 28px;
+
+                        &.file-doc {
+                            background: url('../../assets/images/file-word.png') no-repeat center/20px;
+                        }
+
+                        &.file-xls {
+                            background: url('../../assets/images/file-execl.png') no-repeat center/20px;
+                        }
+
+                        &.file-other {
+                            background: url('../../assets/images/file-file.png') no-repeat center/20px;
+                        }
+                    }
+
+                }
+            }
+
+            .mtl4 {
+                width: 5%;
+
+                i {
+                    font-size: 18px;
+                    cursor: pointer;
+                }
+            }
+
+        }
+
+        .mtl-scrollbar {
+            // max-height: 150px;
+            // overflow-y: auto;
+            width: 100%;
+
+            /deep/ .el-scrollbar__wrap {
+                overflow-x: hidden;
+                max-height: 150px;
+                margin-bottom: -7px !important;
+
+
+            }
+
+            /deep/.el-scrollbar__bar.is-vertical {
+                opacity: 1;
+            }
+        }
+    }
+
+    .dialog-footer {
+        text-align: center;
+
+        .submit {
+            margin-right: 20px;
+            background: #00C187;
+            border-color: #E1E7ED;
+
+            &:hover {
+                background: #00C187;
+                border-color: #E1E7ED;
+            }
+        }
+
+        .cancel {
+            background: #F9FAFC;
+            border-color: #E1E7ED;
+            color: #6C7883;
+
+            &:hover {
+                background: #F9FAFC;
+                border-color: #E1E7ED;
+                color: #6C7883;
+            }
+        }
+    }
+
+    /deep/ .el-dialog__header span {
+        font-size: 14px;
+        color: #22262E;
+        line-height: 19px;
+    }
+
+    /deep/ .el-dialog__headerbtn {
+        top: 24px;
+    }
+}

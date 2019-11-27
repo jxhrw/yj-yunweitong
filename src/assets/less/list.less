@@ -1,0 +1,68 @@
+.base-info {
+    border: none;
+    border-radius: 0;
+
+    .title h3 {
+        border-top: 0px;
+    }
+
+    .content {
+        border: 1px solid #E4EAEE;
+        border-radius: 2px;
+        border-top: 0px;
+        padding-bottom: 24px;
+
+        .content-select {
+            width: 220px;
+        }
+    }
+
+    .content-icon {
+        position: absolute;
+        width: 28px;
+        height: 28px;
+        background: url('../../assets/images/icon-arrow-double.png') no-repeat center/100%;
+        cursor: pointer;
+        left: -38px;
+
+        &.active {
+            transform: rotate(90deg);
+        }
+    }
+}
+
+
+.depiction-info {
+    margin-bottom: 25px;
+
+    .title {
+        margin-right: 40px;
+
+        &::before {
+            top: 2px;
+        }
+
+        h3 {
+            line-height: 36px;
+            display: inline-block;
+        }
+    }
+
+    .content {
+        padding-top: 10px;
+        padding-left: 40px;
+        padding-right: 40px;
+        padding-bottom: 58px;
+
+        .content-row-select {
+            .content-textarea {
+                margin-left: 0;
+            }
+
+            .content-label {
+                position: relative;
+                top: -50px;
+            }
+        }
+    }
+}

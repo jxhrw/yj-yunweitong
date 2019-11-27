@@ -1,0 +1,109 @@
+.blueBodyHd .ej-header {
+    background: linear-gradient(to right, #0365bb, #0250ac) !important;
+}
+
+.blueBodyHd .scrollview {
+    background-color: #f5f5f7 !important;
+    border-right: 1px solid #bdc9d4;
+}
+
+.blueBodyHd .el-menu-vertical-demo {
+    background-color: #f5f5f7 !important;
+}
+
+.blueBodyHd .el-menu-vertical-demo .el-submenu__title {
+    background-color: #f5f5f7 !important;
+}
+
+.blueBodyHd .el-menu-vertical-demo .el-submenu.is-active .el-submenu__title,
+.blueBodyHd .el-menu-vertical-demo .el-submenu.is-opened .el-submenu__title {
+    background-color: #e4ebf1 !important;
+}
+
+.blueBodyHd .el-menu-vertical-demo.el-menu--collapse .el-submenu.is-active .el-submenu__title {
+    background-color: #025eb8 !important;
+}
+
+.blueBodyHd .el-menu-vertical-demo .el-submenu.is-active .el-menu-vertical-demo,
+.blueBodyHd .el-menu-vertical-demo .el-submenu.is-opened .el-menu-vertical-demo {
+    background-color: #e4ebf1 !important;
+}
+
+.blueBodyHd .el-menu-vertical-demo .el-menu-item.is-active,
+.blueBodyHd .el-menu-vertical-demo .no-child:hover,
+.blueBodyHd .el-menu-vertical-demo .el-submenu .el-submenu__title:hover,
+.blueBodyHd .el-menu-vertical-demo .el-submenu.is-active .el-submenu__title:hover,
+.blueBodyHd .el-menu-vertical-demo .el-submenu.is-opened .el-submenu__title:hover,
+.blueBodyHd .el-menu-vertical-demo .el-submenu .el-menu-vertical-demo:hover,
+.blueBodyHd .el-menu-vertical-demo .el-submenu .el-menu-vertical-demo.is-active,
+.blueBodyHd .el-menu--vertical .el-menu--popup .el-menu-item:hover,
+.blueBodyHd .el-menu--vertical .el-menu--popup .el-menu-item.is-active {
+    background-color: #025eb8 !important;
+    color: #fff !important;
+}
+
+.blueBodyHd .menu-collapse {
+    background-color: #e5ebf2 !important;
+}
+
+.blueBodyHd .el-menu--vertical .el-menu--popup {
+    background: #f5f5f7 !important;
+}
+
+/* 
+.blueBodyHd .base-info .content .content-search,
+.blueBodyHd .dialog-urge .dialog-footer .submit,
+.blueBodyHd .el-pagination.is-background .el-pager li:not(.disabled).active,
+.blueBodyHd .operation-info .operation-btn,
+.blueBodyHd .ej-main .ej-content .ej-content-operation .submit,
+.blueBodyHd .operation-info .operation-main .operation-content .complete-content .ej-content-operation .submit {
+    background: #3c96ee !important;
+}
+
+.blueBodyHd .operation-info .operation-btn {
+    box-shadow: 0 6px 26px -5px rgba(60, 150, 238, .76) !important;
+}
+
+
+.blueBodyHd .depiction-info .title::before {
+    border-left-color: #409EFF !important;
+}
+
+.blueBodyHd .depiction-info ul::before {
+    background-color: #409EFF !important;
+}
+
+
+.blueBodyHd .depiction-info .content .tab-operation,
+.blueBodyHd .el-loading-spinner i,
+.blueBodyHd .el-loading-spinner .el-loading-text {
+    color: #409EFF !important;
+}
+
+.blueBodyHd .depiction-info .content .content-table .el-table__body tr.current-row>td .tab-operation {
+    color: #fff !important;
+}
+
+.blueBodyHd .ej-main .ej-content .ej-content-title .ej-content-goto,
+.blueBodyHd .ej-main .ej-content-title-btn.ej-content-green {
+    background: #3e9dfb !important;
+    border-color: #3e9dfb !important;
+}
+
+.blueBodyHd .content-table .el-table__body tr.hover-row.el-table__row--striped>td,
+.blueBodyHd .content-table .el-table__body tr.hover-row>td,
+.blueBodyHd .content-table table tbody tr.hovre-row:hover>td,
+.blueBodyHd .content-table table tbody tr:hover>td {
+    background: rgba(60, 150, 238, .1) !important;
+}
+
+.blueBodyHd .content-table .el-table__body tr.current-row>td {
+    background: rgba(60, 150, 238, 1) !important;
+} */
+
+
+
+/* 以下非蓝色系统也可使用 */
+.el-image-viewer__wrapper .el-icon-circle-close {
+    color: #fff !important;
+}

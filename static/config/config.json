@@ -1,0 +1,14 @@
+{
+    "efoms_HOST": "http://192.168.91.158:10005/efoms-rest",
+    "ubms_HOST": "http://192.168.91.158:8080/ubms-server",
+    "serverPushUrl": "http://192.168.91.142:6201/serverpush.js",
+    "loginUrl": "http://192.168.91.158:10006/efoms-web/hz/index.html",
+
+    "?Gaode_Map": "高德地图配置信息（备注）",
+    "?Gaode_Map_Get": "模糊查询获取地址的接口",
+    "?Gaode_Map_Key": "高德地图使用密钥",
+    "?Gaode_Map_Url": "高德地图底图地址",
+    "Gaode_Map_Get": "https://restapi.amap.com/v3/place/text",
+    "Gaode_Map_Key": "76ff15bcf7664bb6c3d9a660305f9e0b",
+    "Gaode_Map_Url": "//webapi.amap.com/maps?v=1.4.15&key=76ff15bcf7664bb6c3d9a660305f9e0b"
+}
