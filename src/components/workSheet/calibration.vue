@@ -4,23 +4,23 @@
             <template slot="condFirst">
                 <el-col :span="7">
                     <label>设备编号</label>
-                    <el-input v-model="key" placeholder="设备编号" size='mini' class="content-select" clearable></el-input>
+                    <el-input v-model="key" placeholder="设备编号" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
                 <el-col :span="7">
                     <label>时间</label>
-                    <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd">
+                    <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd" @keyup.enter.native="searchTableInfo">
                     </el-date-picker>
                 </el-col>
                 <el-col :span="7">
                     <label>处理结果</label>
-                    <mInput :list="typeList" :code.sync="typeCode" :name.sync="typeName" :clearable="true"></mInput>
+                    <mInput :list="typeList" :code.sync="typeCode" :name.sync="typeName" :clearable="true" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
             </template>
 
             <template slot="condSecond">
                 <el-col :span="7">
                     <label>所属系统</label>
-                    <mInput :list="systemList" :code.sync="systemCode" :name.sync="systemName"></mInput>
+                    <mInput :list="systemList" :code.sync="systemCode" :name.sync="systemName" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
             </template>
 
@@ -44,7 +44,7 @@
                     <el-table-column prop="createDate" label="创建时间" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column label="操作">
                         <template slot-scope="scope">
-                            <div v-if="scope.row.dealResult != '1'" class="tab-operation" @click="dataDetail(scope.row)">校准</div>
+                            <div v-if="scope.row.dealResult != '1'" class="tab-operation" @click="dataDetail(scope.row)">审核</div>
                         </template>
                     </el-table-column>
                 </el-table>

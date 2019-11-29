@@ -81,7 +81,11 @@
                         // }
                     })
                     .catch(err => {
-                        Common.printErrorLog(err);
+                        if (err.response.status == 403) {
+                            location.reload();
+                        } else {
+                            Common.printErrorLog(err);
+                        }
                     });
             }
         }

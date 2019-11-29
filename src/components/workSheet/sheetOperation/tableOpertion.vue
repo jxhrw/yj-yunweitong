@@ -20,6 +20,8 @@
         <div v-if="title=='转单审核'&&queryConditions.type=='0'" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
         <!-- 材料审核页面，并且状态为待审核时出现 -->
         <div v-if="title=='材料审核'&&queryConditions.type=='0'" class="tab-operation" @click="handleOther(scope.row)">审核</div>
+        <!-- 材料超期工单，并且状态为已超期时出现 -->
+        <div v-if="title=='超期工单'&&queryConditions.type=='0'" class="tab-operation" @click="dataDetail(scope.row,'edit')">操作</div>
 
         <div class="tab-operation" @click="dataDetail(scope.row)">详情</div>
     </div>

@@ -16,14 +16,26 @@
                         <div class="content">
                             <el-row class="content-row-select lager-label">
                                 <el-col :span="10">
-                                    <label><i class="redStar">*</i>点位名称</label>
-                                    <el-input v-model="devName" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead" :clearable="true"></el-input>
+                                    <label>点位名称</label>
+                                    <span>{{pointInfo.deviceName}}</span>
                                 </el-col>
                                 <el-col :span="10">
                                     <label>点位编号</label>
+                                    <span>{{pointInfo.deviceId}}</span>
+                                </el-col>
+                                <el-col :span="10">
+                                    <label><i class="redStar">*</i>校准点位名称</label>
+                                    <el-input v-model="devName" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead" :clearable="true"></el-input>
+                                </el-col>
+                                <el-col :span="10">
+                                    <label>校准点位编号</label>
                                     <el-input v-model="devCode" placeholder="" size='mini' class="content-select" :disabled="true"></el-input>
                                 </el-col>
 
+                                <el-col :span="10">
+                                    <label>唯一识别码</label>
+                                    <el-input v-model="onlyId" placeholder="" size='mini' class="content-select" :clearable="true"></el-input>
+                                </el-col>
                                 <el-col :span="10">
                                     <label><i class="redStar">*</i>所属系统</label>
                                     <mInput :list="devTypeList" :code.sync="devTypeCode" :name.sync="devTypeName" :disabled="isOnlyRead">
@@ -34,6 +46,10 @@
                                     <mInput :list="areaList" :code.sync="areaCode" :name.sync="areaName" showAttr="regionName" getAttr="regionId" :disabled="isOnlyRead"></mInput>
                                 </el-col>
 
+                                <el-col :span="10">
+                                    <label><i class="redStar">*</i>维护单位</label>
+                                    <mInput :list="opDeptList" :code.sync="opDeptCode" :name.sync="opDeptName" showAttr="opsDeptName" getAttr="opsDeptId" :disabled="isOnlyRead" :clearable="true"></mInput>
+                                </el-col>
                                 <el-col :span="10">
                                     <label>IP地址</label>
                                     <el-input v-model="devIp" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead" :clearable="true"></el-input>
@@ -46,10 +62,6 @@
                                     </el-input>
                                 </el-col>
 
-                                <el-col :span="10">
-                                    <label><i class="redStar">*</i>维护单位</label>
-                                    <mInput :list="opDeptList" :code.sync="opDeptCode" :name.sync="opDeptName" showAttr="opsDeptName" getAttr="opsDeptId" :disabled="isOnlyRead" :clearable="true"></mInput>
-                                </el-col>
                                 <el-col :span="10">
                                     <label>现管理单位</label>
                                     <mInput :list="manDeptList" :code.sync="manDeptCode" :name.sync="manDeptName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput>
@@ -119,16 +131,16 @@
                                     <label>点位状态</label>
                                     <mInput :list="statusList" :code.sync="statusCode" :name.sync="statusName" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
-                                <el-col :span="10">
-                                    <label>唯一识别码</label>
-                                    <el-input v-model="onlyId" placeholder="" size='mini' class="content-select" :clearable="true"></el-input>
-                                </el-col>
+
                             </el-row>
                         </div>
                     </div>
                 </el-scrollbar>
             </div>
             <div class="ej-content-operation" v-if="!isOnlyRead && pointInfo.dealResult != '1'">
+                <div class="submit" @click="dialogCalibrationVisible = true">
+                    <p>校准点位</p>
+                </div>
                 <div class="submit" @click="submitForm">
                     <p>提交</p>
                 </div>
@@ -157,6 +169,8 @@
                     <el-button @click="dialogMapVisible = false" size='mini' class="cancel">取 消</el-button>
                 </div>
             </el-dialog>
+
+            <DialogCalibration :dialogVisible.sync="dialogCalibrationVisible" :cabCode="devTypeCode" :cabName="devTypeName" @callback="resetInfo"></DialogCalibration>
         </div>
     </div>
 </template>
@@ -164,10 +178,12 @@
     import mInput from "components/common/selectDrop";
     import Bus from "@/assets/js/bus.js";
     import Common from "@/assets/js/common.js";
+    import DialogCalibration from "./business/dialog-calibration";
     var MAPCONTAIN; // 地图实例
     export default {
         components: {
-            mInput
+            mInput,
+            DialogCalibration
         },
         data() {
             return {
@@ -239,6 +255,7 @@
                 loactName: '',
                 selectLocat: '', //地图弹窗选中的地址
                 selectLnglat: {}, // 地图弹窗选中的坐标
+                dialogCalibrationVisible: false,
             };
         },
         watch: {
@@ -365,7 +382,7 @@
                     workOrder: {
                         typeCode: "REPAIRTYPE01",
                         typeName: "维修",
-                        repSourceCode: "REPAIRSOURCE06",
+                        repSourceCode: "REPAIRSSOURCE06",
                         repSourceName: "其他来源",
                         failureDescrible: "点位校准生成"
                     }
@@ -427,6 +444,35 @@
                         });
 
                 });
+            },
+            resetInfo(item) {
+                console.log(item);
+                this.devCode = item.devId || '';
+                this.devName = item.devName || '';
+                this.areaCode = item.devAreaCode || '';
+                this.areaName = item.devAreaName || '';
+                this.devIp = item.devIp || '';
+                this.coordinate.x = item.longitude || '';
+                this.coordinate.y = item.latitude || '';
+                this.address = item.siteDescrible || '';
+                this.manDeptCode = '';
+                this.outUnitCode = '';
+                this.conUnitCode = '';
+                this.stuUnitCode = '';
+                this.detPoliceCode = '';
+                this.resPoliceCode = '';
+                this.reviewersCode = '';
+                this.supervisorCode = '';
+                this.squadronCode = '';
+                this.buildTime = '';
+                this.acceptanceTime = '';
+                this.transferTime = '';
+                this.attributeCode = '';
+                this.underCode = '';
+                this.statusCode = item.devStatusCode || '';
+                this.onlyId = item.manageId || '';
+                this.useAge = item.useAge || '';
+                this.shelfLiefTime = item.shelfLief || '';
             },
             searchLocat() {
                 let _this = this;

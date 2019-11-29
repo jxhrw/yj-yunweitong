@@ -10,48 +10,48 @@
             <template slot="condFirst">
                 <el-col :span="7">
                     <label>模糊查询</label>
-                    <el-input v-model="key" placeholder="设备名称/设备编号" size='mini' class="content-select" clearable></el-input>
+                    <el-input v-model="key" placeholder="设备名称/设备编号" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
                 <el-col :span="7">
                     <label>申报时间</label>
-                    <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd">
+                    <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd" @keyup.enter.native="searchTableInfo">
                     </el-date-picker>
                 </el-col>
                 <el-col :span="7">
-                    <label>申报人员</label>
-                    <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable></el-input>
+                    <label>当前状态</label>
+                    <mSelectMult :list="stateList" :code.sync="stateCode" :name.sync="stateName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
             </template>
 
             <template slot="condSecond">
+                <el-col :span="7">
+                    <label>申报人员</label>
+                    <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
+                </el-col>
                 <!-- <el-col :span="7">
           <label>申报编号</label>
           <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
         </el-col> -->
                 <el-col :span="7">
                     <label>申报部门</label>
-                    <mInput :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId"></mInput>
+                    <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>申报来源</label>
-                    <mInput :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName"></mInput>
+                    <mSelectMult :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>所属区域</label>
-                    <mInput :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId"></mInput>
+                    <mSelectMult :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>所属系统</label>
-                    <mInput :list="systemList" :code.sync="systemCode" :name.sync="systemName"></mInput>
+                    <mSelectMult :list="systemList" :code.sync="systemCode" :name.sync="systemName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <!-- <el-col :span="7">
                     <label>维修类型</label>
                     <mInput :list="reptypeList" :code.sync="reptypeCode" :name.sync="reptypeName"></mInput>
                 </el-col> -->
-                <el-col :span="7">
-                    <label>当前状态</label>
-                    <mInput :list="stateList" :code.sync="stateCode" :name.sync="stateName"></mInput>
-                </el-col>
             </template>
 
             <template slot="tableBtn">
@@ -137,10 +137,12 @@
     import WkLayout from "components/common/wklayout";
     import mInput from "components/common/selectDrop";
     import Common from "@/assets/js/common.js";
+    import mSelectMult from "@/components/common/selectMult";
     export default {
         components: {
             WkLayout,
-            mInput
+            mInput,
+            mSelectMult
         },
         watch: {
             $route(newVal, oldVal) {
@@ -158,23 +160,23 @@
                 person: "",
                 declareId: "",
 
-                departCode: "",
-                departName: "",
+                departCode: [],
+                departName: [],
                 departList: [],
-                sourceCode: "",
-                sourceName: "",
+                sourceCode: [],
+                sourceName: [],
                 sourceList: [],
-                regionCode: "",
-                regionName: "",
+                regionCode: [],
+                regionName: [],
                 regionList: [],
-                systemCode: "",
-                systemName: "",
+                systemCode: [],
+                systemName: [],
                 systemList: [],
                 reptypeCode: "",
                 reptypeName: "",
                 reptypeList: [],
-                stateCode: "",
-                stateName: "",
+                stateCode: [],
+                stateName: [],
                 stateList: [],
                 isTableLoading: false,
                 tableData: [],
@@ -205,12 +207,12 @@
                     endTime: this.times ? this.times[1] : "",
 
                     repairsId: this.declareId,
-                    repDeptIds: this.departCode,
+                    repDeptIds: this.departCode.join(','),
 
-                    devAreaCode: this.regionCode,
-                    devTypeCode: this.systemCode,
+                    devAreaCode: this.regionCode.join(','),
+                    devTypeCode: this.systemCode.join(','),
 
-                    repStatusCode: this.stateCode
+                    repStatusCode: this.stateCode.join(',')
                 };
                 this.searchPageInfo();
             },
@@ -344,18 +346,18 @@
                 this.times = "";
                 this.person = "";
                 this.declareId = "";
-                this.departCode = "";
-                this.departName = "";
-                this.sourceCode = "";
-                this.sourceName = "";
-                this.regionCode = "";
-                this.regionName = "";
-                this.systemCode = "";
-                this.systemName = "";
+                this.departCode = [];
+                this.departName = [];
+                this.sourceCode = [];
+                this.sourceName = [];
+                this.regionCode = [];
+                this.regionName = [];
+                this.systemCode = [];
+                this.systemName = [];
                 this.reptypeCode = "";
                 this.reptypeName = "";
-                this.stateCode = "";
-                this.stateName = "";
+                this.stateCode = [];
+                this.stateName = [];
                 this.queryConditions = {};
                 this.multipleSelection = [];
                 this.detailInfo = {};
@@ -375,7 +377,7 @@
             });
             //申报来源
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
-                parentCode: "REPAIRSOURCE"
+                parentCode: "REPAIRSSOURCE"
             }).then(res => {
                 this.sourceList = res.resultList || [];
             });

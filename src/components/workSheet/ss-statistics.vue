@@ -3,35 +3,35 @@
         <WkLayout ref="layout" :title="'工单统计'" :queryConditions="queryConditions" :totalPage="totalPage" :totalCount="totalCount" :searchMore="1" @searchTable="searchTableInfo" @searchPage="searchPageInfo">
             <template slot="condFirst">
                 <el-col :span="7">
-                    <label>区域</label>
-                    <mInput :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId"></mInput>
+                    <label>所属区域</label>
+                    <mSelectMult :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>所属部门</label>
-                    <mInput :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId"></mInput>
+                    <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
-                    <label>系统名称</label>
-                    <mInput :list="systemList" :code.sync="systemCode" :name.sync="systemName"></mInput>
+                    <label>所属系统</label>
+                    <mSelectMult :list="systemList" :code.sync="systemCode" :name.sync="systemName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
             </template>
 
             <template slot="condSecond">
                 <el-col :span="7">
                     <label>来源</label>
-                    <mInput :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName"></mInput>
+                    <mSelectMult :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
-                    <label>状态</label>
-                    <mInput :list="stateList" :code.sync="stateCode" :name.sync="stateName"></mInput>
+                    <label>当前状态</label>
+                    <mSelectMult :list="stateList" :code.sync="stateCode" :name.sync="stateName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>时间类型</label>
-                    <mInput :list="timeTypeList" :code.sync="timeTypeCode" :name.sync="timeTypeName" :clearable="false"></mInput>
+                    <mInput :list="timeTypeList" :code.sync="timeTypeCode" :name.sync="timeTypeName" :clearable="false" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
                 <el-col :span="7">
                     <label>时间范围</label>
-                    <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd">
+                    <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd" @keyup.enter.native="searchTableInfo">
                     </el-date-picker>
                 </el-col>
             </template>
@@ -70,10 +70,12 @@
     import WkLayout from "components/common/wklayout";
     import mInput from "components/common/selectDrop";
     import Common from "@/assets/js/common.js";
+    import mSelectMult from "@/components/common/selectMult";
     export default {
         components: {
             WkLayout,
-            mInput
+            mInput,
+            mSelectMult
         },
         filters: {
             dateTime(val) {
@@ -90,20 +92,20 @@
                 token: "",
                 key: "",
                 times: "",
-                regionCode: "",
-                regionName: "",
+                regionCode: [],
+                regionName: [],
                 regionList: [],
-                departCode: "",
-                departName: "",
+                departCode: [],
+                departName: [],
                 departList: [],
-                systemCode: "",
-                systemName: "",
+                systemCode: [],
+                systemName: [],
                 systemList: [],
-                sourceCode: "",
-                sourceName: "",
+                sourceCode: [],
+                sourceName: [],
                 sourceList: [],
-                stateCode: "",
-                stateName: "",
+                stateCode: [],
+                stateName: [],
                 stateList: [],
                 timeTypeCode: '',
                 timeTypeName: '',
@@ -122,11 +124,11 @@
                 this.queryConditions = {
                     pageSize: pageSize,
                     currentPage: 1,
-                    areaCode: this.regionCode,
-                    deptId: this.departCode,
-                    devTypeCode: this.systemCode,
-                    sourceCode: this.sourceCode,
-                    statusCode: this.stateCode,
+                    areaCode: this.regionCode.join(","),
+                    deptId: this.departCode.join(","),
+                    devTypeCode: this.systemCode.join(","),
+                    sourceCode: this.sourceCode.join(","),
+                    statusCode: this.stateCode.join(","),
                     dataType: this.timeTypeCode,
                     beginTime: this.times ? `${this.times[0]} 00:00:00` : '',
                     endTime: this.times ? `${this.times[1]} 23:59:59` : '',
@@ -202,7 +204,7 @@
             });
             //申报来源
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
-                parentCode: "REPAIRSOURCE"
+                parentCode: "REPAIRSSOURCE"
             }).then(res => {
                 this.sourceList = res.resultList || [];
             });

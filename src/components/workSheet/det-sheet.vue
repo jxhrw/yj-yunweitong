@@ -2,7 +2,21 @@
     <div class="ej-main">
         <div class="ej-content">
             <div class="ej-content-title">
-                <h2>{{title}}</h2>
+                <div class="title-box">
+                    <h2>{{title}}</h2>
+                    <ul class="pos-step" v-if="workordersInfo.workordersRecordMap">
+                        <li :class="{'active': activeIndex==''||activeIndex=='sq'}" @click="scrollIntoView('sq')" v-if="workordersInfo.workordersRecordMap.submitList&&workordersInfo.workordersRecordMap.submitList.length>0">申请</li>
+                        <li :class="{'active': activeIndex=='sh'}" @click="scrollIntoView('sh')" v-if="workordersInfo.workordersRecordMap.checkList&&workordersInfo.workordersRecordMap.checkList.length>0">审核</li>
+                        <li :class="{'active': activeIndex=='xf'}" @click="scrollIntoView('xf')" v-if="workordersInfo.workordersRecordMap.dispatchList&&workordersInfo.workordersRecordMap.dispatchList.length>0">下发</li>
+                        <li :class="{'active': activeIndex=='zp'}" @click="scrollIntoView('zp')" v-if="workordersInfo.workordersRecordMap.appointList&&workordersInfo.workordersRecordMap.appointList.length>0">指派</li>
+                        <li :class="{'active': activeIndex=='fk'}" @click="scrollIntoView('fk')" v-if="workordersInfo.workordersRecordMap.fackbackList&&workordersInfo.workordersRecordMap.fackbackList.length>0">反馈</li>
+                        <li :class="{'active': activeIndex=='qr'}" @click="scrollIntoView('qr')" v-if="workordersInfo.workordersRecordMap.sureList&&workordersInfo.workordersRecordMap.sureList.length>0">确认</li>
+                        <li :class="{'active': activeIndex=='pj'}" @click="scrollIntoView('pj')" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0">评价</li>
+                        <li :class="{'active': activeIndex=='cx'}" @click="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">撤销</li>
+                    </ul>
+                </div>
+
+
                 <div>
                     <template v-if="$route.query.isread=='edit'">
                         <!-- 转单，材料： ORDEROPERTYPE23 -->
@@ -28,7 +42,8 @@
                             <p>拒绝</p>
                         </div>
                         <!-- 可撤销： ORDEROPERTYPE02，REPOPERTYPE02-->
-                        <div v-if="(operatCode.indexOf('ORDEROPERTYPE02')>-1||operatCode.indexOf('REPOPERTYPE02')>-1)" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
+                        <!-- 或者 超期工单并且状态为非 已撤销状态ORDERSSTATUS08 -->
+                        <div v-if="(operatCode.indexOf('ORDEROPERTYPE02')>-1||operatCode.indexOf('REPOPERTYPE02')>-1 ||(prePage=='超期工单'&&workordersStatusCode!='ORDERSSTATUS08'))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
                             <p>撤销</p>
                         </div>
                     </template>
@@ -43,7 +58,7 @@
                 </div>
             </div>
             <div class="ej-content-main">
-                <el-scrollbar class="ej-content-scrollbar">
+                <el-scrollbar class="ej-content-scrollbar" ref="swrapper">
                     <div class="base-info">
                         <div class="content">
                             <el-row class="content-row-detail">
@@ -146,394 +161,356 @@
                             </div>
                         </div>
                     </div>
-                    <div class="depiction-info" v-if="workordersInfo.workordersRecordMap">
-                        <!-- 维修申请ORDEROPERTYPE01，优化申请 ORDEROPERTYPE09-->
-                        <ul class="apply-info" v-if="workordersInfo.workordersRecordMap.submitList&&workordersInfo.workordersRecordMap.submitList.length>0">
-                            <li v-for="(item,index) in workordersInfo.workordersRecordMap.submitList" :key="index">
-                                <div class="title">
-                                    <label for="" class="title-name">{{item.operTypeName}}</label>
-                                    <span class="title-date">{{item.operDate}}</span>
-                                    <span class="title-person">{{item.operPerson}}</span>
-                                </div>
-                                <!-- 催办 -->
-                                <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
-                                    <div class="content">
-                                        <label for="">催办原因</label>
-                                        <span style="width: 989px;">{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-
-                                <template v-else>
-                                    <div class="content">
-                                        <template v-if="workordersInfo.optimeScheme">
-                                            <label for="">优化方案</label>
-                                            <span style="width: 989px;">{{workordersInfo.optimeScheme}}</span>
+                    <div class="step-scroll">
+                        <div class="step-left">
+                            <el-steps class="pos-step" :class="stepPosition" direction="vertical" :space="30" v-if="workordersInfo.workordersRecordMap">
+                                <el-step title="申请" :class="{'active': activeIndex==''||activeIndex=='sq'}" @click.native="scrollIntoView('sq')" v-if="workordersInfo.workordersRecordMap.submitList&&workordersInfo.workordersRecordMap.submitList.length>0"></el-step>
+                                <el-step title="审核" :class="{'active': activeIndex=='sh'}" @click.native="scrollIntoView('sh')" v-if="workordersInfo.workordersRecordMap.checkList&&workordersInfo.workordersRecordMap.checkList.length>0"></el-step>
+                                <el-step title="下发" :class="{'active': activeIndex=='xf'}" @click.native="scrollIntoView('xf')" v-if="workordersInfo.workordersRecordMap.dispatchList&&workordersInfo.workordersRecordMap.dispatchList.length>0"></el-step>
+                                <el-step title="指派" :class="{'active': activeIndex=='zp'}" @click.native="scrollIntoView('zp')" v-if="workordersInfo.workordersRecordMap.appointList&&workordersInfo.workordersRecordMap.appointList.length>0"></el-step>
+                                <el-step title="反馈" :class="{'active': activeIndex=='fk'}" @click.native="scrollIntoView('fk')" v-if="workordersInfo.workordersRecordMap.fackbackList&&workordersInfo.workordersRecordMap.fackbackList.length>0"></el-step>
+                                <el-step title="确认" :class="{'active': activeIndex=='qr'}" @click.native="scrollIntoView('qr')" v-if="workordersInfo.workordersRecordMap.sureList&&workordersInfo.workordersRecordMap.sureList.length>0"></el-step>
+                                <el-step title="评价" :class="{'active': activeIndex=='pj'}" @click.native="scrollIntoView('pj')" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0"></el-step>
+                                <el-step title="撤销" :class="{'active': activeIndex=='cx'}" @click.native="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0"></el-step>
+                            </el-steps>
+                        </div>
+                        <div class="step-right">
+                            <div class="depiction-info" v-if="workordersInfo.workordersRecordMap">
+                                <!-- 维修申请ORDEROPERTYPE01，优化申请 ORDEROPERTYPE09-->
+                                <ul id="sq" class="sp-info apply-info" v-if="workordersInfo.workordersRecordMap.submitList&&workordersInfo.workordersRecordMap.submitList.length>0">
+                                    <li v-for="(item,index) in workordersInfo.workordersRecordMap.submitList" :key="index">
+                                        <div class="title">
+                                            <label for="" class="title-name">{{item.operTypeName}}</label>
+                                            <span class="title-date">{{item.operDate}}</span>
+                                            <span class="title-person">{{item.operPerson}}</span>
+                                        </div>
+                                        <!-- 催办 -->
+                                        <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
+                                            <div class="content">
+                                                <label for="">催办原因</label>
+                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                            </div>
                                         </template>
+
                                         <template v-else>
-                                            <label for="">情况描述</label>
-                                            <span style="width: 989px;">{{workordersInfo.failureDescrible}}</span>
+                                            <div class="content">
+                                                <template v-if="workordersInfo.optimeScheme">
+                                                    <label for="">优化方案</label>
+                                                    <span style="width: 996px;">{{workordersInfo.optimeScheme}}</span>
+                                                </template>
+                                                <template v-else>
+                                                    <label for="">情况描述</label>
+                                                    <span style="width: 996px;">{{workordersInfo.failureDescrible}}</span>
+                                                </template>
+                                            </div>
                                         </template>
-                                    </div>
-                                </template>
-                            </li>
-                        </ul>
-                        <!-- 优化审核（科室ORDEROPERTYPE07，处室ORDEROPERTYPE08） -->
-                        <ul class="examine-info" v-if="workordersInfo.workordersRecordMap.checkList&&workordersInfo.workordersRecordMap.checkList.length>0">
-                            <li v-for="(item,index) in workordersInfo.workordersRecordMap.checkList" :key="index">
-                                <div class="title">
-                                    <label for="" class="title-name">{{item.operTypeName}}</label>
-                                    <span class="title-date">{{item.operDate}}</span>
-                                    <span class="title-person">{{item.operPerson}}</span>
-                                </div>
-                                <!-- 催办 -->
-                                <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
-                                    <div class="content">
-                                        <label for="">催办原因</label>
-                                        <span style="width: 989px;">{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-
-                                <template v-else>
-                                    <div class="content">
-                                        <label for="">审核结果</label>
-                                        <span style="width: 349px;">{{item.operResult}}</span>
-                                        <label for="">审核意见</label>
-                                        <span style="width: 567px;">{{item.operExplain || '未填写'}}</span>
-                                    </div>
-                                </template>
-                            </li>
-                        </ul>
-                        <!-- 下发ORDEROPERTYPE04，下发拒绝ORDEROPERTYPE14 -->
-                        <ul class="iss-info" v-if="workordersInfo.workordersRecordMap.dispatchList&&workordersInfo.workordersRecordMap.dispatchList.length>0">
-                            <li v-for="(item,index) in workordersInfo.workordersRecordMap.dispatchList" :key="index">
-                                <div class="title">
-                                    <label for="" class="title-name">{{item.operTypeName}}</label>
-                                    <span class="title-date">{{item.operDate}}</span>
-                                    <span class="title-person">{{item.operPerson}}</span>
-                                </div>
-
-                                <!-- 催办 -->
-                                <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
-                                    <div class="content">
-                                        <label for="">催办原因</label>
-                                        <span style="width: 989px;">{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-
-                                <!-- 下发 -->
-                                <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE04'">
-                                    <div class="content">
-                                        <label for="">运维单位</label>
-                                        <span style="width: 349px;">{{item.opDeptName}}</span>
-                                        <label for="">维修期限</label>
-                                        <span style="width: 567px;">{{item.deadlineDate}}</span>
-                                    </div>
-                                </template>
-                                <!-- 下发拒绝 -->
-                                <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE14'">
-                                    <div class="content">
-                                        <label for="">备注</label>
-                                        <span style="width: 989px;">{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-                            </li>
-                        </ul>
-                        <!-- 指派ORDEROPERTYPE15，指派拒绝ORDEROPERTYPE17 -->
-                        <ul class="asgn-info" v-if="workordersInfo.workordersRecordMap.appointList&&workordersInfo.workordersRecordMap.appointList.length>0">
-                            <li v-for="(item,index) in workordersInfo.workordersRecordMap.appointList" :key="index">
-                                <div class="title">
-                                    <label for="" class="title-name">{{item.operTypeName}}</label>
-                                    <span class="title-date">{{item.operDate}}</span>
-                                    <span class="title-person">{{item.operPerson}}</span>
-                                </div>
-
-                                <!-- 催办 -->
-                                <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
-                                    <div class="content">
-                                        <label for="">催办原因</label>
-                                        <span style="width: 989px;">{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-                                <!-- 指派 -->
-                                <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE15'">
-                                    <div class="content">
-                                        <label for="">运维组</label>
-                                        <span style="width: 349px;">{{item.opDeptName}}</span>
-                                        <label for="">维修人员</label>
-                                        <span style="width: 567px;">{{item.workordersPersonRltList|opPersonNameShow}}</span>
-                                    </div>
-                                </template>
-                                <!-- 指派拒绝 -->
-                                <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE17'">
-                                    <div class="content">
-                                        <label for="">备注</label>
-                                        <span style="width: 989px;">{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-
-                                <!-- 延期申请 -->
-                                <template v-else-if="item.operTypeCode=='ORDEROPERTYPE05'">
-                                    <div class="content">
-                                        <label for="">延期原因</label>
-                                        <span style="width: 349px;">{{item.operExplain}}</span>
-                                        <label for="">申请期限</label>
-                                        <span style="width: 567px;">{{item.deadlineDate}}</span>
-                                    </div>
-                                </template>
-
-                                <!-- 延期审核 -->
-                                <template v-else-if="item.operTypeCode=='ORDEROPERTYPE06'">
-                                    <div class="content">
-                                        <label for="">审核结果</label>
-                                        <span>{{item.operResult}}</span>
-                                        <label for="">审核意见</label>
-                                        <span>{{item.operExplain}}</span>
-                                        <label for="">申请期限</label>
-                                        <span style="width: 567px;">{{item.deadlineDate}}</span>
-                                    </div>
-                                </template>
-
-                                <template v-else>
-                                    <div class="content">
-                                        <label for="">备注</label>
-                                        <span style="width: 989px;">{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-                            </li>
-                        </ul>
-                        <!-- 反馈 -->
-                        <ul class="feedback-info" v-if="workordersInfo.workordersRecordMap.fackbackList&&workordersInfo.workordersRecordMap.fackbackList.length>0">
-                            <template v-for="(item,index) in workordersInfo.workordersRecordMap.fackbackList">
-                                <li class="feedback-progress" :key="index">
-                                    <div class="title">
-                                        <label for="" class="title-name">{{item.operTypeName}}</label>
-                                        <span class="title-date">{{item.operDate}}</span>
-                                        <span class="title-person">{{item.operPerson}}</span>
-                                    </div>
-
-                                    <!-- 催办 -->
-                                    <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
-                                        <div class="content">
-                                            <label for="">催办原因</label>
-                                            <span style="width: 989px;">{{item.operExplain}}</span>
+                                    </li>
+                                </ul>
+                                <!-- 优化审核（科室ORDEROPERTYPE07，处室ORDEROPERTYPE08） -->
+                                <ul id="sh" class="sp-info examine-info" v-if="workordersInfo.workordersRecordMap.checkList&&workordersInfo.workordersRecordMap.checkList.length>0">
+                                    <li v-for="(item,index) in workordersInfo.workordersRecordMap.checkList" :key="index">
+                                        <div class="title">
+                                            <label for="" class="title-name">{{item.operTypeName}}</label>
+                                            <span class="title-date">{{item.operDate}}</span>
+                                            <span class="title-person">{{item.operPerson}}</span>
                                         </div>
-                                    </template>
+                                        <!-- 催办 -->
+                                        <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
+                                            <div class="content">
+                                                <label for="">催办原因</label>
+                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
 
-                                    <!-- 转单申请 -->
-                                    <template v-else-if="item.operTypeCode=='ORDEROPERTYPE23'">
-                                        <div class="content">
-                                            <label for="">记录编号</label>
-                                            <span style="width: 989px;">{{item.workordersRecordId}}</span>
+                                        <template v-else>
+                                            <div class="content">
+                                                <label for="">审核结果</label>
+                                                <span style="width: 349px;">{{item.operResult}}</span>
+                                                <label for="">审核意见</label>
+                                                <span style="width: 567px;">{{item.operExplain || '未填写'}}</span>
+                                            </div>
+                                        </template>
+                                    </li>
+                                </ul>
+                                <!-- 下发ORDEROPERTYPE04，下发拒绝ORDEROPERTYPE14 -->
+                                <ul id="xf" class="sp-info iss-info" v-if="workordersInfo.workordersRecordMap.dispatchList&&workordersInfo.workordersRecordMap.dispatchList.length>0">
+                                    <li v-for="(item,index) in workordersInfo.workordersRecordMap.dispatchList" :key="index">
+                                        <div class="title">
+                                            <label for="" class="title-name">{{item.operTypeName}}</label>
+                                            <span class="title-date">{{item.operDate}}</span>
+                                            <span class="title-person">{{item.operPerson}}</span>
                                         </div>
-                                    </template>
 
-                                    <!-- 转单审核，受理ORDEROPERTYPE06，拒绝 ORDEROPERTYPE25 -->
-                                    <template v-else-if="item.operTypeCode=='ORDEROPERTYPE24'||item.operTypeCode=='ORDEROPERTYPE25'">
-                                        <div class="content">
-                                            <label for="">审核结果</label>
-                                            <span style="width:349px;">{{item.operResult}}</span>
-                                            <label for="">审核意见</label>
-                                            <span style="width: 567px;">{{item.operExplain}}</span>
-                                        </div>
-                                    </template>
+                                        <!-- 催办 -->
+                                        <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
+                                            <div class="content">
+                                                <label for="">催办原因</label>
+                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
 
-                                    <!-- 材料申请ORDEROPERTYPE26，材料申请受理ORDEROPERTYPE21，材料申请拒绝ORDEROPERTYPE22 -->
-                                    <template v-else-if="item.operTypeCode=='ORDEROPERTYPE26'||item.operTypeCode=='ORDEROPERTYPE21'||item.operTypeCode=='ORDEROPERTYPE22'">
-                                        <div class="content">
-                                            <label for="">申请材料</label>
-                                            <span :title="item.materialInfoList|materialShow" style="width:349px;">{{item.materialInfoList|materialShow}}</span>
-                                            <label for="">备注</label>
-                                            <span style="width: 567px;">{{item.operExplain}}</span>
+                                        <!-- 下发 -->
+                                        <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE04'">
+                                            <div class="content">
+                                                <label for="">运维单位</label>
+                                                <span style="width: 349px;">{{item.opDeptName}}</span>
+                                                <label for="">维修期限</label>
+                                                <span style="width: 567px;">{{item.deadlineDate}}</span>
+                                            </div>
+                                        </template>
+                                        <!-- 下发拒绝 -->
+                                        <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE14'">
+                                            <div class="content">
+                                                <label for="">备注</label>
+                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
+                                    </li>
+                                </ul>
+                                <!-- 指派ORDEROPERTYPE15，指派拒绝ORDEROPERTYPE17 -->
+                                <ul id="zp" class="sp-info asgn-info" v-if="workordersInfo.workordersRecordMap.appointList&&workordersInfo.workordersRecordMap.appointList.length>0">
+                                    <li v-for="(item,index) in workordersInfo.workordersRecordMap.appointList" :key="index">
+                                        <div class="title">
+                                            <label for="" class="title-name">{{item.operTypeName}}</label>
+                                            <span class="title-date">{{item.operDate}}</span>
+                                            <span class="title-person">{{item.operPerson}}</span>
                                         </div>
-                                        <div class="content file-info">
-                                            <label for="">附件</label>
-                                            <span class="file-name">
-                                                <div v-for="(item,index) in materialFileList(item.materialInfoList)" :key="index" class="file-single">
-                                                    <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="item.fileUrl" :preview-src-list="[item.fileUrl]" fit="fill"></el-image>
-                                                    <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
-                                                    <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
-                                                    <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
+
+                                        <!-- 催办 -->
+                                        <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
+                                            <div class="content">
+                                                <label for="">催办原因</label>
+                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
+                                        <!-- 指派 -->
+                                        <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE15'">
+                                            <div class="content">
+                                                <label for="">运维组</label>
+                                                <span style="width: 349px;">{{item.opDeptName}}</span>
+                                                <label for="">维修人员</label>
+                                                <span style="width: 567px;">{{item.workordersPersonRltList|opPersonNameShow}}</span>
+                                            </div>
+                                        </template>
+                                        <!-- 指派拒绝 -->
+                                        <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE17'">
+                                            <div class="content">
+                                                <label for="">备注</label>
+                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
+
+                                        <!-- 延期申请 -->
+                                        <template v-else-if="item.operTypeCode=='ORDEROPERTYPE05'">
+                                            <div class="content">
+                                                <label for="">延期原因</label>
+                                                <span style="width: 349px;">{{item.operExplain}}</span>
+                                                <label for="">申请期限</label>
+                                                <span style="width: 567px;">{{item.deadlineDate}}</span>
+                                            </div>
+                                        </template>
+
+                                        <!-- 延期审核 -->
+                                        <template v-else-if="item.operTypeCode=='ORDEROPERTYPE06'">
+                                            <div class="content">
+                                                <label for="">审核结果</label>
+                                                <span>{{item.operResult}}</span>
+                                                <label for="">审核意见</label>
+                                                <span>{{item.operExplain}}</span>
+                                                <label for="">申请期限</label>
+                                                <span style="width: 567px;">{{item.deadlineDate}}</span>
+                                            </div>
+                                        </template>
+
+                                        <template v-else>
+                                            <div class="content">
+                                                <label for="">备注</label>
+                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
+                                    </li>
+                                </ul>
+                                <!-- 反馈 -->
+                                <ul id="fk" class="sp-info feedback-info" v-if="workordersInfo.workordersRecordMap.fackbackList&&workordersInfo.workordersRecordMap.fackbackList.length>0">
+                                    <template v-for="(item,index) in workordersInfo.workordersRecordMap.fackbackList">
+                                        <li class="feedback-progress" :key="index">
+                                            <div class="title">
+                                                <label for="" class="title-name">{{item.operTypeName}}</label>
+                                                <span class="title-date">{{item.operDate}}</span>
+                                                <span class="title-person">{{item.operPerson}}</span>
+                                            </div>
+
+                                            <!-- 催办 -->
+                                            <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
+                                                <div class="content">
+                                                    <label for="">催办原因</label>
+                                                    <span style="width: 996px;">{{item.operExplain}}</span>
                                                 </div>
-                                            </span>
-                                        </div>
-                                    </template>
+                                            </template>
 
-                                    <!-- 延期申请 -->
-                                    <template v-else-if="item.operTypeCode=='ORDEROPERTYPE05'">
-                                        <div class="content">
-                                            <label for="">延期原因</label>
-                                            <span style="width: 349px;">{{item.operExplain}}</span>
-                                            <label for="">申请期限</label>
-                                            <span style="width: 567px;">{{item.deadlineDate}}</span>
-                                        </div>
-                                    </template>
-
-                                    <!-- 延期审核 -->
-                                    <template v-else-if="item.operTypeCode=='ORDEROPERTYPE06'">
-                                        <div class="content">
-                                            <label for="">审核结果</label>
-                                            <span>{{item.operResult}}</span>
-                                            <label for="">审核意见</label>
-                                            <span>{{item.operExplain}}</span>
-                                            <label for="">申请期限</label>
-                                            <span style="width: 567px;">{{item.deadlineDate}}</span>
-                                        </div>
-                                    </template>
-
-                                    <!-- 到达 -->
-                                    <template v-else-if="item.operTypeCode=='ORDEROPERTYPE18'">
-                                        <div class="content">
-                                            <label for="">备注</label>
-                                            <span style="width: 989px;">{{item.operExplain}}</span>
-                                        </div>
-                                    </template>
-
-                                    <!-- 反馈ORDEROPERTYPE07 -->
-                                    <template v-else>
-                                        <div class="content">
-                                            <label for="">操作类型</label>
-                                            <span>{{item.operResult}}</span>
-                                            <label for="">故障类型</label>
-                                            <span>{{item.failureTypeName}}</span>
-                                            <label for="">故障原因</label>
-                                            <span>{{item.failureReason}}</span>
-                                            <label for="">结果反馈</label>
-                                            <span style="width: 351px;">{{item.operExplain}}</span>
-                                        </div>
-                                        <div class="content file-info">
-                                            <label for="">附件</label>
-                                            <span class="file-name">
-                                                <div v-for="(item,index) in item.fileInfoList" :key="index" class="file-single">
-                                                    <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="item.fileUrl" :preview-src-list="[item.fileUrl]" fit="fill"></el-image>
-                                                    <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
-                                                    <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
-                                                    <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
+                                            <!-- 转单申请 -->
+                                            <template v-else-if="item.operTypeCode=='ORDEROPERTYPE23'">
+                                                <div class="content">
+                                                    <label for="">记录编号</label>
+                                                    <span style="width: 996px;">{{item.workordersRecordId}}</span>
                                                 </div>
-                                            </span>
-                                        </div>
+                                            </template>
+
+                                            <!-- 转单审核，受理ORDEROPERTYPE06，拒绝 ORDEROPERTYPE25 -->
+                                            <template v-else-if="item.operTypeCode=='ORDEROPERTYPE24'||item.operTypeCode=='ORDEROPERTYPE25'">
+                                                <div class="content">
+                                                    <label for="">审核结果</label>
+                                                    <span style="width:349px;">{{item.operResult}}</span>
+                                                    <label for="">审核意见</label>
+                                                    <span style="width: 567px;">{{item.operExplain}}</span>
+                                                </div>
+                                            </template>
+
+                                            <!-- 材料申请ORDEROPERTYPE26，材料申请受理ORDEROPERTYPE21，材料申请拒绝ORDEROPERTYPE22 -->
+                                            <template v-else-if="item.operTypeCode=='ORDEROPERTYPE26'||item.operTypeCode=='ORDEROPERTYPE21'||item.operTypeCode=='ORDEROPERTYPE22'">
+                                                <div class="content">
+                                                    <label for="">申请材料</label>
+                                                    <span :title="item.materialInfoList|materialShow" style="width:349px;">{{item.materialInfoList|materialShow}}</span>
+                                                    <label for="">备注</label>
+                                                    <span style="width: 567px;">{{item.operExplain}}</span>
+                                                </div>
+                                                <div class="content file-info">
+                                                    <label for="">附件</label>
+                                                    <span class="file-name">
+                                                        <div v-for="(item,index) in materialFileList(item.materialInfoList)" :key="index" class="file-single">
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="item.fileUrl" :preview-src-list="[item.fileUrl]" fit="fill"></el-image>
+                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
+                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
+                                                            <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
+                                                        </div>
+                                                    </span>
+                                                </div>
+                                            </template>
+
+                                            <!-- 延期申请 -->
+                                            <template v-else-if="item.operTypeCode=='ORDEROPERTYPE05'">
+                                                <div class="content">
+                                                    <label for="">延期原因</label>
+                                                    <span style="width: 349px;">{{item.operExplain}}</span>
+                                                    <label for="">申请期限</label>
+                                                    <span style="width: 567px;">{{item.deadlineDate}}</span>
+                                                </div>
+                                            </template>
+
+                                            <!-- 延期审核 -->
+                                            <template v-else-if="item.operTypeCode=='ORDEROPERTYPE06'">
+                                                <div class="content">
+                                                    <label for="">审核结果</label>
+                                                    <span>{{item.operResult}}</span>
+                                                    <label for="">审核意见</label>
+                                                    <span>{{item.operExplain}}</span>
+                                                    <label for="">申请期限</label>
+                                                    <span style="width: 567px;">{{item.deadlineDate}}</span>
+                                                </div>
+                                            </template>
+
+                                            <!-- 到达 -->
+                                            <template v-else-if="item.operTypeCode=='ORDEROPERTYPE18'">
+                                                <div class="content">
+                                                    <label for="">备注</label>
+                                                    <span style="width: 996px;">{{item.operExplain}}</span>
+                                                </div>
+                                            </template>
+
+                                            <!-- 反馈ORDEROPERTYPE07 -->
+                                            <template v-else>
+                                                <div class="content">
+                                                    <label for="">操作类型</label>
+                                                    <span>{{item.operResult}}</span>
+                                                    <label for="">故障类型</label>
+                                                    <span>{{item.failureTypeName}}</span>
+                                                    <label for="">故障原因</label>
+                                                    <span>{{item.failureReason}}</span>
+                                                    <label for="">结果反馈</label>
+                                                    <span style="width: 351px;">{{item.operExplain}}</span>
+                                                </div>
+                                                <div class="content file-info">
+                                                    <label for="">附件</label>
+                                                    <span class="file-name">
+                                                        <div v-for="(item,index) in item.fileInfoList" :key="index" class="file-single">
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="item.fileUrl" :preview-src-list="[item.fileUrl]" fit="fill"></el-image>
+                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
+                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
+                                                            <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
+                                                        </div>
+                                                    </span>
+                                                </div>
+                                            </template>
+                                        </li>
                                     </template>
-                                </li>
-                            </template>
-                        </ul>
-                        <!-- 确认 -->
-                        <ul class="confirm-info" v-if="workordersInfo.workordersRecordMap.sureList&&workordersInfo.workordersRecordMap.sureList.length>0">
-                            <li class="confirm-normal" v-for="(item,index) in workordersInfo.workordersRecordMap.sureList" :key="index">
-                                <div class="title">
-                                    <label for="" class="title-name">{{item.operTypeName}}</label>
-                                    <span class="title-date">{{item.operDate}}</span>
-                                    <span class="title-person">{{item.operPerson}}</span>
-                                </div>
-                                <!-- 催办 -->
-                                <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
-                                    <div class="content">
-                                        <label for="">催办原因</label>
-                                        <span style="width: 989px;">{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-
-                                <template v-else>
-                                    <div class="content">
-                                        <label for="">确认结果</label>
-                                        <span>{{item.operResult}}</span>
-                                        <label for="">反馈时间</label>
-                                        <span>{{item.operDate}}</span>
-                                        <label for="">确认意见</label>
-                                        <span style="width: 567px;">{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-                            </li>
-                        </ul>
-                        <!-- 评价 -->
-                        <ul class="assess-info" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0">
-                            <li v-for="(item,index) in workordersInfo.workordersRecordMap.evaluateList" :key="index">
-                                <div class="title">
-                                    <label for="" class="title-name">{{item.operTypeName}}</label>
-                                    <span class="title-date">{{item.operDate}}</span>
-                                    <span class="title-person">{{item.operPerson}}</span>
-                                </div>
-
-                                <!-- 催办 -->
-                                <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
-                                    <div class="content">
-                                        <label for="">催办原因</label>
-                                        <span style="width: 989px;">{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-
-                                <template v-else>
-                                    <div class="content">
-                                        <template v-for="(res,rdx) in item.evalGradeList">
-                                            <label for="" :key="'lb'+rdx">{{res.evalItemName}}</label>
-                                            <span :key="'sp'+rdx">{{res.evalGrades}}星</span>
+                                </ul>
+                                <!-- 确认 -->
+                                <ul id="qr" class="sp-info confirm-info" v-if="workordersInfo.workordersRecordMap.sureList&&workordersInfo.workordersRecordMap.sureList.length>0">
+                                    <li class="confirm-normal" v-for="(item,index) in workordersInfo.workordersRecordMap.sureList" :key="index">
+                                        <div class="title">
+                                            <label for="" class="title-name">{{item.operTypeName}}</label>
+                                            <span class="title-date">{{item.operDate}}</span>
+                                            <span class="title-person">{{item.operPerson}}</span>
+                                        </div>
+                                        <!-- 催办 -->
+                                        <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
+                                            <div class="content">
+                                                <label for="">催办原因</label>
+                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                            </div>
                                         </template>
-                                        <label for="">意见</label>
-                                        <span>{{item.operExplain}}</span>
-                                    </div>
-                                </template>
-                            </li>
-                        </ul>
-                        <!-- 催办 -->
-                        <!-- <ul class="urge-info" v-if="workordersInfo.workordersRecordMap.pressList.length>0">
-                            <li v-for="(item,index) in workordersInfo.workordersRecordMap.pressList" :key="index">
-                                <div class="title">
-                                    <label for="" class="title-name">{{item.operTypeName}}</label>
-                                    <span class="title-date">{{item.operDate}}</span>
-                                    <span class="title-person">{{item.operPerson}}</span>
-                                </div>
-                                <div class="content">
-                                    <label for="">催办原因</label>
-                                    <span style="width: 989px;">{{item.operExplain}}</span>
-                                </div>
-                            </li>
-                        </ul> -->
-                        <!-- 延期 -->
-                        <!-- <ul class="feedback-info postpone-info" v-if="workordersInfo.workordersRecordMap.postponeList.length>0">
-                            <template v-for="(item,index) in this.workordersInfo.workordersRecordMap.postponeList">
-                                <li class="feedback-defer" :key="'-'+index">
-                                    <div class="title">
-                                        <label for="" class="title-name">{{item.operTypeName}}</label>
-                                        <span class="title-date">{{item.operDate}}</span>
-                                        <span class="title-person">{{item.operPerson}}</span>
-                                    </div>
-                                    <div class="content">
-                                        <template v-if="item.operTypeName=='延期审核'">
-                                            <label for="">审核结果</label>
-                                            <span>{{item.operResult}}</span>
+
+                                        <template v-else>
+                                            <div class="content">
+                                                <label for="">确认结果</label>
+                                                <span>{{item.operResult}}</span>
+                                                <label for="">反馈时间</label>
+                                                <span>{{item.operDate}}</span>
+                                                <label for="">确认意见</label>
+                                                <span style="width: 567px;">{{item.operExplain}}</span>
+                                            </div>
                                         </template>
-                                        <label for="">{{item.operTypeName=='延期审核'?'审核意见':'延期原因'}}</label>
-                                        <span>{{item.operExplain}}</span>
-                                        <label for="">维修期限</label>
-                                        <span style="width: 567px;">{{item.deadlineDate}}</span>
-                                    </div>
-                                </li>
-                            </template>
-                        </ul> -->
-                        <!-- 转单 -->
-                        <!-- <ul class="feedback-info transfer-info" v-if="workordersInfo.workordersRecordMap.transferList.length>0">
-                            <template v-for="(item,index) in this.workordersInfo.workordersRecordMap.transferList">
-                                <li class="feedback-defer" :key="'-'+index">
-                                    <div class="title">
-                                        <label for="" class="title-name">{{item.operTypeName}}</label>
-                                        <span class="title-date">{{item.operDate}}</span>
-                                        <span class="title-person">{{item.operPerson}}</span>
-                                    </div>
-                                    <div class="content">
-                                        <label for="">记录编号</label>
-                                        <span style="width: 567px;">{{item.workordersRecordId}}</span>
-                                    </div>
-                                </li>
-                            </template>
-                        </ul> -->
-                        <!-- 材料 -->
-                        <!-- <ul class="feedback-info material-info" v-if="workordersInfo.workordersRecordMap.materialList.length>0">
-                            <template v-for="(item,index) in this.workordersInfo.workordersRecordMap.materialList">
-                                <li class="feedback-defer" :key="'-'+index">
-                                    <div class="title">
-                                        <label for="" class="title-name">{{item.operTypeName}}</label>
-                                        <span class="title-date">{{item.operDate}}</span>
-                                        <span class="title-person">{{item.operPerson}}</span>
-                                    </div>
-                                    <div class="content">
+                                    </li>
+                                </ul>
+                                <!-- 评价 -->
+                                <ul id="pj" class="sp-info assess-info" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0">
+                                    <li v-for="(item,index) in workordersInfo.workordersRecordMap.evaluateList" :key="index">
+                                        <div class="title">
+                                            <label for="" class="title-name">{{item.operTypeName}}</label>
+                                            <span class="title-date">{{item.operDate}}</span>
+                                            <span class="title-person">{{item.operPerson}}</span>
+                                        </div>
+
+                                        <!-- 催办 -->
+                                        <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
+                                            <div class="content">
+                                                <label for="">催办原因</label>
+                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
+
+                                        <template v-else>
+                                            <div class="content">
+                                                <template v-for="(res,rdx) in item.evalGradeList">
+                                                    <label for="" :key="'lb'+rdx">{{res.evalItemName}}</label>
+                                                    <span :key="'sp'+rdx">{{res.evalGrades}}星</span>
+                                                </template>
+                                                <label for="">意见</label>
+                                                <span>{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
+                                    </li>
+                                </ul>
+                                <!-- 材料 -->
+                                <!-- <ul class="feedback-info material-info" v-if="workordersInfo.workordersRecordMap.materialList.length>0">
+                                <template v-for="(item,index) in this.workordersInfo.workordersRecordMap.materialList">
+                                    <li class="feedback-defer" :key="'-'+index">
+                                        <div class="title">
+                                            <label for="" class="title-name">{{item.operTypeName}}</label>
+                                            <span class="title-date">{{item.operDate}}</span>
+                                            <span class="title-person">{{item.operPerson}}</span>
+                                        </div>
+                                        <div class="content">
                                         <label for="">申请材料</label>
                                         <span :title="item.materialInfoList|materialShow" style="width:349px;">{{item.materialInfoList|materialShow}}</span>
                                         <label for="">备注</label>
@@ -550,24 +527,27 @@
                                             </div>
                                         </span>
                                     </div>
-                                </li>
-                            </template>
-                        </ul> -->
-                        <!-- 撤销 -->
-                        <ul class="revoke-info" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">
-                            <li v-for="(item,index) in workordersInfo.workordersRecordMap.cancelList" :key="index">
-                                <div class="title">
-                                    <label for="" class="title-name">{{item.operTypeName}}</label>
-                                    <span class="title-date">{{item.operDate}}</span>
-                                    <span class="title-person">{{item.operPerson}}</span>
-                                </div>
-                                <div class="content">
-                                    <label for="">撤销原因</label>
-                                    <span style="width: 989px;">{{item.operExplain}}</span>
-                                </div>
-                            </li>
-                        </ul>
+                                    </li>
+                                </template>
+                                </ul> -->
+                                <!-- 撤销 -->
+                                <ul id="cx" class="sp-info revoke-info" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">
+                                    <li v-for="(item,index) in workordersInfo.workordersRecordMap.cancelList" :key="index">
+                                        <div class="title">
+                                            <label for="" class="title-name">{{item.operTypeName}}</label>
+                                            <span class="title-date">{{item.operDate}}</span>
+                                            <span class="title-person">{{item.operPerson}}</span>
+                                        </div>
+                                        <div class="content">
+                                            <label for="">撤销原因</label>
+                                            <span style="width: 996px;">{{item.operExplain}}</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
+
                 </el-scrollbar>
             </div>
             <template>
@@ -670,9 +650,11 @@
                             <el-scrollbar class="mtl-scrollbar">
                                 <ul class="mt-list mt-list-scroll">
                                     <li v-for="(item,index) in materialList" :key="index">
-                                        <el-input v-model="item.materialName" size='mini' class="content-select mtl1" clearable></el-input>
+                                        <!-- <el-input v-model="item.materialName" size='mini' class="content-select mtl1" clearable></el-input> -->
+                                        <mInput :list="materialDic" :code.sync="item.materialId" :name.sync="item.materialName" class="content-select mtl1"></mInput>
                                         <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
-                                        <el-input v-model="item.materialUnit" size='mini' class="content-select mtl3" clearable></el-input>
+                                        <!-- <el-input v-model="item.materialUnit" size='mini' class="content-select mtl3" clearable></el-input> -->
+                                        <mInput :list="materialDUnit" :code.sync="item.materialUnit" :name.sync="item.materialUnit" class="content-select mtl3"></mInput>
 
                                         <div class="mtl5" v-if="item.fileList && item.fileList.length>0">
                                             <template v-for="(res,ix) in item.fileList">
@@ -747,6 +729,7 @@
     import assign from "components/workSheet/sheetOperation/assign";
     import auditApply from "components/workSheet/sheetOperation/auditApply";
     import auditTransfer from "components/workSheet/sheetOperation/auditTransfer";
+    import mInput from "components/common/selectDrop";
 
     import Common from "@/assets/js/common.js";
     export default {
@@ -758,7 +741,8 @@
             issue,
             assign,
             auditApply,
-            auditTransfer
+            auditTransfer,
+            mInput
         },
         filters: {
             filterOverdue(value) {
@@ -800,6 +784,8 @@
                 title: "工单详情",
                 token: "",
                 isShow: true,
+                stepPosition: 'relative',
+                activeIndex: '',
                 workordersInfo: {
                     workordersId: '',
                     workordersRecordMap: {}
@@ -823,6 +809,8 @@
                 operRefuseExplain: "",
                 delayTime: '',
                 delayExplain: '',
+                materialDic: [], //材料字典
+                materialDUnit: [],
                 materialList: [], // 材料列表，写入
                 materialListIndex: -1, // 当前处理材料列表的索引（关联附件）
                 operMaterialExplain: '',
@@ -834,6 +822,7 @@
         mounted() {
             this.token = Common.getQueryString("token");
             this.initPage();
+            this.addScrollListen();
         },
         watch: {
             $route(newVal, oldVal) {
@@ -1049,6 +1038,12 @@
             },
             showMaterial() {
                 if (!this.stopOpertion()) return;
+                this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { "parentCode": "DEVMATERTYPE" }).then(res => {
+                    if (res.appCode == 0) {
+                        this.materialDic = res.resultList;
+                        this.materialDUnit = [{ dicCode: '个', dicName: '个' }, { dicCode: '台', dicName: '台' }];
+                    }
+                });
                 this.dialogMaterialVisible = true;
             },
             materialFileList(val) {
@@ -1136,8 +1131,9 @@
             },
             addMaterial() {
                 this.materialList.push({
+                    materialId: '',
                     materialName: '',
-                    materialNum: '',
+                    materialNum: '1',
                     materialUnit: '',
                     fileList: []
                 });
@@ -1263,6 +1259,59 @@
                 } else {
                     this.dataDetail();
                 }
+            },
+            addScrollListen() {
+                let _this = this;
+                this.$nextTick(() => {
+                    let scrollbarEl = this.$refs.swrapper.wrap;
+
+                    scrollbarEl.onscroll = function() {
+
+                        let t1 = document.querySelector('#sq') ? document.querySelector('#sq').offsetTop : -1;
+                        let t2 = document.querySelector('#sh') ? document.querySelector('#sh').offsetTop : -1;
+                        let t3 = document.querySelector('#xf') ? document.querySelector('#xf').offsetTop : -1;
+                        let t4 = document.querySelector('#zp') ? document.querySelector('#zp').offsetTop : -1;
+                        let t5 = document.querySelector('#fk') ? document.querySelector('#fk').offsetTop : -1;
+                        let t6 = document.querySelector('#qr') ? document.querySelector('#qr').offsetTop : -1;
+                        let t7 = document.querySelector('#pj') ? document.querySelector('#pj').offsetTop : -1;
+                        let t8 = document.querySelector('#cx') ? document.querySelector('#cx').offsetTop : -1;
+                        if (t8 >= 0 && scrollbarEl.scrollTop >= t8) {
+                            _this.stepPosition = 'fixed';
+                            _this.activeIndex = 'cx';
+                        } else if (t7 >= 0 && scrollbarEl.scrollTop >= t7) {
+                            _this.stepPosition = 'fixed';
+                            _this.activeIndex = 'pj';
+                        } else if (t6 >= 0 && scrollbarEl.scrollTop >= t6) {
+                            _this.stepPosition = 'fixed';
+                            _this.activeIndex = 'qr';
+                        } else if (t5 >= 0 && scrollbarEl.scrollTop >= t5) {
+                            _this.stepPosition = 'fixed';
+                            _this.activeIndex = 'fk';
+                        } else if (t4 >= 0 && scrollbarEl.scrollTop >= t4) {
+                            _this.stepPosition = 'fixed';
+                            _this.activeIndex = 'zp';
+                        } else if (t3 >= 0 && scrollbarEl.scrollTop >= t3) {
+                            _this.stepPosition = 'fixed';
+                            _this.activeIndex = 'xf';
+                        } else if (t2 >= 0 && scrollbarEl.scrollTop >= t2) {
+                            _this.stepPosition = 'fixed';
+                            _this.activeIndex = 'sh';
+                        } else if (t1 >= 0 && scrollbarEl.scrollTop >= t1) {
+                            _this.stepPosition = 'fixed';
+                            _this.activeIndex = 'sq';
+                        } else {
+                            _this.stepPosition = 'relative';
+                            _this.activeIndex = '';
+                        }
+
+                    }
+                });
+            },
+            scrollIntoView(id) {
+                document.getElementById(id).scrollIntoView();
+                setTimeout(() => {
+                    this.activeIndex = id;
+                })
             }
         }
     };
@@ -1276,6 +1325,56 @@
     @import "../../assets/less/dialog.less";
 
     .ej-main {
+        .ej-content-title {
+            .title-box {
+                display: flex;
+
+                .pos-step {
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    font-size: 13px;
+                    margin-left: 20px;
+
+                    li {
+                        cursor: pointer;
+                        border: 1px solid #C0C4CC;
+                        padding: 1px 3px;
+                        border-radius: 3px;
+                        color: #C0C4CC;
+                        margin-right: 10px;
+                        position: relative;
+                        background: #fff;
+                        z-index: 2;
+
+                        &::before {
+                            content: '';
+                            display: block;
+                            position: absolute;
+                            width: 10px;
+                            height: 1px;
+                            background: #C0C4CC;
+                            z-index: 1;
+                            top: 50%;
+                            right: -11px;
+                        }
+
+                        &:last-child {
+                            &::before {
+                                display: none;
+                            }
+                        }
+
+                        &.active,
+                        &:hover {
+                            color: #00c187;
+                            border-color: #00c187;
+                        }
+                    }
+                }
+            }
+        }
+
         .ej-content-title-btn {
             background: rgba(255, 255, 255, 0.09);
             border: 1px solid;
@@ -1339,9 +1438,77 @@
         }
     }
 
+    .step-scroll {
+        display: flex;
+        padding-top: 10px;
+
+        .step-left {
+            // width: 70px;
+            width: 0;
+            box-sizing: border-box;
+            // padding-left: 10px;
+            overflow: hidden;
+
+            .pos-step {
+                &.fixed {
+                    position: fixed;
+                    top: 98px;
+                    display: none;
+                }
+            }
+
+            /deep/ .el-step {
+                cursor: pointer;
+
+                &.active,
+                &:hover {
+                    .el-step__icon {
+                        &.is-text {
+                            border-color: #00c187;
+                        }
+
+                        color: #00c187;
+                    }
+
+                    .el-step__title {
+                        color: #00c187;
+                    }
+                }
+
+                .el-step__icon {
+                    &.is-text {
+                        border-width: 1px;
+                    }
+
+                    font-size: 12px;
+                    width: 20px;
+                    height: 20px;
+                }
+
+                .el-step__title {
+                    font-size: 14px;
+                }
+
+                &.is-vertical .el-step__line {
+                    left: 9px;
+                    top: 2px;
+                    bottom: -2px;
+                }
+
+                .el-step__main {
+                    padding-left: 4px;
+                }
+            }
+        }
+
+        .step-right {
+            flex: 1;
+            overflow: hidden;
+        }
+    }
+
     .depiction-info {
         margin: 0 14px 0 32px;
-        padding-top: 10px;
         background: transparent;
         border: none;
         border-left: 1px solid #00c187;
@@ -1391,7 +1558,7 @@
                 }
 
                 // .content .urge-reason {
-                //     width: 989px;
+                //     width: 996px;
                 // }
             }
 
@@ -1487,7 +1654,7 @@
                 }
 
                 // .content .revoke-record {
-                //     width: 989px;
+                //     width: 996px;
                 // }
             }
 
@@ -1566,7 +1733,7 @@
                         line-height: 25px;
                         text-align: left;
                         color: #4f5a64;
-                        padding-left: 10px;
+                        padding-left: 7px;
                         overflow: hidden;
                         white-space: nowrap;
                         text-overflow: ellipsis;

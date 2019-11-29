@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 Vue.use(Router);
 
-const time = resolve => require(['components/rpProcess/timedeft/main'], resolve);
+const time = resolve => require(['components/workSheet/timedeft'], resolve);
 
 const sheet = resolve => require(['components/workSheet/sheet'], resolve);
 const repair = resolve => require(['components/workSheet/repair'], resolve);

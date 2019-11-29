@@ -10,23 +10,27 @@
             <template slot="condFirst">
                 <el-col :span="7">
                     <label>模糊查询</label>
-                    <el-input v-model="key" placeholder="设备名称/设备编号" size='mini' class="content-select" clearable></el-input>
+                    <el-input v-model="key" placeholder="设备名称/设备编号" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
                 <el-col :span="7">
                     <label>申报时间</label>
-                    <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd">
+                    <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd" @keyup.enter.native="searchTableInfo">
                     </el-date-picker>
                 </el-col>
-                <el-col :span="7">
+                <el-col :span="7" v-if="title!='工单查询'&&title!='维修申报'">
                     <label>查询类型</label>
-                    <mInput :list="typeList" :code.sync="typeCode" :name.sync="typeName" :clearable="false"></mInput>
+                    <mInput :list="typeList" :code.sync="typeCode" :name.sync="typeName" :clearable="false" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
+                <el-col :span="7" v-else>
+                    <label>当前状态</label>
+                    <mSelectMult :list="stateList" :code.sync="stateCode" :name.sync="stateName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
             </template>
 
             <template slot="condSecond">
                 <el-col :span="7">
                     <label>申报人员</label>
-                    <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable></el-input>
+                    <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
                 <!-- <el-col :span="7">
                     <label>申报编号</label>
@@ -34,29 +38,24 @@
                 </el-col> -->
                 <el-col :span="7">
                     <label>申报部门</label>
-                    <mInput :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId"></mInput>
+                    <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>申报来源</label>
-                    <!-- <mInput :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName"></mInput> -->
-                    <mSelectMult :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName"></mSelectMult>
+                    <mSelectMult :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>所属区域</label>
-                    <mInput :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId"></mInput>
+                    <mSelectMult :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>所属系统</label>
-                    <mInput :list="systemList" :code.sync="systemCode" :name.sync="systemName"></mInput>
+                    <mSelectMult :list="systemList" :code.sync="systemCode" :name.sync="systemName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <!-- <el-col :span="7">
                     <label>维修类型</label>
                     <mInput :list="reptypeList" :code.sync="reptypeCode" :name.sync="reptypeName"></mInput>
                 </el-col> -->
-                <el-col :span="7">
-                    <label>当前状态</label>
-                    <mInput :list="stateList" :code.sync="stateCode" :name.sync="stateName"></mInput>
-                </el-col>
             </template>
 
             <template slot="tableBtn">
@@ -262,9 +261,12 @@
                                 <el-scrollbar class="mtl-scrollbar">
                                     <ul class="mt-list mt-list-scroll">
                                         <li v-for="(item,index) in materialList" :key="index">
-                                            <el-input v-model="item.materialName" size='mini' class="content-select mtl1" clearable></el-input>
+                                            <!-- <el-input v-model="item.materialName" size='mini' class="content-select mtl1" clearable></el-input>
                                             <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
-                                            <el-input v-model="item.materialUnit" size='mini' class="content-select mtl3" clearable></el-input>
+                                            <el-input v-model="item.materialUnit" size='mini' class="content-select mtl3" clearable></el-input> -->
+                                            <mInput :list="materialDic" :code.sync="item.materialId" :name.sync="item.materialName" class="content-select mtl1"></mInput>
+                                            <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
+                                            <mInput :list="materialDUnit" :code.sync="item.materialUnit" :name.sync="item.materialUnit" class="content-select mtl3"></mInput>
 
                                             <div class="mtl5" v-if="item.fileList && item.fileList.length>0">
                                                 <template v-for="(res,ix) in item.fileList">
@@ -374,23 +376,23 @@
                 person: "",
                 declareId: "",
 
-                departCode: "",
-                departName: "",
+                departCode: [],
+                departName: [],
                 departList: [],
                 sourceCode: [],
                 sourceName: [],
                 sourceList: [],
-                regionCode: "",
-                regionName: "",
+                regionCode: [],
+                regionName: [],
                 regionList: [],
-                systemCode: "",
-                systemName: "",
+                systemCode: [],
+                systemName: [],
                 systemList: [],
                 reptypeCode: "",
                 reptypeName: "",
                 reptypeList: [],
-                stateCode: "",
-                stateName: "",
+                stateCode: [],
+                stateName: [],
                 stateList: [],
 
                 typeCode: '',
@@ -418,6 +420,8 @@
                 dialogTransferVisible: false, // 转单审核
                 operTransferExplain: '',
                 dialogMaterialVisible: false, // 材料审核
+                materialDic: [], //材料字典
+                materialDUnit: [],
                 materialList: [], //材料清单
                 materialListIndex: -1, // 当前处理材料列表的索引（关联附件）
                 operMaterialExplain: '',
@@ -442,12 +446,12 @@
                         repEndDate: this.times ? this.times[1] : "",
 
                         workordersId: this.declareId,
-                        devDeptId: this.departCode,
+                        devDeptId: this.departCode.join(","),
                         repSourceCode: this.sourceCode.join(","),
-                        devAreaCode: this.regionCode,
-                        devTypeCode: this.systemCode,
+                        devAreaCode: this.regionCode.join(","),
+                        devTypeCode: this.systemCode.join(","),
 
-                        workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode
+                        workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode.join(",")
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 } else if (this.title == '转单审核' || this.title == '转单查询') {
@@ -455,8 +459,8 @@
                         type: this.typeCode,
                         startTime: this.times ? this.times[0] : "",
                         endTime: this.times ? this.times[1] : "",
-                        deviceArea: this.regionCode,
-                        deviceType: this.systemCode
+                        deviceArea: this.regionCode.join(","),
+                        deviceType: this.systemCode.join(",")
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 } else if (this.title == '点位校准') {
@@ -464,7 +468,7 @@
                         deviceId: this.key,
                         startTime: this.times ? this.times[0] : "",
                         endTime: this.times ? this.times[1] : "",
-                        deviceTypeCode: this.systemCode,
+                        deviceTypeCode: this.systemCode.join(","),
                         dealResult: this.typeCode
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
@@ -477,12 +481,12 @@
                         applyPersonId: '',
 
 
-                        deviceArea: this.regionCode,
+                        deviceArea: this.regionCode.join(","),
                         deviceType: this.sourceCode.join(","),
 
-                        devTypeCode: this.systemCode,
+                        devTypeCode: this.systemCode.join(","),
                         applyDeptId: this.declareId,
-                        workordersStatusCode: this.stateCode
+                        workordersStatusCode: this.stateCode.join(",")
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 }
@@ -730,12 +734,29 @@
                 this.dialogTransferVisible = true;
             },
             materialDetail(item) {
+                this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { "parentCode": "DEVMATERTYPE" }).then(res => {
+                    if (res.appCode == 0) {
+                        this.materialDic = res.resultList;
+                        this.materialDUnit = [{ dicCode: '个', dicName: '个' }, { dicCode: '台', dicName: '台' }];
+                    }
+                });
+                this.dialogMaterialVisible = true;
                 this.detailInfo = item || {};
-                this.materialList = item.materialInfoList || [];
                 this.operMaterialExplain = item.operExplain || '';
                 this.materialOldFiles = item.fileInfoList || [];
                 this.materialFiles = [];
-                this.dialogMaterialVisible = true;
+
+                let abc = item.materialInfoList || [];
+                let arr = [];
+                abc.map(res => {
+                    arr.push({});
+                });
+                this.materialList = arr; // 先把材料的数量对应的dom加载出来
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        this.materialList = item.materialInfoList || []; // dom加载完成后再赋值数据才能渲染成功
+                    })
+                });
             },
             // 字典类型接口
             getDicInfo(url, obj) {
@@ -806,8 +827,9 @@
             },
             addMaterial() {
                 this.materialList.push({
+                    materialId: '',
                     materialName: '',
-                    materialNum: '',
+                    materialNum: '1',
                     materialUnit: '',
                     fileList: []
                 });
@@ -822,18 +844,18 @@
                 this.times = "";
                 this.person = "";
                 this.declareId = "";
-                this.departCode = "";
-                this.departName = "";
+                this.departCode = [];
+                this.departName = [];
                 this.sourceCode = [];
                 this.sourceName = [];
-                this.regionCode = "";
-                this.regionName = "";
-                this.systemCode = "";
-                this.systemName = "";
+                this.regionCode = [];
+                this.regionName = [];
+                this.systemCode = [];
+                this.systemName = [];
                 this.reptypeCode = "";
                 this.reptypeName = "";
-                this.stateCode = "";
-                this.stateName = "";
+                this.stateCode = [];
+                this.stateName = [];
                 this.queryConditions = {};
                 this.multipleSelection = [];
                 this.tableData = [];
@@ -950,6 +972,14 @@
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;
                         break;
+                    case '14':
+                        this.tableShowType = 3;
+                        this.title = '超期工单';
+                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/exception`;
+                        this.typeList = [{ dicCode: '0', dicName: '已超期' }, { dicCode: '1', dicName: '已撤销' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        this.typeName = this.typeList[0].dicName;
+                        break;
                     case '21':
                         this.tableShowType = 1;
                         this.title = '材料审核';
@@ -963,8 +993,8 @@
                         this.title = '点位校准';
                         this.listUrl.table = `${this.$config.efoms_HOST}/deviceConfirm/pageDeviceConfirm`;
                         this.typeList = [{ dicCode: '0', dicName: '未处理' }, { dicCode: '1', dicName: '已处理' }];
-                        this.typeCode = '';
-                        this.typeName = '';
+                        this.typeCode = this.typeList[0].dicCode;
+                        this.typeName = this.typeList[0].dicName;
                         break;
                     default:
                         break;
@@ -994,7 +1024,7 @@
             });
             //申报来源
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
-                parentCode: "REPAIRSOURCE"
+                parentCode: "REPAIRSSOURCE"
             }).then(res => {
                 this.sourceList = res.resultList || [];
             });

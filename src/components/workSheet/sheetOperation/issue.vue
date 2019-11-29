@@ -60,8 +60,9 @@
         mounted() {
             this.token = Common.getQueryString("token");
             this.workordersInfo = this.data || {};
-            let time = new Date(this.workordersInfo.repDate).getTime() + 2 * 24 * 60 * 60 * 1000;
-            this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
+            // let time = new Date(this.workordersInfo.repDate).getTime() + 2 * 24 * 60 * 60 * 1000;
+            // this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
+            this.getDeadlineTime();
             //维护单位
             this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {}).then(res => {
                 this.opDeptList = res.resultList || [];
@@ -102,6 +103,31 @@
                     })
                     .catch(err => {
                         this.isAjaxing = false;
+                        Common.printErrorLog(err);
+                    });
+            },
+            // 获取默认完成时间
+            getDeadlineTime() {
+                let time = new Date(this.workordersInfo.repDate).getTime() + 24 * 60 * 60 * 1000;
+                this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfList`, {
+                        devTypeCode: this.workordersInfo.devTypeCode,
+                        typeCode: this.workordersInfo.typeCode,
+                        isUse: 1
+                    }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            let num = 24;
+                            if (res.resultList && res.resultList.length > 0) {
+                                num = res.resultList[0].deadlineTime || 24;
+                            }
+                            time = new Date(this.workordersInfo.repDate).getTime() + num * 60 * 60 * 1000;
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                        this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
+                    })
+                    .catch(err => {
+                        this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
                         Common.printErrorLog(err);
                     });
             },

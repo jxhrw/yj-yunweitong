@@ -39,14 +39,20 @@
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
                                     <label>路口点位</label>
-                                    <mInput :list="devList" :code.sync="devCode" :name.sync="devName" showAttr="devName" getAttr="devId" @netSearch="getDevInfo" :isSearch="true" :isShowCode="true" :disabled="isOnlyRead"></mInput>
-                                    <div class="Warning" v-show="isWarning"><span>维修中</span></div>
+                                    <mInput v-if="devTypeCode!='REPDEVTYPE17'" :list="devList" :code.sync="devCode" :name.sync="devName" showAttr="devName" getAttr="devId" @netSearch="getDevInfo" :isSearch="true" :isShowCode="true" :disabled="isOnlyRead"></mInput>
+                                    <el-input v-else v-model="devName" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead"></el-input>
+
+                                    <div class="Warning" v-show="isWarning" title="该点位已有工单，点击查看" @click="gotoDetail"><span></span></div>
                                 </el-col>
                                 <!-- <el-col :span="9">
-                                    <i class="redStar">*</i>
                                     <label>所属辖区</label>
-                                    <mInput :list="areaList" :code.sync="areaCode" :name.sync="areaName" showAttr="regionName" getAttr="regionId" :disabled="isOnlyRead"></mInput>
+                                    <mInput :list="areaList" :code.sync="areaCode" :name.sync="areaName" showAttr="regionName" getAttr="regionId" :disabled="devTypeCode!='REPDEVTYPE17'"></mInput>
                                 </el-col> -->
+                                <el-col :span="9">
+                                    <i class="redStar">*</i>
+                                    <label>所属部门</label>
+                                    <mInput :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" :disabled="devTypeCode!='REPDEVTYPE17'"></mInput>
+                                </el-col>
 
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
@@ -278,6 +284,9 @@
                 areaCode: '',
                 areaName: '',
                 areaList: [],
+                departCode: '',
+                departName: '',
+                departList: [],
                 sourceCode: '',
                 sourceName: '',
                 sourceList: [],
@@ -307,6 +316,7 @@
                 loactName: '',
                 selectLocat: '', //地图弹窗选中的地址
                 isCanChangeDevtype: false, // 所属系统是否可修改
+                relationId: '', // 当前点位已报修关联的工单编号
             };
         },
         watch: {
@@ -346,11 +356,15 @@
                     this.devInfo = arr[0];
                     this.areaCode = arr[0].devAreaCode;
                     this.areaName = arr[0].devAreaName;
+                    this.departCode = arr[0].devDeptId;
+                    this.departName = arr[0].devDeptName;
                     this.address = '';
                 } else {
                     this.devInfo = {};
                     this.areaCode = '';
                     this.areaName = '';
+                    this.departCode = '';
+                    this.departName = '';
                     this.address = '';
                 }
                 this.devRepeatCheck();
@@ -389,12 +403,16 @@
             this.tainCode = this.tainList[0].dicCode;
             this.tainName = this.tainList[0].dicName;
             //所属辖区
-            this.getDicInfo(`${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}).then(res => {
-                this.areaList = res.resultList || [];
+            // this.getDicInfo(`${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}).then(res => {
+            //     this.areaList = res.resultList || [];
+            // });
+            //所属部门
+            this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}).then(res => {
+                this.departList = res.resultList || [];
             });
             //申报来源
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
-                parentCode: "REPAIRSOURCE"
+                parentCode: "REPAIRSSOURCE"
             }).then(res => {
                 this.sourceList = res.resultList || [];
             });
@@ -405,9 +423,16 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                if (this.devTypeCode == "" || this.tainCode == "" || this.devCode == "" || this.sourceCode == "") {
-                    Common.ejMessage("warning", "请选择设备基本信息");
-                    return;
+                if (this.devTypeCode != 'REPDEVTYPE17') {
+                    if (this.devTypeCode == "" || this.tainCode == "" || this.devCode == "" || this.sourceCode == "") {
+                        Common.ejMessage("warning", "请选择设备基本信息");
+                        return;
+                    }
+                } else {
+                    if (this.departCode == "" || this.tainCode == "" || this.devName == "" || this.sourceCode == "") {
+                        Common.ejMessage("warning", "请选择设备基本信息");
+                        return;
+                    }
                 }
                 if (this.isWarning) {
                     Common.ejMessage("warning", "该设备已经报修过了，请勿重复提交");
@@ -433,6 +458,8 @@
                     devName: this.devName,
                     devAreaCode: this.areaCode,
                     devAreaName: this.areaName,
+                    devDeptId: this.departCode,
+                    devDeptName: this.departName,
                     repSourceCode: this.sourceCode,
                     repSourceName: this.sourceName,
                     detailAddr: this.address,
@@ -484,6 +511,8 @@
                 this.devName = '';
                 this.areaCode = '';
                 this.areaName = '';
+                this.departCode = '';
+                this.departName = '';
                 this.sourceCode = '';
                 this.sourceName = '';
                 this.address = '';
@@ -523,6 +552,7 @@
                         devTypeCode: this.devTypeCode
                     }, { token: this.token })
                     .then(res => {
+                        this.relationId = res.resultList || '';
                         if (res.appCode == 2103) {
                             this.isWarning = true;
                         } else {
@@ -689,6 +719,8 @@
                                 this.tainCode = this.repairsInfo.typeName;
                                 this.areaCode = this.repairsInfo.devAreaCode;
                                 this.areaName = this.repairsInfo.devAreaName;
+                                this.departCode = this.repairsInfo.devDeptId;
+                                this.departName = this.repairsInfo.devDeptName;
                                 this.sourceCode = this.repairsInfo.repSourceCode;
                                 this.address = this.repairsInfo.siteDescrible || this.repairsInfo.detailAddr;
                                 this.gzdesc = this.repairsInfo.failureDescrible;
@@ -741,7 +773,15 @@
                     url, obj, { token: this.token }
                 );
             },
-
+            gotoDetail() {
+                this.$router.push({
+                    path: '/detsheet',
+                    query: {
+                        type: this.$route.query.type,
+                        id: this.relationId
+                    }
+                });
+            }
         }
     };
 </script>

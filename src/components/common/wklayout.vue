@@ -44,7 +44,7 @@
                     </div>
                     <div class="content">
                         <slot name="table"></slot>
-                        <paging ref="tableList" id="managePage" :totalCount="totalCount" :totalPage="totalPage" :queryConditions="queryConditions" @pageAsk="searchPage"></paging>
+                        <Paging ref="tableList" id="managePage" :totalCount="totalCount" :totalPage="totalPage" :queryConditions="queryConditions" @pageAsk="searchPage"></Paging>
                     </div>
 
                     <slot name="dialog"></slot>
@@ -54,7 +54,7 @@
     </div>
 </template>
 <script>
-    import paging from "@/components/common/paging_new";
+    import Paging from "@/components/common/paging_new";
     export default {
         // props: ['title', 'searchMore', 'queryConditions', 'totalPage', 'totalCount', 'typeTableData', 'multipleSelection'],
         props: {
@@ -94,7 +94,7 @@
             }
         },
         components: {
-            paging
+            Paging
         },
         watch: {
             'queryConditions.currentPage'(val) {
