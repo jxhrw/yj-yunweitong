@@ -17,11 +17,11 @@
                     <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd" @keyup.enter.native="searchTableInfo">
                     </el-date-picker>
                 </el-col>
-                <el-col :span="7" v-if="title!='工单查询'&&title!='维修申报'">
+                <el-col :span="7" v-show="title!='工单查询'&&title!='维修申报'">
                     <label>查询类型</label>
                     <mInput :list="typeList" :code.sync="typeCode" :name.sync="typeName" :clearable="false" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
-                <el-col :span="7" v-else>
+                <el-col :span="7" v-show="title=='工单查询'||title=='维修申报'">
                     <label>当前状态</label>
                     <mSelectMult :list="stateList" :code.sync="stateCode" :name.sync="stateName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
@@ -88,12 +88,12 @@
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repDeptName" label="申报单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column> -->
                     <!-- <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column> -->
                     <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
-                    <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip>
+                    <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
                         </template>
@@ -115,7 +115,7 @@
                             {{scope.row.workordersId||scope.row.repairsId}}
                         </template>
                     </el-table-column> -->
-                    <el-table-column prop="workordersId" label="申报单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="workordersId" label="申报部门" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
@@ -124,7 +124,7 @@
                     <el-table-column prop="workordersId" label="申请完成时间" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column prop="workordersId" label="延期理由" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
-                    <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip>
+                    <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
                         </template>
@@ -151,13 +151,13 @@
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repDeptName" label="申报单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column> -->
                     <!-- <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column> -->
                     <el-table-column prop="deadlineTime" label="期限完成时间" show-overflow-tooltip min-width="120"></el-table-column>
                     <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
-                    <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip>
+                    <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
                         </template>
@@ -185,13 +185,13 @@
 
                     <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repDeptName" label="申报单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip min-width="120"></el-table-column>
                     <!-- <el-table-column prop="aaaa" label="下发时间" show-overflow-tooltip min-width="120"></el-table-column> -->
                     <el-table-column prop="updateDate" label="完成时间" show-overflow-tooltip min-width="120"></el-table-column>
                     <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
-                    <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip>
+                    <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
                         </template>
@@ -264,7 +264,7 @@
                                             <!-- <el-input v-model="item.materialName" size='mini' class="content-select mtl1" clearable></el-input>
                                             <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
                                             <el-input v-model="item.materialUnit" size='mini' class="content-select mtl3" clearable></el-input> -->
-                                            <mInput :list="materialDic" :code.sync="item.materialId" :name.sync="item.materialName" class="content-select mtl1"></mInput>
+                                            <mInput :list="materialDic" :code.sync="item.materialCode" :name.sync="item.materialName" class="content-select mtl1"></mInput>
                                             <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
                                             <mInput :list="materialDUnit" :code.sync="item.materialUnit" :name.sync="item.materialUnit" class="content-select mtl3"></mInput>
 
@@ -827,7 +827,7 @@
             },
             addMaterial() {
                 this.materialList.push({
-                    materialId: '',
+                    materialCode: '',
                     materialName: '',
                     materialNum: '1',
                     materialUnit: '',

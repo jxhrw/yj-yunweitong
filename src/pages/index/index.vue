@@ -1,9 +1,8 @@
 <template>
     <div class="ej-mian">
-        <EJ-Header :userName="userInfo.personName" @click.native="qwerAbc"></EJ-Header>
-        <!-- <EJ-Main :menusDate="userInfo.rightListsEx"></EJ-Main> -->
+        <EJ-Header v-if="isHeadMenuVisible" :userName="userInfo.personName"></EJ-Header>
         <div class="ej-main" id="mainBox">
-            <EJ-Menu :menusList="rightListsEx"></EJ-Menu>
+            <EJ-Menu v-if="isHeadMenuVisible" :menusList="rightListsEx"></EJ-Menu>
 
             <keep-alive>
                 <router-view class="page-iframe" v-if="$route.meta.keepAlive"></router-view>
@@ -30,6 +29,7 @@
         },
         data() {
             return {
+                isHeadMenuVisible: true,
                 userInfo: {},
                 path: '',
                 audio: Audio,
@@ -39,6 +39,7 @@
             }
         },
         created() {
+            this.isHeadMenuVisible = Common.getQueryString("headMenu") != 'hide';
             this.rightListsEx = [{
                 children: [{
                     checked: true,
@@ -171,11 +172,14 @@
                     ]
                 }]
             }];
-
-            this.getUserInfo();
+            if (this.isHeadMenuVisible) {
+                this.getUserInfo();
+            }
         },
         mounted() {
-            this.tipsPush('EFOMS_OPERATION');
+            if (this.isHeadMenuVisible) {
+                this.tipsPush('EFOMS_OPERATION');
+            }
             window.myVue = this;
         },
         methods: {
@@ -242,20 +246,6 @@
                         query: { pre: entrance, id: obj.wokrorderIds, isread: obj.type == '待办' ? 'edit' : undefined }
                     });
                 }
-            },
-            qwerAbc() {
-                // this.domIndex += 1;
-                // let res = { content: '去查看', wokrorderIds: '12345678', key: this.domIndex };
-                // document.getElementById('audio').play();
-
-                // this.DOMS[this.domIndex] = this.$notify({
-                //     title: '消息提醒',
-                //     position: 'bottom-right',
-                //     dangerouslyUseHTMLString: true,
-                //     duration: 0,
-                //     message: `<a style="cursor: pointer;" onclick="myVue.onclickNotification('${encodeURIComponent(JSON.stringify(res))}')">${res.content}${this.domIndex}</a>`,
-                //     customClass: 'serverpushNotice'
-                // });
             },
             getType(className) {
                 //   //================待办子类==================//
@@ -370,7 +360,7 @@
     @import "../../assets/css/blue.css";
 
     body {
-        min-width: 1200px;
+        min-width: 1150px;
     }
 
     .ej-content-scrollbar {

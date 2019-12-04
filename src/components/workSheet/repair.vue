@@ -79,11 +79,11 @@
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repDeptName" label="申报单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
                     <!-- <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column> -->
-                    <el-table-column prop="repStatusName" label="状态" show-overflow-tooltip>
+                    <el-table-column prop="repStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
                         </template>

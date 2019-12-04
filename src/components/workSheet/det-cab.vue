@@ -66,17 +66,19 @@
                                     <label>现管理单位</label>
                                     <mInput :list="manDeptList" :code.sync="manDeptCode" :name.sync="manDeptName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
+                                <!-- 外建单位库里没有code，根据name存值 -->
                                 <el-col :span="10">
                                     <label>外建单位</label>
-                                    <mInput :list="outUnitList" :code.sync="outUnitCode" :name.sync="outUnitName" showAttr="opsDeptName" getAttr="opsDeptId" :disabled="isOnlyRead" :clearable="true"></mInput>
+                                    <mInput :list="outUnitList" :code.sync="outUnitCode" :name.sync="outUnitName" showAttr="opsDeptName" getAttr="opsDeptName" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
                                 <el-col :span="10">
                                     <label>建设单位</label>
                                     <mInput :list="conUnitList" :code.sync="conUnitCode" :name.sync="conUnitName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
+                                <!-- 施工单位库里没有code，根据name存值 -->
                                 <el-col :span="10">
                                     <label>施工单位</label>
-                                    <mInput :list="stuUnitList" :code.sync="stuUnitCode" :name.sync="stuUnitName" showAttr="opsDeptName" getAttr="opsDeptId" :disabled="isOnlyRead" :clearable="true"></mInput>
+                                    <mInput :list="stuUnitList" :code.sync="stuUnitCode" :name.sync="stuUnitName" showAttr="opsDeptName" getAttr="opsDeptName" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
                                 <el-col :span="10">
                                     <label>支队责任民警</label>
@@ -260,10 +262,10 @@
         },
         watch: {
             onlyId(val) {
-                this.onlyId = val.replace(/[^\d]/g, '');
+                // this.onlyId = val.replace(/[^\d]/g, '');
             },
             useAge(val) {
-                this.useAge = val.replace(/[^\d|.]/g, '');
+                this.useAge = val ? val.replace(/[^\d|.]/g, '') : val;
             }
         },
         mounted() {
@@ -335,6 +337,10 @@
                     Common.ejMessage("warning", "点位名称必填");
                     return;
                 }
+                // if (this.onlyId == "") {
+                //     Common.ejMessage("warning", "唯一识别码必填");
+                //     return;
+                // }
                 if (this.devTypeCode == "") {
                     Common.ejMessage("warning", "所属系统必填");
                     return;
@@ -351,6 +357,7 @@
                 let obj = {
                     deviceId: this.devCode,
                     devName: this.devName, //设备名称；
+                    manageId: this.onlyId,
                     devTypeCode: this.devTypeCode,
                     areaId: this.areaCode,
                     areaName: this.areaName,
@@ -371,12 +378,11 @@
                     buildDate: this.buildTime,
                     checkDate: this.acceptanceTime,
                     overTime: this.transferTime,
+                    useAge: this.useAge,
+                    shelfLief: this.shelfLiefTime,
                     oppmType: this.attributeCode,
                     project: this.underCode,
                     deviceStatusCode: this.statusCode,
-                    manageId: this.onlyId,
-                    useAge: this.useAge,
-                    shelfLief: this.shelfLiefTime,
 
                     // 相关code值从维修申报中参考
                     workOrder: {
@@ -388,11 +394,16 @@
                     }
                 };
 
+                let murl = `${this.$config.efoms_HOST}/UbmsAddInfo/addUbmsInfo`;
+                if (this.pointInfo.deviceId != this.devCode) {
+                    murl = `${this.$config.efoms_HOST}/UbmsAddInfo/updateUbmsDev`;
+                }
+
                 this.isAjaxing = true;
-                this.$api.get(`${this.$config.efoms_HOST}/UbmsAddInfo/addUbmsInfo`, { token: this.token, mapBean: obj }, { token: this.token }).then(res => {
+                this.$api.get(murl, { token: this.token, mapBean: obj }, { token: this.token }).then(res => {
                         this.isAjaxing = false;
                         if (res.appCode == 0) {
-                            this.$confirm('点位增加成功，已生成维修单?', '操作成功', {
+                            this.$confirm('点位校准成功，已生成维修单?', '操作成功', {
                                 confirmButtonText: '返回',
                                 cancelButtonText: '关闭',
                                 type: 'success'
@@ -422,7 +433,7 @@
                     }
 
                     this.isAjaxing = true;
-                    this.$api.get(`${this.$config.efoms_HOST}/deviceConfirm/dealDeviceConfirm`, { deviceId: this.devCode }, { token: this.token }).then(res => {
+                    this.$api.get(`${this.$config.efoms_HOST}/deviceConfirm/dealDeviceConfirm`, { deviceId: this.pointInfo.deviceId }, { token: this.token }).then(res => {
                             this.isAjaxing = false;
                             if (res.appCode == 0) {
                                 this.$confirm('当前点位已关闭', '操作成功', {
@@ -447,32 +458,36 @@
             },
             resetInfo(item) {
                 console.log(item);
-                this.devCode = item.devId || '';
-                this.devName = item.devName || '';
-                this.areaCode = item.devAreaCode || '';
-                this.areaName = item.devAreaName || '';
-                this.devIp = item.devIp || '';
-                this.coordinate.x = item.longitude || '';
-                this.coordinate.y = item.latitude || '';
-                this.address = item.siteDescrible || '';
-                this.manDeptCode = '';
-                this.outUnitCode = '';
-                this.conUnitCode = '';
-                this.stuUnitCode = '';
-                this.detPoliceCode = '';
-                this.resPoliceCode = '';
-                this.reviewersCode = '';
-                this.supervisorCode = '';
-                this.squadronCode = '';
-                this.buildTime = '';
-                this.acceptanceTime = '';
-                this.transferTime = '';
-                this.attributeCode = '';
-                this.underCode = '';
-                this.statusCode = item.devStatusCode || '';
-                this.onlyId = item.manageId || '';
-                this.useAge = item.useAge || '';
-                this.shelfLiefTime = item.shelfLief || '';
+                this.devCode = item.devId || undefined;
+                this.devName = item.devName || undefined;
+                // this.onlyId = item.manageId || undefined;
+                this.devTypeCode = item.devTypeCode || undefined;
+                this.devTypeName = item.devTypeName || undefined;
+                this.areaCode = item.devAreaCode || undefined;
+                this.areaName = item.devAreaName || undefined;
+                this.opDeptCode = item.oppmDept || undefined;
+                this.opDeptName = item.oppmDeptName || undefined;
+                this.devIp = item.devIp || undefined;
+                this.address = item.siteDescrible || undefined;
+                this.coordinate.x = item.longitude || undefined;
+                this.coordinate.y = item.latitude || undefined;
+                this.manDeptCode = item.devDeptId || undefined;
+                this.outUnitCode = item.outsideCompanyName || undefined;
+                this.conUnitCode = item.company || undefined;
+                this.stuUnitCode = item.constructionCompanyName || undefined;
+                this.detPoliceCode = item.detaResPolice || undefined;
+                this.resPoliceCode = item.briResPolice || undefined;
+                this.reviewersCode = item.optimizeReicewer || undefined;
+                this.supervisorCode = item.supervison || undefined;
+                this.squadronCode = item.squadron || undefined;
+                this.buildTime = item.devBuildDate || undefined;
+                this.acceptanceTime = item.checkDate || undefined;
+                this.transferTime = item.overTime || undefined;
+                this.useAge = item.useAge || undefined;
+                this.shelfLiefTime = item.shelfLief || undefined;
+                this.attributeCode = item.oppmType || undefined;
+                this.underCode = item.project || undefined;
+                this.statusCode = item.deviceStatus || undefined;
             },
             searchLocat() {
                 let _this = this;
@@ -520,9 +535,27 @@
                             this.pointInfo = res.resultList.result[0] || {};
                             this.devName = this.pointInfo.deviceName;
                             this.devCode = this.pointInfo.deviceId;
+                            this.onlyId = this.pointInfo.deviceId;
                             this.devTypeCode = this.pointInfo.deviceTypeCode;
                             this.devTypeName = this.pointInfo.deviceTypeName;
                             // console.log(this.devTypeCode)
+                            this.automatic();
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+            },
+            // 自动校准
+            automatic() {
+                this.$api.get(`${this.$config.efoms_HOST}/deviceDetail/selectDeviceDetailInfoById`, { manageId: this.pointInfo.deviceId }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            if (res.resultList) {
+                                this.resetInfo(res.resultList);
+                            }
                         } else {
                             Common.printErrorLog(res);
                         }

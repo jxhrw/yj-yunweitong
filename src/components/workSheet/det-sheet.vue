@@ -42,8 +42,8 @@
                             <p>拒绝</p>
                         </div>
                         <!-- 可撤销： ORDEROPERTYPE02，REPOPERTYPE02-->
-                        <!-- 或者 超期工单并且状态为非 已撤销状态ORDERSSTATUS08 -->
-                        <div v-if="(operatCode.indexOf('ORDEROPERTYPE02')>-1||operatCode.indexOf('REPOPERTYPE02')>-1 ||(prePage=='超期工单'&&workordersStatusCode!='ORDERSSTATUS08'))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
+                        <!-- 或者 超期工单并且状态为非 已撤销状态ORDERSSTATUS08 已完结ORDERSSTATUS07-->
+                        <div v-if="(operatCode.indexOf('ORDEROPERTYPE02')>-1||operatCode.indexOf('REPOPERTYPE02')>-1 ||(prePage=='超期工单'&&(workordersStatusCode!='ORDERSSTATUS08'||workordersStatusCode!='ORDERSSTATUS07')))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
                             <p>撤销</p>
                         </div>
                     </template>
@@ -227,7 +227,7 @@
                                                 <label for="">审核结果</label>
                                                 <span style="width: 349px;">{{item.operResult}}</span>
                                                 <label for="">审核意见</label>
-                                                <span style="width: 567px;">{{item.operExplain || '未填写'}}</span>
+                                                <span style="width: 567px;">{{item.operExplain}}</span>
                                             </div>
                                         </template>
                                     </li>
@@ -496,40 +496,11 @@
                                                     <span :key="'sp'+rdx">{{res.evalGrades}}星</span>
                                                 </template>
                                                 <label for="">意见</label>
-                                                <span>{{item.operExplain}}</span>
+                                                <span :title="item.operExplain">{{item.operExplain}}</span>
                                             </div>
                                         </template>
                                     </li>
                                 </ul>
-                                <!-- 材料 -->
-                                <!-- <ul class="feedback-info material-info" v-if="workordersInfo.workordersRecordMap.materialList.length>0">
-                                <template v-for="(item,index) in this.workordersInfo.workordersRecordMap.materialList">
-                                    <li class="feedback-defer" :key="'-'+index">
-                                        <div class="title">
-                                            <label for="" class="title-name">{{item.operTypeName}}</label>
-                                            <span class="title-date">{{item.operDate}}</span>
-                                            <span class="title-person">{{item.operPerson}}</span>
-                                        </div>
-                                        <div class="content">
-                                        <label for="">申请材料</label>
-                                        <span :title="item.materialInfoList|materialShow" style="width:349px;">{{item.materialInfoList|materialShow}}</span>
-                                        <label for="">备注</label>
-                                        <span style="width: 567px;">{{item.operExplain}}</span>
-                                    </div>
-                                    <div class="content file-info">
-                                        <label for="">附件</label>
-                                        <span class="file-name">
-                                            <div v-for="(item,index) in item.fileInfoList" :key="index" class="file-single">
-                                                <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="item.fileUrl" :preview-src-list="[item.fileUrl]" fit="fill"></el-image>
-                                                <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
-                                                <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
-                                                <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
-                                            </div>
-                                        </span>
-                                    </div>
-                                    </li>
-                                </template>
-                                </ul> -->
                                 <!-- 撤销 -->
                                 <ul id="cx" class="sp-info revoke-info" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">
                                     <li v-for="(item,index) in workordersInfo.workordersRecordMap.cancelList" :key="index">
@@ -651,7 +622,7 @@
                                 <ul class="mt-list mt-list-scroll">
                                     <li v-for="(item,index) in materialList" :key="index">
                                         <!-- <el-input v-model="item.materialName" size='mini' class="content-select mtl1" clearable></el-input> -->
-                                        <mInput :list="materialDic" :code.sync="item.materialId" :name.sync="item.materialName" class="content-select mtl1"></mInput>
+                                        <mInput :list="materialDic" :code.sync="item.materialCode" :name.sync="item.materialName" class="content-select mtl1"></mInput>
                                         <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
                                         <!-- <el-input v-model="item.materialUnit" size='mini' class="content-select mtl3" clearable></el-input> -->
                                         <mInput :list="materialDUnit" :code.sync="item.materialUnit" :name.sync="item.materialUnit" class="content-select mtl3"></mInput>
@@ -1131,7 +1102,7 @@
             },
             addMaterial() {
                 this.materialList.push({
-                    materialId: '',
+                    materialCode: '',
                     materialName: '',
                     materialNum: '1',
                     materialUnit: '',
@@ -1755,15 +1726,15 @@
             }
         }
 
-        .confirm-info {
-            // .confirm-normal .normal-suggest {
-            //     width: 567px;
-            // }
+        // .confirm-info {
+        //     .confirm-normal .normal-suggest {
+        //         width: 567px;
+        //     }
 
-            // .confirm-other .other-suggest {
-            //     width: 773px;
-            // }
-        }
+        //     .confirm-other .other-suggest {
+        //         width: 773px;
+        //     }
+        // }
 
         // .examine-info .content .examine-suggest {
         //     width: 558px;
