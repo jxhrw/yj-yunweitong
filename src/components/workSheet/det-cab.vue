@@ -154,7 +154,7 @@
             <el-dialog title="定位" :visible.sync="dialogMapVisible" width='560px' class="dialog-urge">
                 <div class="dialog-main">
                     <div class="revoke-reason">
-                        <el-input v-model="loactName" placeholder="" size='mini' class="content-select" style="width: 450px;" :clearable="true"></el-input>
+                        <el-input v-model="loactName" placeholder="" size='mini' class="content-select" style="width: 450px;" :clearable="true" @keyup.enter.native="searchLocat"></el-input>
                         <el-button @click="searchLocat" size='mini' class="submit">搜索</el-button>
                     </div>
                     <div>
@@ -333,7 +333,7 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                if (this.devName == "") {
+                if (!this.devName || this.devName == "") {
                     Common.ejMessage("warning", "点位名称必填");
                     return;
                 }
@@ -341,15 +341,15 @@
                 //     Common.ejMessage("warning", "唯一识别码必填");
                 //     return;
                 // }
-                if (this.devTypeCode == "") {
+                if (!this.devTypeCode || this.devTypeCode == "") {
                     Common.ejMessage("warning", "所属系统必填");
                     return;
                 }
-                if (this.areaCode == "") {
+                if (!this.areaCode || this.areaCode == "") {
                     Common.ejMessage("warning", "所属辖区必填");
                     return;
                 }
-                if (this.opDeptCode == "") {
+                if (!this.opDeptCode || this.opDeptCode == "") {
                     Common.ejMessage("warning", "维护单位必填");
                     return;
                 }
@@ -375,11 +375,11 @@
                     optimizeReviewer: this.reviewersCode,
                     supervison: this.supervisorCode,
                     squadron: this.squadronCode,
-                    buildDate: this.buildTime,
-                    checkDate: this.acceptanceTime,
-                    overTime: this.transferTime,
+                    buildDate: this.buildTime ? (this.buildTime + ' 00:00:00') : '',
+                    checkDate: this.acceptanceTime ? (this.acceptanceTime + ' 00:00:00') : '',
+                    overTime: this.transferTime ? (this.transferTime + ' 00:00:00') : '',
                     useAge: this.useAge,
-                    shelfLief: this.shelfLiefTime,
+                    shelfLief: this.shelfLiefTime ? (this.shelfLiefTime + ' 00:00:00') : '',
                     oppmType: this.attributeCode,
                     project: this.underCode,
                     deviceStatusCode: this.statusCode,

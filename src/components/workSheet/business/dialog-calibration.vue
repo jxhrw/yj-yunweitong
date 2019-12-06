@@ -2,7 +2,7 @@
     <el-dialog title="选择点位" :visible.sync="mDialogVisible" width='560px' class="dialog-urge">
         <div class="dialog-main">
             <div class="revoke-reason">
-                路口名称 <el-input v-model="key" placeholder="" size='mini' class="dialog-select" @keyup.enter.native="searchTable"></el-input>
+                关键字 <el-input v-model="key" placeholder="ID/名称/IP/唯一识别码" size='mini' class="dialog-select" clearable @keyup.enter.native="searchTable"></el-input>
                 所属系统 <mInput :list="devTypeList" :code.sync="devTypeCode" :name.sync="devTypeName" class="dialog-select" @keyup.enter.native="searchTable"></mInput>
                 <el-button @click="searchTable" size='mini' class="submit">搜索</el-button>
             </div>
@@ -98,7 +98,7 @@
             },
             searchTable() {
                 let obj = {
-                    devName: this.key,
+                    key: this.key,
                     devTypeCode: this.devTypeCode,
                 };
                 this.queryConditions = { ...this.queryConditions, ...obj }

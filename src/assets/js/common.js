@@ -191,7 +191,8 @@ var Common = {
         // console.log(
         //     "接口报错，接口为：" + host + method
         // );
-        console.log('看到我就知道是接口报错了，要是猜不到是哪个接口的话就去控制台查一下吧！  ^_^...');
+        // console.log('看到我就知道是接口报错了，要是猜不到是哪个接口的话就去控制台查一下吧！  ^_^...');
+        console.log(JSON.stringify(err))
         let errorTp = '处理异常';
         if (err) {
             if (err.dataBuffer) {
@@ -201,10 +202,16 @@ var Common = {
             }
         }
         errorTp = errorTp || '';
-        Vue.prototype.$message({
-            message: errorTp.length > 50 ? errorTp.substr(0, 50) : errorTp,
-            type: 'warning'
-        });
+
+        if(err && err.response && err.response.status == 403 && process.env.NODE_ENV != 'development'){
+            alert('登录失效，请重新登录！');
+            location.reload();
+        } else{
+            Vue.prototype.$message({
+                message: errorTp.length > 50 ? errorTp.substr(0, 50) : errorTp,
+                type: 'warning'
+            });
+        }
     },
     ejMessage(type, message) {
         let messageText = '';

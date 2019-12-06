@@ -28,7 +28,7 @@
             </template>
 
             <template slot="condSecond">
-                <el-col :span="7">
+                <el-col :span="7" v-if="title!='维修申报'">
                     <label>申报人员</label>
                     <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
@@ -119,10 +119,10 @@
                     <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="workordersId" label="维护单位" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="workordersId" label="原定完成时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="workordersId" label="申请完成时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="workordersId" label="延期理由" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="deadlineTime" label="原定完成时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="aaa" label="申请完成时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="aaa" label="延期理由" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
                     <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
@@ -444,23 +444,27 @@
                         key: this.key,
                         repStartDate: this.times ? this.times[0] : "",
                         repEndDate: this.times ? this.times[1] : "",
-
-                        workordersId: this.declareId,
-                        devDeptId: this.departCode.join(","),
+                        workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode.join(","),
+                        repPersonName: this.person,
+                        // workordersId: this.declareId,
+                        // devDeptId: this.departCode.join(","),
+                        repDeptIds: this.departCode.join(","),
                         repSourceCode: this.sourceCode.join(","),
                         devAreaCode: this.regionCode.join(","),
                         devTypeCode: this.systemCode.join(","),
-
-                        workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode.join(",")
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 } else if (this.title == '转单审核' || this.title == '转单查询') {
                     let obj = {
                         type: this.typeCode,
+                        keyWord: this.key,
                         startTime: this.times ? this.times[0] : "",
                         endTime: this.times ? this.times[1] : "",
+                        applyPersonName: this.person,
+                        applyDeptId: this.departCode.join(","),
+                        repSourceCode: this.sourceCode.join(","),
                         deviceArea: this.regionCode.join(","),
-                        deviceType: this.systemCode.join(",")
+                        deviceType: this.systemCode.join(","),
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 } else if (this.title == '点位校准') {
@@ -478,14 +482,14 @@
                         keyWord: this.key,
                         startTime: this.times ? this.times[0] : "",
                         endTime: this.times ? this.times[1] : "",
-                        applyPersonId: '',
-
-
+                        applyPersonName: this.person,
+                        applyDeptId: this.departCode.join(","),
+                        repSourceCode: this.sourceCode.join(","),
                         deviceArea: this.regionCode.join(","),
-                        deviceType: this.sourceCode.join(","),
+                        deviceType: this.systemCode.join(","),
 
-                        devTypeCode: this.systemCode.join(","),
-                        applyDeptId: this.declareId,
+                        // devTypeCode: this.systemCode.join(","),
+                        // workorderId: this.declareId,
                         workordersStatusCode: this.stateCode.join(",")
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
@@ -754,7 +758,7 @@
                 this.materialList = arr; // 先把材料的数量对应的dom加载出来
                 this.$nextTick(() => {
                     setTimeout(() => {
-                        this.materialList = item.materialInfoList || []; // dom加载完成后再赋值数据才能渲染成功
+                        this.materialList = abc; // dom加载完成后再赋值数据才能渲染成功
                     })
                 });
             },

@@ -24,14 +24,14 @@
             </template>
 
             <template slot="condSecond">
-                <el-col :span="7">
+                <!-- <el-col :span="7">
                     <label>申报人员</label>
                     <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
-                </el-col>
+                </el-col> -->
                 <!-- <el-col :span="7">
-          <label>申报编号</label>
-          <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
-        </el-col> -->
+                <label>申报编号</label>
+                <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
+                </el-col> -->
                 <el-col :span="7">
                     <label>申报部门</label>
                     <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
@@ -205,14 +205,12 @@
                     key: this.key,
                     startTime: this.times ? this.times[0] : "",
                     endTime: this.times ? this.times[1] : "",
-
+                    repStatusCode: this.stateCode.join(','),
                     repairsId: this.declareId,
                     repDeptIds: this.departCode.join(','),
-
+                    repSourceCode: this.sourceCode.join(','),
                     devAreaCode: this.regionCode.join(','),
                     devTypeCode: this.systemCode.join(','),
-
-                    repStatusCode: this.stateCode.join(',')
                 };
                 this.searchPageInfo();
             },
