@@ -29,8 +29,8 @@
                     <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col> -->
                 <!-- <el-col :span="7">
-                <label>申报编号</label>
-                <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
+                    <label>申报编号</label>
+                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
                 </el-col> -->
                 <el-col :span="7">
                     <label>申报部门</label>
