@@ -64,7 +64,7 @@
                             <el-row class="content-row-detail">
                                 <el-col :span="9">
                                     <label>申报编号</label>
-                                    <span>{{workordersInfo.workordersId}}</span>
+                                    <span>{{workordersInfo.workordersId || workordersInfo.repairsId}}</span>
                                     <!-- <div class="fix-state"><span>{{workordersInfo.workordersStatusName}}</span></div> -->
                                     <span class="date-state" style="flex:none" v-if="workordersInfo.isOverdue">{{workordersInfo.isOverdue|filterOverdue}}</span>
                                 </el-col>
@@ -87,7 +87,7 @@
                                 </el-col>
                                 <el-col :span="9" class="detail-warning">
                                     <label>当前状态</label>
-                                    <span>{{workordersInfo.workordersStatusName}}</span>
+                                    <span>{{workordersInfo.workordersStatusName || workordersInfo.repStatusName}}</span>
                                 </el-col>
                                 <el-col :span="9" class="detail-warning">
                                     <label>路口点位</label>

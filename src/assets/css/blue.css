@@ -1,5 +1,5 @@
 .blueBodyHd .ej-header {
-    background: linear-gradient(to right, #0365bb, #0250ac) !important;
+    background: linear-gradient(to right, #03294a, #020d2f) !important;
 }
 
 .blueBodyHd .scrollview {
@@ -21,7 +21,7 @@
 }
 
 .blueBodyHd .el-menu-vertical-demo.el-menu--collapse .el-submenu.is-active .el-submenu__title {
-    background-color: #025eb8 !important;
+    background-color: #03294a !important;
 }
 
 .blueBodyHd .el-menu-vertical-demo .el-submenu.is-active .el-menu-vertical-demo,
@@ -38,7 +38,7 @@
 .blueBodyHd .el-menu-vertical-demo .el-submenu .el-menu-vertical-demo.is-active,
 .blueBodyHd .el-menu--vertical .el-menu--popup .el-menu-item:hover,
 .blueBodyHd .el-menu--vertical .el-menu--popup .el-menu-item.is-active {
-    background-color: #025eb8 !important;
+    background-color: #03294a !important;
     color: #fff !important;
 }
 

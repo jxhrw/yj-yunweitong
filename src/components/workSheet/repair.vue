@@ -370,9 +370,20 @@
         mounted() {
             this.token = Common.getQueryString("token");
             //申报部门
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}).then(res => {
-                this.departList = res.resultList || [];
+            let a1 = this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {});
+            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {});
+            Promise.all([a1,a2]).then(res => {
+                let arr0 = res[0].resultList || [];
+                let arr1 = res[1].resultList || [];
+                arr1.map(item => {
+                    item.deptId = item.opsDeptId;
+                    item.deptName = item.opsDeptName;
+                });
+                this.departList = [...arr0,...arr1];
             });
+            // this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}).then(res => {
+            //     this.departList = res.resultList || [];
+            // });
             //申报来源
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
                 parentCode: "REPAIRSSOURCE"
