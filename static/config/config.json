@@ -3,12 +3,17 @@
     "ubms_HOST": "http://192.168.91.158:8080/ubms-server",
     "serverPushUrl": "http://192.168.91.142:6201/serverpush.js",
     "loginUrl": "http://192.168.91.158:10006/efoms-web/hz/index.html",
+    "systemUrl": "http://192.168.91.158:8081/uums-server/index.html",
 
     "?Gaode_Map": "高德地图配置信息（备注）",
+    "?Gaode_Map_Center": "高德地图初始化定位中心(精度纬度 , 分割)，默认杭州",
     "?Gaode_Map_Get": "模糊查询获取地址的接口",
+    "?Gaode_Map_regeo": "逆地理编码API服务地址",
     "?Gaode_Map_Key": "高德地图使用密钥",
     "?Gaode_Map_Url": "高德地图底图地址",
+    "Gaode_Map_Center": "120.159756,30.279806",
     "Gaode_Map_Get": "https://restapi.amap.com/v3/place/text",
+    "Gaode_Map_regeo": "https://restapi.amap.com/v3/geocode/regeo",
     "Gaode_Map_Key": "76ff15bcf7664bb6c3d9a660305f9e0b",
     "Gaode_Map_Url": "//webapi.amap.com/maps?v=1.4.15&key=76ff15bcf7664bb6c3d9a660305f9e0b"
 }

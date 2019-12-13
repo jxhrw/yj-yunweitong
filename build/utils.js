@@ -136,7 +136,9 @@ exports.htmlPlugin = function() {
             filename: filename + '.html',
             // 页面模板需要加对应的js脚本，如果不加这行则每个页面都会引入所有的js脚本
             chunks: ['manifest', 'vendor', filename],
-            inject: true
+            inject: true,
+            // 页面默认图标
+            favicon: path.resolve('src/assets/images/favicon.ico')
         };
         if (process.env.NODE_ENV === 'production') {
             conf = merge(conf, {

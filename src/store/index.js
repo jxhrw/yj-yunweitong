@@ -6,7 +6,8 @@ Vue.use(Vuex);
 // 创建vuex的store
 const store = new Vuex.Store({
     state: {
-        count: 5
+        count: 5,
+        isHeadMenuVisible: true
     },
     // 更改store的状态
     mutations: {
@@ -15,6 +16,9 @@ const store = new Vuex.Store({
         },
         decrement(state) {
             state.count--
+        },
+        changeVisible(state,value){
+            state.isHeadMenuVisible = value;
         }
     },
     // 有异步的时候， 需要action
@@ -32,6 +36,9 @@ const store = new Vuex.Store({
     getters: {
         getState(state) {
             return state.count > 0 ? state.count : 0;
+        },
+        getIsHeadMenuVisible(state){
+            return state.isHeadMenuVisible;
         }
     }
 });

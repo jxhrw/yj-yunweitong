@@ -55,16 +55,41 @@
                                     <el-input v-model="devIp" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead" :clearable="true"></el-input>
                                 </el-col>
                                 <el-col :span="10">
-                                    <label>详细地址</label>
-                                    <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
+                                    <label>经纬度</label>
+                                    <el-input v-model="lnglatShow" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
                                         <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="handleIconClick" style="font-size:16px;">
                                         </i>
                                     </el-input>
                                 </el-col>
 
                                 <el-col :span="10">
-                                    <label>现管理单位</label>
-                                    <mInput :list="manDeptList" :code.sync="manDeptCode" :name.sync="manDeptName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput>
+                                    <label>所属部门</label>
+                                    <mInput :list="devDeptList" :code.sync="devDeptCode" :name.sync="devDeptName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput>
+                                </el-col>
+                                <el-col :span="10">
+                                    <label>详细地址</label>
+                                    <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
+                                        <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="handleIconClick" style="font-size:16px;">
+                                        </i>
+                                    </el-input>
+                                </el-col>
+                                <el-col :span="10">
+                                    <label>所属中队</label>
+                                    <mInput :list="squadronList" :code.sync="squadronCode" :name.sync="squadronName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput>
+                                </el-col>
+                                <el-col :span="10">
+                                    <label>巡区</label>
+                                    <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
+                                    </el-input>
+                                </el-col>
+                                <el-col :span="10">
+                                    <label>现管单位</label>
+                                    <mInput :list="manDeptList" :code.sync="manDeptCode" :name.sync="manDeptName" :disabled="isOnlyRead" :clearable="true"></mInput>
+                                </el-col>
+                                <el-col :span="10">
+                                    <label>防区</label>
+                                    <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
+                                    </el-input>
                                 </el-col>
                                 <!-- 外建单位库里没有code，根据name存值 -->
                                 <el-col :span="10">
@@ -73,7 +98,7 @@
                                 </el-col>
                                 <el-col :span="10">
                                     <label>建设单位</label>
-                                    <mInput :list="conUnitList" :code.sync="conUnitCode" :name.sync="conUnitName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput>
+                                    <mInput :list="conUnitList" :code.sync="conUnitCode" :name.sync="conUnitName" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
                                 <!-- 施工单位库里没有code，根据name存值 -->
                                 <el-col :span="10">
@@ -96,10 +121,6 @@
                                 <el-col :span="10">
                                     <label>所属监理</label>
                                     <mInput :list="supervisorList" :code.sync="supervisorCode" :name.sync="supervisorName" showAttr="opsDeptName" getAttr="opsDeptId" :disabled="isOnlyRead" :clearable="true"></mInput>
-                                </el-col>
-                                <el-col :span="10">
-                                    <label>所属中队</label>
-                                    <mInput :list="squadronList" :code.sync="squadronCode" :name.sync="squadronName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
                                 <el-col :span="10">
                                     <label>建设时间</label>
@@ -151,26 +172,7 @@
                 </div>
             </div>
 
-            <el-dialog title="定位" :visible.sync="dialogMapVisible" width='560px' class="dialog-urge">
-                <div class="dialog-main">
-                    <div class="revoke-reason">
-                        <el-input v-model="loactName" placeholder="" size='mini' class="content-select" style="width: 450px;" :clearable="true" @keyup.enter.native="searchLocat"></el-input>
-                        <el-button @click="searchLocat" size='mini' class="submit">搜索</el-button>
-                    </div>
-                    <div>
-                        <div class="mapBox" id="mapContainer" style="width:100%;height:300px;"></div>
-                        <div id="searchResults"></div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <label class="dialog-label">选中地址</label>
-                        <el-input v-model="selectLocat" placeholder="" size='mini' class="content-select" style="width: 450px;" :clearable="true"></el-input>
-                    </div>
-                </div>
-                <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="()=>{address = selectLocat; coordinate.x = selectLnglat.x; coordinate.y = selectLnglat.y; dialogMapVisible = false;}" size='mini' class="submit">提 交</el-button>
-                    <el-button @click="dialogMapVisible = false" size='mini' class="cancel">取 消</el-button>
-                </div>
-            </el-dialog>
+            <DialogGDMap :dialogVisible.sync="dialogMapVisible" @callback="setLocatInfo"></DialogGDMap>
 
             <DialogCalibration :dialogVisible.sync="dialogCalibrationVisible" :cabCode="devTypeCode" :cabName="devTypeName" @callback="resetInfo"></DialogCalibration>
         </div>
@@ -181,16 +183,18 @@
     import Bus from "@/assets/js/bus.js";
     import Common from "@/assets/js/common.js";
     import DialogCalibration from "./business/dialog-calibration";
-    var MAPCONTAIN; // 地图实例
+    import DialogGDMap from "./business/dialog-gaodeMap";
     export default {
         components: {
             mInput,
-            DialogCalibration
+            DialogCalibration,
+            DialogGDMap
         },
         data() {
             return {
                 title: "",
                 token: "",
+                lnglatShow: '',
                 coordinate: {}, //坐标
                 devName: '',
                 devCode: '',
@@ -205,9 +209,9 @@
                 opDeptCode: '',
                 opDeptName: '',
                 opDeptList: [],
-                manDeptCode: '',
-                manDeptName: '',
-                manDeptList: [],
+                devDeptCode: '',
+                devDeptName: '',
+                devDeptList: [],
                 outUnitCode: '',
                 outUnitName: '',
                 outUnitList: [],
@@ -232,6 +236,9 @@
                 squadronCode: '',
                 squadronName: '',
                 squadronList: [],
+                manDeptCode: '',
+                manDeptName: '',
+                manDeptList: [],
                 buildTime: '',
                 acceptanceTime: '',
                 transferTime: '',
@@ -253,10 +260,6 @@
                 isOnlyRead: false,
                 isAjaxing: false, //是否在请求中
                 dialogMapVisible: false,
-                allMarkers: [], // 地图上当前所有的点
-                loactName: '',
-                selectLocat: '', //地图弹窗选中的地址
-                selectLnglat: {}, // 地图弹窗选中的坐标
                 dialogCalibrationVisible: false,
             };
         },
@@ -266,6 +269,27 @@
             },
             useAge(val) {
                 this.useAge = val ? val.replace(/[^\d|.]/g, '') : val;
+            },
+            devDeptCode(val) {
+                let arr = this.devDeptList.filter(res => {
+                    return res.deptId == val;
+                });
+                let obj = arr[0] || {};
+                this.squadronCode = '';
+                this.squadronName = '';
+                console.log('部门信息：', obj.deptProperCode, obj.deptRankCode)
+                if (obj.deptProperCode == 'DEPTPROPER01' && obj.deptRankCode == 'DEPTRANK04') {
+                    // 所属中队
+                    this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, { parentId: val }).then(res => {
+                        this.squadronList = res.resultList || [];
+                    });
+                } else if (obj.deptRankCode == 'DEPTRANK05') {
+                    this.squadronList = [{ deptId: obj.deptId, deptName: obj.deptName }];
+                    this.squadronCode = obj.deptId;
+                    this.squadronName = obj.deptName;
+                } else {
+                    this.squadronList = this.devDeptList;
+                }
             }
         },
         mounted() {
@@ -280,17 +304,31 @@
             this.getDicInfo(`${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}).then(res => {
                 this.areaList = res.resultList || [];
             });
-            //维护单位，外建单位，施工单位
-            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {}).then(res => {
+            //维护单位
+            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, { deptTypeCode: 'OPSDEPTTYPE01,OPSDEPTTYPE03' }).then(res => {
                 this.opDeptList = res.resultList || [];
+            });
+            // 外建单位
+            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, { deptTypeCode: 'OPSDEPTTYPE03' }).then(res => {
                 this.outUnitList = res.resultList || [];
+            });
+            // 施工单位
+            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, { deptTypeCode: 'OPSDEPTTYPE05' }).then(res => {
                 this.stuUnitList = res.resultList || [];
             });
-            //管理单位，建设单位，所属中队
+            // 监理单位
+            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, { "deptTypeCode": 'OPSDEPTTYPE04' }).then(res => {
+                this.supervisorList = res.resultList || [];
+            });
+            //所属部门，所属中队
             this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}).then(res => {
+                this.devDeptList = res.resultList || [];
+                this.squadronList = res.resultList || [];
+            });
+            // 现管单位，建设单位
+            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "DEVICECOMPANY" }).then(res => {
                 this.manDeptList = res.resultList || [];
                 this.conUnitList = res.resultList || [];
-                this.squadronList = res.resultList || [];
             });
             // 所属项目
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "DEVICEPROJECT" }).then(res => {
@@ -299,11 +337,6 @@
             // 点位状态
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "DEVICESTATUS" }).then(res => {
                 this.statusList = res.resultList || [];
-            });
-
-            // 监理单位
-            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptInfo.htm`, { "deptTypeCode": 'OPSDEPTTYPE04' }).then(res => {
-                this.supervisorList = res.resultList || [];
             });
 
             //项目属性
@@ -354,6 +387,10 @@
                     return;
                 }
 
+                if (this.lnglatShow.indexOf(',') > -1) {
+                    this.coordinate.x = this.lnglatShow.split(',')[0];
+                    this.coordinate.y = this.lnglatShow.split(',')[1];
+                }
                 let obj = {
                     deviceId: this.devCode,
                     devName: this.devName, //设备名称；
@@ -366,7 +403,7 @@
                     y: this.coordinate.y ? (this.coordinate.y + '') : undefined,
                     siteDescrible: this.address,
                     oppmDept: this.opDeptCode,
-                    manageDept: this.manDeptCode,
+                    manageDept: this.devDeptCode,
                     outsideCompany: this.outUnitCode,
                     company: this.conUnitCode,
                     constructionCompany: this.stuUnitCode,
@@ -471,7 +508,7 @@
                 this.address = item.siteDescrible || undefined;
                 this.coordinate.x = item.longitude || undefined;
                 this.coordinate.y = item.latitude || undefined;
-                this.manDeptCode = item.devDeptId || undefined;
+                this.devDeptCode = item.devDeptId || undefined;
                 this.outUnitCode = item.outsideCompanyName || undefined;
                 this.conUnitCode = item.company || undefined;
                 this.stuUnitCode = item.constructionCompanyName || undefined;
@@ -489,41 +526,16 @@
                 this.underCode = item.project || undefined;
                 this.statusCode = item.deviceStatus || undefined;
             },
-            searchLocat() {
-                let _this = this;
-                this.$api.get(`${this.$config.Gaode_Map_Get}?keywords=${this.loactName}&output=json&offset=10&page=1&key=${this.$config.Gaode_Map_Key}&extensions=all`).then(res => {
-                    console.log(res);
-                    if (res.pois && res.pois.length > 0) {
-                        MAPCONTAIN.remove(this.allMarkers); // 移除所有点
-                        MAPCONTAIN.setCenter(res.pois[0].location.split(',')); // 已第一个地位居中
-                        res.pois.map(item => {
-                            let arr = item.location.split(',');
-                            let marker = new AMap.Marker({
-                                position: arr,
-                                title: item.address,
-                                clickable: true
-                            });
-                            marker.address = item.address;
-                            this.allMarkers.push(marker);
-                            //点标注的点击事件
-                            marker.on('click', function(e) {
-                                _this.selectLocat = e.target.address;
-                                _this.selectLnglat = { x: e.lnglat.lng, y: e.lnglat.lat };
-                            });
-                            MAPCONTAIN.add(marker);
-                        });
-                    }
-                })
-            },
             handleIconClick() {
                 this.dialogMapVisible = true;
-
-                this.$nextTick(() => {
-                    MAPCONTAIN = new AMap.Map('mapContainer', {
-                        zoom: 10
-                    });
-
-                })
+            },
+            setLocatInfo(res) {
+                this.address = res.address;
+                this.coordinate.x = res.lnglat.x;
+                this.coordinate.y = res.lnglat.y;
+                if (this.coordinate.x && this.coordinate.y) {
+                    this.lnglatShow = this.coordinate.x + ',' + this.coordinate.y;
+                }
             },
             goBack() {
                 window.history.back();

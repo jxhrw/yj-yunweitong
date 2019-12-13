@@ -121,6 +121,10 @@
                                     <span>{{devInfo.projectName}}</span>
                                 </el-col>
                                 <el-col :span="9">
+                                    <label>维护次数</label>
+                                    <span :class="{'mclass':mtimes>0}" @click="gotoList">{{mtimes}}次</span>
+                                </el-col>
+                                <el-col :span="9">
                                     <label>点位状态</label>
                                     <span>{{devInfo.deviceStatusName}}</span>
                                 </el-col>
@@ -233,26 +237,7 @@
                 </div>
             </div>
 
-            <el-dialog title="定位" :visible.sync="dialogMapVisible" width='560px' class="dialog-urge">
-                <div class="dialog-main">
-                    <div class="revoke-reason">
-                        <el-input v-model="loactName" placeholder="" size='mini' class="content-select" style="width: 450px;" clearable=""></el-input>
-                        <el-button @click="searchLocat" size='mini' class="submit">搜索</el-button>
-                    </div>
-                    <div>
-                        <div class="mapBox" id="mapContainer" style="width:100%;height:300px;"></div>
-                        <div id="searchResults"></div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <label class="dialog-label">选中地址</label>
-                        <el-input v-model="selectLocat" placeholder="" size='mini' class="content-select" style="width: 450px;" clearable=""></el-input>
-                    </div>
-                </div>
-                <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="()=>{address = selectLocat;dialogMapVisible = false;}" size='mini' class="submit">提 交</el-button>
-                    <el-button @click="dialogMapVisible = false" size='mini' class="cancel">取 消</el-button>
-                </div>
-            </el-dialog>
+            <DialogGDMap :dialogVisible.sync="dialogMapVisible" @callback="setLocatInfo"></DialogGDMap>
         </div>
     </div>
 </template>
@@ -260,13 +245,15 @@
     // import BaseInfo from "components/rpProcess/eqpm/baseInfo";
     // import Depiction from "components/rpProcess/eqpm/depiction";
     import mInput from "components/common/selectDrop";
+    import DialogGDMap from "./business/dialog-gaodeMap";
 
     import Bus from "@/assets/js/bus.js";
     import Common from "@/assets/js/common.js";
     var MAPCONTAIN; // 地图实例
     export default {
         components: {
-            mInput
+            mInput,
+            DialogGDMap
         },
         data() {
             return {
@@ -310,11 +297,9 @@
                 prePage: '',
                 isAjaxing: false, //是否在请求中
                 devInfo: {}, // 当前选中的点位信息
+                mtimes: 0, // 维护次数
 
                 dialogMapVisible: false,
-                allMarkers: [], // 地图上当前所有的点
-                loactName: '',
-                selectLocat: '', //地图弹窗选中的地址
                 isCanChangeDevtype: false, // 所属系统是否可修改
                 relationId: '', // 当前点位已报修关联的工单编号
             };
@@ -359,6 +344,16 @@
                     this.departCode = arr[0].devDeptId;
                     this.departName = arr[0].devDeptName;
                     this.address = '';
+                    // 获取工单列表里有几条记录
+                    this.getDataInfo(`${this.$config.efoms_HOST}/workorders/getWorkordersInfoPage`, {
+                        pageSize: 1,
+                        currentPage: 1,
+                        devId: this.devInfo.devId
+                    }).then(res => {
+                        this.mtimes = res.resultList ? (res.resultList.totalCount || 0) : 0;
+                    }).catch(err => {
+                        this.mtimes = 0;
+                    });
                 } else {
                     this.devInfo = {};
                     this.areaCode = '';
@@ -366,6 +361,7 @@
                     this.departCode = '';
                     this.departName = '';
                     this.address = '';
+                    this.mtimes = 0;
                 }
                 this.devRepeatCheck();
             }
@@ -393,6 +389,8 @@
                         }
                     });
                 }
+            }).catch(err => {
+                Common.printErrorLog(err);
             });
             //维修类型
             if (this.$route.query.type == 'optimize') {
@@ -650,40 +648,11 @@
                         Common.printErrorLog(err);
                     });
             },
-            searchLocat() {
-                let _this = this;
-                this.$api.get(`${this.$config.Gaode_Map_Get}?keywords=${this.loactName}&output=json&offset=10&page=1&key=${this.$config.Gaode_Map_Key}&extensions=all`).then(res => {
-                    console.log(res);
-                    if (res.pois && res.pois.length > 0) {
-                        MAPCONTAIN.remove(this.allMarkers); // 移除所有点
-                        MAPCONTAIN.setCenter(res.pois[0].location.split(',')); // 已第一个地位居中
-                        res.pois.map(item => {
-                            let arr = item.location.split(',');
-                            let marker = new AMap.Marker({
-                                position: arr,
-                                title: item.address,
-                                clickable: true
-                            });
-                            marker.address = item.address;
-                            this.allMarkers.push(marker);
-                            //点标注的点击事件
-                            marker.on('click', function(e) {
-                                _this.selectLocat = e.target.address;
-                            });
-                            MAPCONTAIN.add(marker);
-                        });
-                    }
-                })
-            },
             handleIconClick() {
                 this.dialogMapVisible = true;
-
-                this.$nextTick(() => {
-                    MAPCONTAIN = new AMap.Map('mapContainer', {
-                        zoom: 10
-                    });
-
-                })
+            },
+            setLocatInfo(res) {
+                this.address = res.address;
             },
             goBack() {
                 window.history.back();
@@ -761,6 +730,17 @@
                         Common.printErrorLog(err);
                     });
             },
+            gotoList() {
+                if (this.mtimes > 0) {
+                    this.$router.push({
+                        path: '/sheet',
+                        query: {
+                            type: '7',
+                            devId: this.devInfo.devId
+                        }
+                    });
+                }
+            },
             // 字典类型接口
             getDicInfo(url, obj) {
                 return this.$api.get(
@@ -815,6 +795,12 @@
         }
 
         .el-icon-location-outline {
+            cursor: pointer;
+        }
+
+        .mclass {
+            color: #FF5722;
+            text-decoration: underline;
             cursor: pointer;
         }
     }

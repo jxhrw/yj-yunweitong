@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="选择点位" :visible.sync="mDialogVisible" width='560px' class="dialog-urge">
+    <el-dialog title="选择点位" :visible.sync="mDialogVisible" width='560px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
         <div class="dialog-main">
             <div class="revoke-reason">
                 关键字 <el-input v-model="key" placeholder="ID/名称/IP/唯一识别码" size='mini' class="dialog-select" clearable @keyup.enter.native="searchTable"></el-input>

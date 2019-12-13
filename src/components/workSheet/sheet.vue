@@ -207,7 +207,7 @@
             </template>
 
             <template slot="dialog">
-                <el-dialog title="工单催办" :visible.sync="dialogUrgeVisible" width='400px' class="dialog-urge">
+                <el-dialog title="工单催办" :visible.sync="dialogUrgeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                     <div class="dialog-main">
                         <label class="dialog-label">催办原因</label>
                         <el-input rows="6" style="width:290px;" type="textarea" placeholder="请输入" v-model="operExplain" class="dialog-textarea">
@@ -218,7 +218,7 @@
                         <el-button @click="dialogUrgeVisible = false" size='mini' class="cancel">取 消</el-button>
                     </div>
                 </el-dialog>
-                <el-dialog title="拒绝申请" :visible.sync="dialogRefuseVisible" width='400px' class="dialog-urge">
+                <el-dialog title="拒绝申请" :visible.sync="dialogRefuseVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                     <div class="dialog-main">
                         <div class="revoke-reason">
                             <label class="dialog-label">备注</label>
@@ -231,7 +231,7 @@
                         <el-button @click="dialogRefuseVisible = false" size='mini' class="cancel">取 消</el-button>
                     </div>
                 </el-dialog>
-                <el-dialog title="转单审核" :visible.sync="dialogTransferVisible" width='400px' class="dialog-urge">
+                <el-dialog title="转单审核" :visible.sync="dialogTransferVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                     <div class="dialog-main">
                         <div class="revoke-reason">
                             <label class="dialog-label">备注</label>
@@ -244,7 +244,7 @@
                         <el-button @click="handleTransfer(0)" size='mini' class="cancel">不通过</el-button>
                     </div>
                 </el-dialog>
-                <el-dialog title="材料审核" :visible.sync="dialogMaterialVisible" width='700px' class="dialog-urge">
+                <el-dialog title="材料审核" :visible.sync="dialogMaterialVisible" width='700px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                     <div class="dialog-main">
                         <div class="revoke-reason">
                             <label class="dialog-label"><span>*</span>材料列表</label>
@@ -361,8 +361,14 @@
         },
         watch: {
             $route(newVal, oldVal) {
-                if (newVal.path === oldVal.path && newVal.path === '/sheet') {
-                    this.initPage();
+                if (newVal.path === '/sheet') {
+                    if (newVal.path === oldVal.path) {
+                        this.initPage();
+                    }
+                    if (newVal.path != oldVal.path && newVal.query.type != sessionStorage.getItem('sheetPageType')) {
+                        this.initPage();
+                    }
+                    sessionStorage.setItem('sheetPageType', newVal.query.type);
                 }
             }
         },
@@ -930,6 +936,9 @@
                         this.tableShowType = 1;
                         this.title = '工单查询';
                         this.listUrl.table = `${this.$config.efoms_HOST}/workorders/getWorkordersInfoPage`;
+                        if (this.$route.query.devId) {
+                            this.key = this.$route.query.devId;
+                        }
                         break;
                     case '8':
                         this.tableShowType = 2;
@@ -1023,14 +1032,14 @@
             //申报部门(交警部门+维护单位)
             let a1 = this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {});
             let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {});
-            Promise.all([a1,a2]).then(res => {
+            Promise.all([a1, a2]).then(res => {
                 let arr0 = res[0].resultList || [];
                 let arr1 = res[1].resultList || [];
                 arr1.map(item => {
                     item.deptId = item.opsDeptId;
                     item.deptName = item.opsDeptName;
                 });
-                this.departList = [...arr0,...arr1];
+                this.departList = [...arr0, ...arr1];
             });
             // this.getDicInfo(
             //     `${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}

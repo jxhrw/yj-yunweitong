@@ -98,7 +98,7 @@
             </template>
 
             <template slot="dialog">
-                <el-dialog title="报修催办" :visible.sync="dialogUrgeVisible" width='400px' class="dialog-urge">
+                <el-dialog title="报修催办" :visible.sync="dialogUrgeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                     <div class="dialog-main">
                         <label class="dialog-label">催办原因</label>
                         <el-input rows="6" style="width:290px;" type="textarea" placeholder="请输入" v-model="operExplain" class="dialog-textarea">
@@ -109,7 +109,7 @@
                         <el-button @click="dialogUrgeVisible = false" size='mini' class="cancel">取 消</el-button>
                     </div>
                 </el-dialog>
-                <el-dialog title="撤销申请" :visible.sync="dialogRevokeVisible" width='400px' class="dialog-urge">
+                <el-dialog title="撤销申请" :visible.sync="dialogRevokeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                     <div class="dialog-main">
                         <div class="revoke-reason">
                             <label class="dialog-label">撤销原因</label>

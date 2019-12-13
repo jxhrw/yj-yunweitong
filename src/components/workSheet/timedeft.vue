@@ -60,7 +60,7 @@
                             </el-table>
                             <EJ-Paging ref="tableList" id="asRoom" :totalCount="totalCount" :queryConditions="queryConditions" @pageAsk="searchPageInfo"></EJ-Paging>
                         </div>
-                        <el-dialog title="添加/修改" :visible.sync="detailVisible" width='400px' class="dialog-urge">
+                        <el-dialog title="添加/修改" :visible.sync="detailVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                             <div class="dialog-main">
                                 <div class="revoke-reason">
                                     <label class="dialog-label"><span>*</span>所属系统</label>

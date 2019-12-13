@@ -90,20 +90,22 @@
             this.token = Common.getQueryString("token");
             this.workordersInfo = this.data || {};
             let arr = this.workordersInfo.workordersRecordMap ? (this.workordersInfo.workordersRecordMap.dispatchList || []) : []; //派发记录
-            console.log(arr)
+            arr = arr.filter(res=>{
+                return res.operResultCode == 'OPERRESULT07'
+            });
 
             this.deadlineDate = arr.length > 0 ? arr[arr.length - 1].deadlineDate : '';
             this.opDeptName = arr.length > 0 ? arr[arr.length - 1].opDeptName : '';
             // 维护组--运维单位的子部门
             let opDeptId = arr.length > 0 ? arr[arr.length - 1].opDeptId : '';
+            this.groupCode = opDeptId;
+            this.groupName = this.opDeptName;
+
             this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptInfo.htm`, { parentId: opDeptId }).then(res => {
-                let arr1 = [{ opsDeptId: this.workordersInfo.oppmDeptId, opsDeptName: this.workordersInfo.oppmDeptName }];
+                let arr1 = [{ opsDeptId: opDeptId, opsDeptName: this.opDeptName }];
                 let arr2 = res.resultList || [];
-                if (this.workordersInfo.oppmDeptId) {
-                    this.groupList = [...arr1, ...arr2];
-                } else {
-                    this.groupList = [...arr2];
-                }
+                
+                this.groupList = [...arr1, ...arr2];
             });
         },
         methods: {

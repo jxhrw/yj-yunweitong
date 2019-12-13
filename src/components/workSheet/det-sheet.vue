@@ -540,7 +540,7 @@
                 <assign v-if="(prePage=='工单指派')&&(operatCode.indexOf('ORDEROPERTYPE15')>-1)" :data="workordersInfo" @callback="dataDetail"></assign>
             </template>
 
-            <el-dialog title="延期申请" :visible.sync="dialogDelayVisible" width='400px' class="dialog-urge">
+            <el-dialog title="延期申请" :visible.sync="dialogDelayVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                 <div class="dialog-main">
                     <div class="revoke-reason">
                         <label class="dialog-label"><span>*</span>申请时间</label>
@@ -558,7 +558,7 @@
                     <el-button @click="dialogDelayVisible = false" size='mini' class="cancel">取 消</el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="工单催办" :visible.sync="dialogUrgeVisible" width='400px' class="dialog-urge">
+            <el-dialog title="工单催办" :visible.sync="dialogUrgeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                 <div class="dialog-main">
                     <label class="dialog-label">催办原因</label>
                     <el-input rows="6" type="textarea" placeholder="请输入" v-model="operExplain" class="dialog-textarea" style="width:290px;">
@@ -569,7 +569,7 @@
                     <el-button @click="dialogUrgeVisible = false" size='mini' class="cancel">取 消</el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="拒绝申请" :visible.sync="dialogRefuseVisible" width='400px' class="dialog-urge">
+            <el-dialog title="拒绝申请" :visible.sync="dialogRefuseVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                 <div class="dialog-main">
                     <div class="revoke-reason">
                         <label class="dialog-label">备注</label>
@@ -582,7 +582,7 @@
                     <el-button @click="dialogRefuseVisible = false" size='mini' class="cancel">取 消</el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="撤销申请" :visible.sync="dialogRevokeVisible" width='400px' class="dialog-urge">
+            <el-dialog title="撤销申请" :visible.sync="dialogRevokeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                 <div class="dialog-main">
                     <div class="revoke-reason">
                         <label class="dialog-label"><span>*</span>撤销原因</label>
@@ -602,7 +602,7 @@
                     <el-button @click="dialogRevokeVisible = false" size='mini' class="cancel">取 消</el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="材料申请" :visible.sync="dialogMaterialVisible" width='700px' class="dialog-urge">
+            <el-dialog title="材料申请" :visible.sync="dialogMaterialVisible" width='700px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                 <div class="dialog-main">
                     <div class="revoke-reason">
                         <label class="dialog-label"><span>*</span>材料列表</label>

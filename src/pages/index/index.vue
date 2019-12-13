@@ -40,6 +40,8 @@
         },
         created() {
             this.isHeadMenuVisible = Common.getQueryString("headMenu") != 'hide';
+            this.$store.commit('changeVisible',Common.getQueryString("headMenu") != 'hide');
+            console.log(this.$store.getters.getIsHeadMenuVisible)
             this.rightListsEx = [{
                 children: [{
                     checked: true,
@@ -195,6 +197,8 @@
                         sessionStorage.setItem("userInfo", JSON.stringify(this.userInfo));
                         window.userInfo = this.userInfo;
                     }
+                }).catch(err => {
+                    Common.printErrorLog(err);
                 });
             },
             tipsPush(code) {

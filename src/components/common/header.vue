@@ -12,7 +12,8 @@
                 <div class="user-name">{{userName||'用户名'}} <i class="el-icon-arrow-down"></i></div>
                 <el-popover ref="out" placement="bottom" :width="80" trigger="click" popper-class="logout">
                     <ul>
-                        <li><a class="ej-out" @click="logOutFuc">退出</a></li>
+                        <li><a class="ej-out" @click="logOutFuc"><i class="el-icon-switch-button"></i>退出</a></li>
+                        <li v-if="$config.systemUrl"><a class="ej-out" @click="logBackFuc"><i class="el-icon-house"></i>返回首页</a></li>
                     </ul>
                 </el-popover>
             </div>
@@ -87,6 +88,10 @@
                             Common.printErrorLog(err);
                         }
                     });
+            },
+            logBackFuc() {
+                let token = Common.getQueryString("token");
+                top.location.href = `${this.$config.systemUrl}?token=${token}`;
             }
         }
     };
@@ -155,39 +160,6 @@
         margin-left: 10px;
     }
 
-    .ej-header .ej-out {
-        border: 1px solid #FFFFFF;
-        border-radius: 20px;
-        color: #FFFFFF;
-        font-size: 12px;
-        height: 24px;
-        width: 24px;
-        text-align: center;
-        margin: 18px 20px 0 0;
-        cursor: pointer;
-        border: 2px solid #ffffff;
-        box-sizing: border-box;
-        background: url('../../assets/images/logout-white.png') no-repeat center/14px;
-    }
-
-    .ej-header .ej-out:hover {
-        background-image: url('../../assets/images/logout-grey.png');
-        border-color: #999999;
-    }
-
-    .ej-header .icon-visualization {
-        background: transparent url(../../assets/images/icon-visualization.png) no-repeat center/22px;
-        display: inline-block;
-        width: 30px;
-        height: 30px;
-        position: relative;
-        left: 14px;
-        top: 9px;
-        border-radius: 50%;
-        cursor: pointer;
-        /* box-shadow: 0 5px 15px 2px #1AC2BB; */
-    }
-
     .ej-header .span-txt {
         color: #FFFFFF;
         font-size: 14px;
@@ -201,17 +173,27 @@
         min-width: 50px !important;
     }
 
+    .logout li{
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .logout li i{
+        color: #262626;
+        /* font-weight: bold; */
+        font-size: 14px;
+        margin-right: 4px;
+    }
+
+    .logout li+li{
+        margin-top: 10px;
+    }
+
     .ej-out {
         border-radius: 20px;
         color: #262626;
         font-size: 12px;
-        height: 24px;
-        width: 24px;
-        padding-left: 30px;
-        text-align: center;
-        margin: 18px 20px 0 0;
-        cursor: pointer;
         box-sizing: border-box;
-        background: url('../../assets/images/logout-grey.png') no-repeat center left/16px;
     }
 </style>
