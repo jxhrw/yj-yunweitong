@@ -64,7 +64,8 @@
 
                                 <el-col :span="10">
                                     <label>所属部门</label>
-                                    <mInput :list="devDeptList" :code.sync="devDeptCode" :name.sync="devDeptName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput>
+                                    <!-- <mInput :list="devDeptList" :code.sync="devDeptCode" :name.sync="devDeptName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput> -->
+                                    <mTree :tree="devDeptList" :code.sync="devDeptCode" showAttr="text" getAttr="id" :disabled="isOnlyRead" :clearable="true"></mTree>
                                 </el-col>
                                 <el-col :span="10">
                                     <label>详细地址</label>
@@ -73,7 +74,7 @@
                                         </i>
                                     </el-input>
                                 </el-col>
-                                <el-col :span="10">
+                                <!-- <el-col :span="10">
                                     <label>所属中队</label>
                                     <mInput :list="squadronList" :code.sync="squadronCode" :name.sync="squadronName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
@@ -81,16 +82,16 @@
                                     <label>巡区</label>
                                     <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
                                     </el-input>
-                                </el-col>
+                                </el-col> -->
                                 <el-col :span="10">
                                     <label>现管单位</label>
                                     <mInput :list="manDeptList" :code.sync="manDeptCode" :name.sync="manDeptName" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
-                                <el-col :span="10">
+                                <!-- <el-col :span="10">
                                     <label>防区</label>
                                     <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
                                     </el-input>
-                                </el-col>
+                                </el-col> -->
                                 <!-- 外建单位库里没有code，根据name存值 -->
                                 <el-col :span="10">
                                     <label>外建单位</label>
@@ -180,6 +181,7 @@
 </template>
 <script>
     import mInput from "components/common/selectDrop";
+    import mTree from "components/common/inputTree";
     import Bus from "@/assets/js/bus.js";
     import Common from "@/assets/js/common.js";
     import DialogCalibration from "./business/dialog-calibration";
@@ -187,6 +189,7 @@
     export default {
         components: {
             mInput,
+            mTree,
             DialogCalibration,
             DialogGDMap
         },
@@ -209,8 +212,8 @@
                 opDeptCode: '',
                 opDeptName: '',
                 opDeptList: [],
-                devDeptCode: '',
-                devDeptName: '',
+                devDeptCode: [],
+                devDeptName: [],
                 devDeptList: [],
                 outUnitCode: '',
                 outUnitName: '',
@@ -271,25 +274,25 @@
                 this.useAge = val ? val.replace(/[^\d|.]/g, '') : val;
             },
             devDeptCode(val) {
-                let arr = this.devDeptList.filter(res => {
-                    return res.deptId == val;
-                });
-                let obj = arr[0] || {};
-                this.squadronCode = '';
-                this.squadronName = '';
-                console.log('部门信息：', obj.deptProperCode, obj.deptRankCode)
-                if (obj.deptProperCode == 'DEPTPROPER01' && obj.deptRankCode == 'DEPTRANK04') {
-                    // 所属中队
-                    this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, { parentId: val }).then(res => {
-                        this.squadronList = res.resultList || [];
-                    });
-                } else if (obj.deptRankCode == 'DEPTRANK05') {
-                    this.squadronList = [{ deptId: obj.deptId, deptName: obj.deptName }];
-                    this.squadronCode = obj.deptId;
-                    this.squadronName = obj.deptName;
-                } else {
-                    this.squadronList = this.devDeptList;
-                }
+                // let arr = this.devDeptList.filter(res => {
+                //     return res.deptId == val;
+                // });
+                // let obj = arr[0] || {};
+                // this.squadronCode = '';
+                // this.squadronName = '';
+                // console.log('部门信息：', obj.deptProperCode, obj.deptRankCode)
+                // if (obj.deptProperCode == 'DEPTPROPER01' && obj.deptRankCode == 'DEPTRANK04') {
+                //     // 所属中队
+                //     this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, { parentId: val }).then(res => {
+                //         this.squadronList = res.resultList || [];
+                //     });
+                // } else if (obj.deptRankCode == 'DEPTRANK05') {
+                //     this.squadronList = [{ deptId: obj.deptId, deptName: obj.deptName }];
+                //     this.squadronCode = obj.deptId;
+                //     this.squadronName = obj.deptName;
+                // } else {
+                //     this.squadronList = this.devDeptList;
+                // }
             }
         },
         mounted() {
@@ -321,9 +324,12 @@
                 this.supervisorList = res.resultList || [];
             });
             //所属部门，所属中队
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}).then(res => {
+            // this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}).then(res => {
+            //     this.devDeptList = res.resultList || [];
+            //     this.squadronList = res.resultList || [];
+            // });
+            this.getDicInfo(`${'http://192.168.91.121:8080/ubms-server'}/DeptInfo/getDeptTree.htm`, {}).then(res => {
                 this.devDeptList = res.resultList || [];
-                this.squadronList = res.resultList || [];
             });
             // 现管单位，建设单位
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "DEVICECOMPANY" }).then(res => {

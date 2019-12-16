@@ -13,10 +13,19 @@ const detCab = resolve => require(['components/workSheet/det-cab'], resolve);
 const data = resolve => require(['components/workSheet/ss-data'], resolve);
 const statistics = resolve => require(['components/workSheet/ss-statistics'], resolve);
 const workload = resolve => require(['components/workSheet/ss-workload'], resolve);
+const app = resolve => require(['components/workSheet/app'], resolve);
 
 export default new Router({
     mode: 'hash',
     routes: [{
+        path: '/app',
+        name: 'app',
+        component: app,
+        meta: {
+            isUseCache: false,
+            keepAlive: true
+        }
+    },{
         path: '/workload',
         name: 'workload',
         component: workload
@@ -43,7 +52,11 @@ export default new Router({
     }, {
         path: '/detrep',
         name: 'detrep',
-        component: detrep
+        component: detrep,
+        meta: {
+            isUseCache: false,
+            keepAlive: true
+        }
     }, {
         path: '/detsheet',
         name: 'detsheet',

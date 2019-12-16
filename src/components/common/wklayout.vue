@@ -28,7 +28,7 @@
                 </div>
                 <div class="depiction-info">
                     <div class="title">
-                        <h3>查询结果</h3>
+                        <h3>{{tableTitle}}</h3>
                         <div v-if="typeTableData.length>0" class="operation select" v-popover:popoverMultiple>
                             <i></i>
                         </div>
@@ -91,7 +91,11 @@
                 default () {
                     return []
                 }
-            }
+            },
+            tableTitle: {
+                type: String,
+                default: '查询结果'
+            },
         },
         components: {
             Paging

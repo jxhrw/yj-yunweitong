@@ -6,6 +6,12 @@
                     <p>创建工单</p>
                 </div>
             </template>
+            <template slot="pageBtn" v-if="$route.query.hasBack=='1'">
+                <div class="ej-content-black" @click="()=>{$router.go(-1)}">
+                    <p>返回</p>
+                </div>
+            </template>
+
 
             <template slot="condFirst">
                 <el-col :span="7">
@@ -368,6 +374,9 @@
                     if (newVal.path != oldVal.path && newVal.query.type != sessionStorage.getItem('sheetPageType')) {
                         this.initPage();
                     }
+                    // if (newVal.path != oldVal.path && newVal.query.devId) {
+                    //     this.initPage();
+                    // }
                     sessionStorage.setItem('sheetPageType', newVal.query.type);
                 }
             }
@@ -530,6 +539,7 @@
                     });
             },
             gotoEqpm() {
+                sessionStorage.setItem('detrepSave', '0'); // 详情页数据清空
                 this.$router.push({
                     path: "/detrep",
                     query: {}

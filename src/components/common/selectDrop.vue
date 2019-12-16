@@ -28,10 +28,7 @@
                 type: String,
                 default: ''
             },
-            name: {
-                type: String,
-                default: ''
-            },
+            name: [String,Object],
             showAttr: {
                 type: String,
                 default: 'dicName'
@@ -74,7 +71,9 @@
                 // console.log(newVal);
                 this.$emit('update:code', newVal);
                 let arr = this.list.filter(res => res[this.getAttr] === newVal);
-                this.$emit('update:name', arr.length > 0 ? arr[0][this.showAttr] : '');
+                if(typeof(this.name) != 'undefined'){
+                    this.$emit('update:name', arr.length > 0 ? arr[0][this.showAttr] : '');
+                }
             },
         },
         methods: {

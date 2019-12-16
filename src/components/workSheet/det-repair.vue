@@ -157,6 +157,14 @@
                             <el-row class="content-row-select">
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
+                                    <label>故障类型</label>
+                                    <mInput :list="gzList" :code.sync="gzCode" :name.sync="gzName" :disabled="isOnlyRead" style="width:300px;">
+                                    </mInput>
+                                </el-col>
+                            </el-row>
+                            <el-row class="content-row-select">
+                                <el-col :span="9">
+                                    <i class="redStar">*</i>
                                     <label class="content-label">故障描述</label>
                                     <el-input type="textarea" :rows="3" placeholder="" class="content-textarea" v-model="gzdesc" resize='none' :disabled="isOnlyRead">
                                     </el-input>
@@ -281,6 +289,9 @@
                 imgSceneUrl: [], //图片地址集合,用于显示
                 imgSceneList: [], //图片文件属性集合,用于上传
                 imgSceneHide: [], //图片文件属性集合,存储上传成功返回值
+                gzCode: '',
+                gzName: '',
+                gzList: [],
                 gzdesc: '',
                 imgOptUrl: [], //图片地址集合,用于显示
                 imgOptList: [], //图片文件属性集合,用于上传
@@ -310,6 +321,7 @@
                 this.devName = '';
                 if (val == '') {
                     this.devList = [];
+                    this.gzList = [];
                     return;
                 }
                 //路口点位
@@ -321,6 +333,13 @@
                 }).then(res => {
                     this.devList = res.resultList.result || [];
                 });
+                //故障类型
+                this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
+                    parentCode: val
+                }).then(res => {
+                    this.gzList = res.resultList || [];
+                });
+
                 this.devRepeatCheck();
             },
             devCode(val) {
@@ -366,6 +385,20 @@
                 this.devRepeatCheck();
             }
         },
+        activated() {
+            //维修类型
+            if (this.$route.query.type == 'optimize') {
+                this.tainList = [{ dicCode: 'REPAIRTYPE03', dicName: '优化' }];
+            } else {
+                this.tainList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }];
+            }
+            this.tainCode = this.tainList[0].dicCode;
+            this.tainName = this.tainList[0].dicName;
+
+            if (sessionStorage.getItem('detrepSave') == '0') {
+                this.resetRepair();
+            }
+        },
         mounted() {
             this.pageMounted();
             this.token = Common.getQueryString("token");
@@ -392,14 +425,6 @@
             }).catch(err => {
                 Common.printErrorLog(err);
             });
-            //维修类型
-            if (this.$route.query.type == 'optimize') {
-                this.tainList = [{ dicCode: 'REPAIRTYPE03', dicName: '优化' }];
-            } else {
-                this.tainList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }];
-            }
-            this.tainCode = this.tainList[0].dicCode;
-            this.tainName = this.tainList[0].dicName;
             //所属辖区
             // this.getDicInfo(`${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}).then(res => {
             //     this.areaList = res.resultList || [];
@@ -436,8 +461,8 @@
                     Common.ejMessage("warning", "该设备已经报修过了，请勿重复提交");
                     return;
                 }
-                if (this.gzdesc == "") {
-                    Common.ejMessage("warning", "填写故障描述");
+                if (this.gzCode == "" || this.gzdesc == "") {
+                    Common.ejMessage("warning", "填写故障类型/故障描述");
                     return;
                 }
                 if (this.$route.query.type === 'optimize' && this.yhdesc == "") {
@@ -462,6 +487,8 @@
                     repSourceName: this.sourceName,
                     detailAddr: this.address,
                     failureDescrible: this.gzdesc,
+                    failureTypeCode: this.gzCode,
+                    failureTypeName: this.gzName,
                     fileInfoList: this.imgSceneList,
 
                     optimeScheme: this.yhdesc,
@@ -732,13 +759,16 @@
             },
             gotoList() {
                 if (this.mtimes > 0) {
-                    this.$router.push({
-                        path: '/sheet',
-                        query: {
-                            type: '7',
-                            devId: this.devInfo.devId
-                        }
-                    });
+                    // sessionStorage.setItem('detrepSave', '1'); //当前页面数据是否保留
+                    // this.$router.push({
+                    //     path: '/sheet',
+                    //     query: {
+                    //         type: '7',
+                    //         devId: this.devInfo.devId,
+                    //         hasBack: 1
+                    //     }
+                    // });
+                    window.open(`./index.html?token=${this.token}&headMenu=hide#/sheet?type=7&devId=${this.devInfo.devId}`);
                 }
             },
             // 字典类型接口
@@ -754,6 +784,7 @@
                 );
             },
             gotoDetail() {
+                sessionStorage.setItem('detrepSave', '1'); //当前页面数据是否保留
                 this.$router.push({
                     path: '/detsheet',
                     query: {

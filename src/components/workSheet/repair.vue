@@ -237,6 +237,7 @@
                     });
             },
             gotoEqpm() {
+                sessionStorage.setItem('detrepSave', '0'); // 详情页数据清空
                 this.$router.push({
                     path: "/detrep",
                     query: { type: 'optimize' }
@@ -372,14 +373,14 @@
             //申报部门
             let a1 = this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {});
             let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {});
-            Promise.all([a1,a2]).then(res => {
+            Promise.all([a1, a2]).then(res => {
                 let arr0 = res[0].resultList || [];
                 let arr1 = res[1].resultList || [];
                 arr1.map(item => {
                     item.deptId = item.opsDeptId;
                     item.deptName = item.opsDeptName;
                 });
-                this.departList = [...arr0,...arr1];
+                this.departList = [...arr0, ...arr1];
             });
             // this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}).then(res => {
             //     this.departList = res.resultList || [];
