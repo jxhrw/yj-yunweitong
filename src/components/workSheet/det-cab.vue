@@ -84,7 +84,7 @@
                                     </el-input>
                                 </el-col> -->
                                 <el-col :span="10">
-                                    <label>现管单位</label>
+                                    <label>现管理单位</label>
                                     <mInput :list="manDeptList" :code.sync="manDeptCode" :name.sync="manDeptName" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
                                 <!-- <el-col :span="10">
@@ -328,10 +328,10 @@
             //     this.devDeptList = res.resultList || [];
             //     this.squadronList = res.resultList || [];
             // });
-            this.getDicInfo(`${'http://192.168.91.121:8080/ubms-server'}/DeptInfo/getDeptTree.htm`, {}).then(res => {
+            this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptTree.htm`, {}).then(res => {
                 this.devDeptList = res.resultList || [];
             });
-            // 现管单位，建设单位
+            // 现管理单位，建设单位
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "DEVICECOMPANY" }).then(res => {
                 this.manDeptList = res.resultList || [];
                 this.conUnitList = res.resultList || [];
@@ -409,7 +409,7 @@
                     y: this.coordinate.y ? (this.coordinate.y + '') : undefined,
                     siteDescrible: this.address,
                     oppmDept: this.opDeptCode,
-                    manageDept: this.devDeptCode,
+                    manageDept: this.devDeptCode ? this.devDeptCode[this.devDeptCode.length - 1] : undefined,
                     outsideCompany: this.outUnitCode,
                     company: this.conUnitCode,
                     constructionCompany: this.stuUnitCode,
@@ -417,6 +417,7 @@
                     briResPolice: this.resPoliceCode,
                     optimizeReviewer: this.reviewersCode,
                     supervison: this.supervisorCode,
+                    currentDept: this.manDeptCode,
                     squadron: this.squadronCode,
                     buildDate: this.buildTime ? (this.buildTime + ' 00:00:00') : '',
                     checkDate: this.acceptanceTime ? (this.acceptanceTime + ' 00:00:00') : '',
@@ -514,7 +515,7 @@
                 this.address = item.siteDescrible || undefined;
                 this.coordinate.x = item.longitude || undefined;
                 this.coordinate.y = item.latitude || undefined;
-                this.devDeptCode = item.devDeptId || undefined;
+                this.devDeptCode = item.devDeptId ? [item.devDeptId] : undefined;
                 this.outUnitCode = item.outsideCompanyName || undefined;
                 this.conUnitCode = item.company || undefined;
                 this.stuUnitCode = item.constructionCompanyName || undefined;
@@ -522,6 +523,7 @@
                 this.resPoliceCode = item.briResPolice || undefined;
                 this.reviewersCode = item.optimizeReicewer || undefined;
                 this.supervisorCode = item.supervison || undefined;
+                this.manDeptCode = item.currentDept || undefined;
                 this.squadronCode = item.squadron || undefined;
                 this.buildTime = item.devBuildDate || undefined;
                 this.acceptanceTime = item.checkDate || undefined;

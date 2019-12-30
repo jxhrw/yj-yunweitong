@@ -370,15 +370,15 @@
                                             <template v-else-if="item.operTypeCode=='ORDEROPERTYPE26'||item.operTypeCode=='ORDEROPERTYPE21'||item.operTypeCode=='ORDEROPERTYPE22'">
                                                 <div class="content">
                                                     <label for="">申请材料</label>
-                                                    <span :title="item.materialInfoList|materialShow" style="width:349px;">{{item.materialInfoList|materialShow}}</span>
+                                                    <span :title="item.materialRltList|materialShow" style="width:349px;">{{item.materialRltList|materialShow}}</span>
                                                     <label for="">备注</label>
                                                     <span style="width: 567px;">{{item.operExplain}}</span>
                                                 </div>
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
                                                     <span class="file-name">
-                                                        <div v-for="(item,index) in materialFileList(item.materialInfoList)" :key="index" class="file-single">
-                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="item.fileUrl" :preview-src-list="[item.fileUrl]" fit="fill"></el-image>
+                                                        <div v-for="(item,index) in materialFileList(item.materialRltList)" :key="index" class="file-single">
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl]" fit="fill"></el-image>
                                                             <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
                                                             <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
                                                             <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
@@ -433,7 +433,7 @@
                                                     <label for="">附件</label>
                                                     <span class="file-name">
                                                         <div v-for="(item,index) in item.fileInfoList" :key="index" class="file-single">
-                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="item.fileUrl" :preview-src-list="[item.fileUrl]" fit="fill"></el-image>
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl]" fit="fill"></el-image>
                                                             <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
                                                             <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
                                                             <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
@@ -630,7 +630,7 @@
                                         <div class="mtl5" v-if="item.fileList && item.fileList.length>0">
                                             <template v-for="(res,ix) in item.fileList">
                                                 <div class="ms-files" :key="ix">
-                                                    <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="res.fileURL" :preview-src-list="[res.fileURL]" fit="fill"></el-image>
+                                                    <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${this.token}`:res.fileURL" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${this.token}`:res.fileURL]" fit="fill"></el-image>
                                                     <div v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-doc"></div>
                                                     <div v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-xls"></div>
                                                     <div v-else :title="res.fileName" class="icon-file file-other"></div>
@@ -804,7 +804,7 @@
         },
         methods: {
             download(e) {
-                window.open(e.fileUrl);
+                window.open(e.fileUrl + '&token=' + this.token);
             },
             // 延期接口
             postponeWorkorders() {
@@ -1090,11 +1090,11 @@
                     }, { "Content-Type": "application/x-www-form-urlencoded" })
                     .then(res => {
                         if (res.appCode == 0) {} else {
-                            Common.printErrorLog(res);
+                            // Common.printErrorLog(res);
                         }
                     })
                     .catch(err => {
-                        Common.printErrorLog(err);
+                        // Common.printErrorLog(err);
                     });
             },
             handleDownload(e) {
@@ -1141,7 +1141,12 @@
                                     let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
                                     fileUrl = fileUrl.replace('&fileName=', '/');
                                     item.mappingAddress = fileUrl;
-                                    this.imgFileList.push(item.mappingAddress);
+
+                                    if (this.$config.baseimgs) {
+                                        this.imgFileList.push(`${this.$config.baseimgs}?path=${item.mappingAddress}&token=${this.token}`);
+                                    } else {
+                                        this.imgFileList.push(item.mappingAddress);
+                                    }
                                 }
                             });
 
@@ -1168,7 +1173,12 @@
                                     let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
                                     fileUrl = fileUrl.replace('&fileName=', '/');
                                     item.mappingAddress = fileUrl;
-                                    this.imgFileList.push(item.mappingAddress);
+
+                                    if (this.$config.baseimgs) {
+                                        this.imgFileList.push(`${this.$config.baseimgs}?path=${item.mappingAddress}&token=${this.token}`);
+                                    } else {
+                                        this.imgFileList.push(item.mappingAddress);
+                                    }
                                 }
                             });
 
@@ -1193,7 +1203,12 @@
                         let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
                         fileUrl = fileUrl.replace('&fileName=', '/');
                         item.mappingAddress = fileUrl;
-                        this.imgFileList.push(item.mappingAddress);
+
+                        if (this.$config.baseimgs) {
+                            this.imgFileList.push(`${this.$config.baseimgs}?path=${item.mappingAddress}&token=${this.token}`);
+                        } else {
+                            this.imgFileList.push(item.mappingAddress);
+                        }
                     }
                 });
             },

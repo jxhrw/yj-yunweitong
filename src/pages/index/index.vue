@@ -40,7 +40,7 @@
         },
         created() {
             this.isHeadMenuVisible = Common.getQueryString("headMenu") != 'hide';
-            this.$store.commit('changeVisible',Common.getQueryString("headMenu") != 'hide');
+            this.$store.commit('changeVisible', Common.getQueryString("headMenu") != 'hide');
             console.log(this.$store.getters.getIsHeadMenuVisible)
             this.rightListsEx = [{
                 children: [{
@@ -181,6 +181,7 @@
         mounted() {
             if (this.isHeadMenuVisible) {
                 this.tipsPush('EFOMS_OPERATION');
+                this.tipsPush('efoms_heartbeat');
             }
             window.myVue = this;
         },

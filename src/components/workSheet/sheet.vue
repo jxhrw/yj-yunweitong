@@ -65,7 +65,7 @@
             </template>
 
             <template slot="tableBtn">
-                <div class="operation export" @click="exportExcel">
+                <div v-if="listUrl.download" class="operation export" @click="exportExcel">
                     <p>导出</p>
                 </div>
                 <!-- 撤销：下发列表待撤销状态 -->
@@ -121,7 +121,7 @@
                             {{scope.row.workordersId||scope.row.repairsId}}
                         </template>
                     </el-table-column> -->
-                    <el-table-column prop="workordersId" label="申报部门" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
@@ -277,7 +277,7 @@
                                             <div class="mtl5" v-if="item.fileList && item.fileList.length>0">
                                                 <template v-for="(res,ix) in item.fileList">
                                                     <div class="ms-files" :key="ix">
-                                                        <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="res.fileURL" :preview-src-list="[res.fileURL]" fit="fill"></el-image>
+                                                        <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${this.token}`:res.fileURL" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${this.token}`:res.fileURL]" fit="fill"></el-image>
                                                         <div v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-doc"></div>
                                                         <div v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-xls"></div>
                                                         <div v-else :title="res.fileName" class="icon-file file-other"></div>
@@ -546,13 +546,11 @@
                 });
             },
             exportExcel() {
-                let host = this.$config.efoms_HOST;
-                let method = "/export/exportWorkorders";
+                let method = this.listUrl.download;
                 let obj = JSON.parse(JSON.stringify(this.queryConditions));
-                this.$api
-                    .getMethod(host, method, obj, this.token)
+                this.$api.get(method, obj, { token: this.token })
                     .then(res => {
-                        window.open(res.path);
+                        window.open(res.path + '&token=' + this.token);
                     })
                     .catch(err => {
                         Common.printErrorLog(err);
@@ -766,7 +764,7 @@
                 this.materialOldFiles = item.fileInfoList || [];
                 this.materialFiles = [];
 
-                let abc = item.materialInfoList || [];
+                let abc = item.materialRltList || [];
                 let arr = [];
                 abc.map(res => {
                     arr.push({});
@@ -887,12 +885,14 @@
                 this.typeList = [];
                 this.tableShowType = 0;
 
+                this.listUrl.download = '';
                 let pageType = this.$route.query.type;
                 switch (pageType) {
                     case '0':
                         this.tableShowType = 1;
                         this.title = '维修申报';
                         this.listUrl.table = `${this.$config.efoms_HOST}/workorders/selectMyWorkordersPage`;
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportWXSB`;
                         break;
                     case '1':
                         this.tableShowType = 1;
@@ -914,6 +914,7 @@
                         this.tableShowType = 1;
                         this.title = '转单审核';
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/transfer`;
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportZDCX`;
                         this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;
@@ -922,6 +923,7 @@
                         this.tableShowType = 1;
                         this.title = '延期审核';
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/postpone`;
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportYQGD`;
                         this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;
@@ -946,6 +948,7 @@
                         this.tableShowType = 1;
                         this.title = '工单查询';
                         this.listUrl.table = `${this.$config.efoms_HOST}/workorders/getWorkordersInfoPage`;
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportGDSSCX`;
                         if (this.$route.query.devId) {
                             this.key = this.$route.query.devId;
                         }
@@ -954,6 +957,7 @@
                         this.tableShowType = 2;
                         this.title = '延期查询';
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/postpone`;
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportYQGD`;
                         this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;
@@ -962,6 +966,7 @@
                         this.tableShowType = 1;
                         this.title = '转单查询';
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/transfer`;
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportZDCX`;
                         this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;
@@ -970,6 +975,7 @@
                         this.tableShowType = 1;
                         this.title = '停用查询';
                         this.listUrl.table = `${this.$config.efoms_HOST}/workorders/getWorkordersInfoPage`;
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportTYGD`;
                         break;
                     case '11':
                         this.tableShowType = 3;
@@ -999,6 +1005,7 @@
                         this.tableShowType = 3;
                         this.title = '超期工单';
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/exception`;
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportCQGD`;
                         this.typeList = [{ dicCode: '0', dicName: '已超期' }, { dicCode: '1', dicName: '已撤销' }];
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;

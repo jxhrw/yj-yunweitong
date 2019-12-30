@@ -244,13 +244,11 @@
                 });
             },
             exportExcel() {
-                let host = this.$config.efoms_HOST;
-                let method = "/export/exportRepairs";
+                let method = `${this.$config.efoms_HOST}/export/exportYHSB`;
                 let obj = JSON.parse(JSON.stringify(this.queryConditions));
-                this.$api
-                    .getMethod(host, method, obj, this.token)
+                this.$api.get(method, obj, { token: this.token })
                     .then(res => {
-                        window.open(res.path);
+                        window.open(res.path + '&token=' + this.token);
                     })
                     .catch(err => {
                         Common.printErrorLog(err);

@@ -221,7 +221,12 @@
                         if (res.appCode == 0) {
                             switch (type) {
                                 case "img":
-                                    this[`${arrNamePre}Url`].push(res.resultList.downloadPath);
+                                    if (this.$config.baseimgs) {
+                                        this[`${arrNamePre}Url`].push(`${this.$config.baseimgs}?path=${res.resultList.downloadPath}&token=${this.token}`);
+                                    } else {
+                                        this[`${arrNamePre}Url`].push(res.resultList.downloadPath);
+                                    }
+
                                     this[`${arrNamePre}Hide`].push(res.resultList);
                                     this[`${arrNamePre}List`].push({
                                         fileName: file.name,

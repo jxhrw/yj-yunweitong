@@ -132,7 +132,7 @@
                 this.$api
                     .getMethod(host, method, obj, this.token)
                     .then(res => {
-                        window.open(res.path);
+                        window.open(res.path + '&token=' + this.token);
                     })
                     .catch(err => {
                         Common.printErrorLog(err);

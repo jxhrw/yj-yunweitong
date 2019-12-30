@@ -15,7 +15,7 @@
                 type: Array,
                 default: []
             },
-            name: [Array,Object],
+            name: [Array, Object],
             showAttr: {
                 type: String,
                 default: 'dicName'
@@ -42,21 +42,21 @@
             }
         },
         watch: {
-            code(newVal,oldVal) {
-                if(JSON.stringify(newVal)!=JSON.stringify(oldVal)){
-                    if(newVal.length == 1){
-                        this.showName = this.filterAllCode(newVal[0],this.tree);
-                    }else{
+            code(newVal, oldVal) {
+                if (JSON.stringify(newVal) != JSON.stringify(oldVal)) {
+                    if (newVal.length == 1) {
+                        this.showName = this.filterAllCode(newVal[0], this.tree);
+                    } else {
                         this.showCode = newVal;
                     }
                 }
             },
             showCode(newVal, oldVal) {
-                if(JSON.stringify(newVal)!=JSON.stringify(oldVal)){
-                    let codeLast = newVal.length>0?newVal[newVal.length-1]: '';
+                if (JSON.stringify(newVal) != JSON.stringify(oldVal)) {
+                    let codeLast = newVal.length > 0 ? newVal[newVal.length - 1] : '';
                     this.$emit('update:code', newVal);
-                    this.showName =  this.forName(newVal);
-                    if(typeof(this.name) != 'undefined'){
+                    this.showName = this.forName(newVal);
+                    if (typeof(this.name) != 'undefined') {
                         this.$emit('update:name', this.showName);
                     }
                 }
@@ -73,7 +73,7 @@
             },
             // 递归遍历，将树形数据的children为空的删除
             ergodic(data) {
-                this.showList = [...this.showList,...data];
+                this.showList = [...this.showList, ...data];
                 data.map(item => {
                     if (item['children'].length > 0) {
                         this.ergodic(item['children']);
@@ -83,23 +83,23 @@
                 });
             },
             // 树形结构数据 每一个对应名称的集合
-            forName(target){
+            forName(target) {
                 let name = [];
-                target.map(res=>{
-                    let arr = this.showList.filter(item=>{return item[this.getAttr] == res});
-                    if(arr.length>0){name.push(arr[0][this.showAttr])}
+                target.map(res => {
+                    let arr = this.showList.filter(item => { return item[this.getAttr] == res });
+                    if (arr.length > 0) { name.push(arr[0][this.showAttr]) }
                 });
                 return name;
             },
             // 递归，code 目标值， data 树形结构数据，arr 先辈code集合
-            filterAllCode(code,data,arr){
+            filterAllCode(code, data, arr) {
                 let b = arr || [];
-                (data||[]).map(res=>{
-                    let all = [...b,res[this.getAttr]];
-                    if(res[this.getAttr] == code){
+                (data || []).map(res => {
+                    let all = [...b, res[this.getAttr]];
+                    if (res[this.getAttr] == code) {
                         this.showCode = all;
-                    }else{
-                        this.filterAllCode(code,res.children,all);
+                    } else {
+                        this.filterAllCode(code, res.children, all);
                     }
                 });
             }

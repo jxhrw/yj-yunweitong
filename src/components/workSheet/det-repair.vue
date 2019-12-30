@@ -141,7 +141,7 @@
                                     <label>上传照片</label>
                                     <template v-for="(item,index) in imgSceneUrl">
                                         <div class="img-preview" :key="index">
-                                            <el-image style="width: 100%; height: 100%" :src="item" :preview-src-list="imgSceneUrl">
+                                            <el-image style="width: 100%; height: 100%" :src="item" :preview-src-list="imgSceneUrl.slice(index).concat(imgSceneUrl.slice(0,index))">
                                             </el-image>
                                             <div class="img-del" @click="delImg(index,'imgScene')">
                                                 <p>删除</p>
@@ -155,7 +155,7 @@
                                 </el-col>
                             </el-row>
                             <el-row class="content-row-select">
-                                <el-col :span="9">
+                                <el-col :span="12">
                                     <i class="redStar">*</i>
                                     <label>故障类型</label>
                                     <mInput :list="gzList" :code.sync="gzCode" :name.sync="gzName" :disabled="isOnlyRead" style="width:300px;">
@@ -386,6 +386,7 @@
             }
         },
         activated() {
+            this.pageMounted();
             //维修类型
             if (this.$route.query.type == 'optimize') {
                 this.tainList = [{ dicCode: 'REPAIRTYPE03', dicName: '优化' }];
@@ -394,24 +395,13 @@
             }
             this.tainCode = this.tainList[0].dicCode;
             this.tainName = this.tainList[0].dicName;
-
-            if (sessionStorage.getItem('detrepSave') == '0') {
-                this.resetRepair();
-            }
-        },
-        mounted() {
-            this.pageMounted();
-            this.token = Common.getQueryString("token");
-            this.getRepairInfo();
-            this.prePage = this.$route.query.pre;
-            this.userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
-
             //所属系统
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
                 parentCode: "REPDEVCATEGORY01"
             }).then(res => {
                 this.devTypeList = res.resultList || [];
 
+                this.isCanChangeDevtype = false;
                 if (this.$route.query.transferId) {
                     // 转单只能选网络链路
                     this.isCanChangeDevtype = true;
@@ -425,6 +415,17 @@
             }).catch(err => {
                 Common.printErrorLog(err);
             });
+
+            if (sessionStorage.getItem('detrepSave') == '0') {
+                this.resetRepair();
+            }
+        },
+        mounted() {
+            this.token = Common.getQueryString("token");
+            this.getRepairInfo();
+            this.prePage = this.$route.query.pre;
+            this.userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+
             //所属辖区
             // this.getDicInfo(`${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}).then(res => {
             //     this.areaList = res.resultList || [];
@@ -461,8 +462,12 @@
                     Common.ejMessage("warning", "该设备已经报修过了，请勿重复提交");
                     return;
                 }
-                if (this.gzCode == "" || this.gzdesc == "") {
-                    Common.ejMessage("warning", "填写故障类型/故障描述");
+                if(this.gzList.length>0 && this.gzCode == ""){
+                    Common.ejMessage("warning", "填写故障类型");
+                    return;
+                }
+                if (this.gzdesc == "") {
+                    Common.ejMessage("warning", "填写故障描述");
                     return;
                 }
                 if (this.$route.query.type === 'optimize' && this.yhdesc == "") {
@@ -543,6 +548,12 @@
                 this.address = '';
                 this.gzdesc = '';
                 this.yhdesc = '';
+
+                this.imgSceneUrl = [];
+                this.imgSceneList = [];
+                this.imgSceneHide = [];
+                this.gzCode = '';
+                this.gzName = '';
             },
             auditMRepairs(isPass) {
                 this.$api.putByQs(`${this.$config.efoms_HOST}/repairs/auditRepairsInfo`, {
@@ -606,11 +617,11 @@
                     }, { "Content-Type": "application/x-www-form-urlencoded" })
                     .then(res => {
                         if (res.appCode == 0) {} else {
-                            Common.printErrorLog(res);
+                            // Common.printErrorLog(res);
                         }
                     })
                     .catch(err => {
-                        Common.printErrorLog(err);
+                        // Common.printErrorLog(err);
                     });
             },
             upload(fileId, type, arrNamePre) {
@@ -644,7 +655,13 @@
                         if (res.appCode == 0) {
                             switch (type) {
                                 case "img":
-                                    this[`${arrNamePre}Url`].push(res.resultList.downloadPath);
+                                    if (this.$config.baseimgs) {
+                                        this[`${arrNamePre}Url`].push(`${this.$config.baseimgs}?path=${res.resultList.downloadPath}&token=${this.token}`);
+                                    } else {
+                                        this[`${arrNamePre}Url`].push(res.resultList.downloadPath);
+                                    }
+                                    console.log(`${this.$config.baseimgs}?path=${res.resultList.downloadPath}&token=${this.token}`)
+
                                     this[`${arrNamePre}Hide`].push(res.resultList);
                                     this[`${arrNamePre}List`].push({
                                         fileName: file.name,
