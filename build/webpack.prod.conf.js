@@ -56,9 +56,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         // Compress extracted CSS. We are using this plugin so that possible
         // duplicated CSS from different components can be deduped.
         new OptimizeCSSPlugin({
-            cssProcessorOptions: config.build.productionSourceMap ?
-                { safe: true, map: { inline: false }, autoprefixer: false } :
-                { safe: true, autoprefixer: false }
+            cssProcessorOptions: config.build.productionSourceMap ? { safe: true, map: { inline: false }, autoprefixer: false } : { safe: true, autoprefixer: false }
         }),
         // keep module.id stable when vendor modules does not change
         new webpack.HashedModuleIdsPlugin(),
@@ -107,9 +105,9 @@ const webpackConfig = merge(baseWebpackConfig, {
                 ignore: ['.*']
             },
             // {
-            //   from: path.resolve(__dirname, '../static/config/config.js'), // 外部配置js:out-config.js文件：不参与编译打包的，直接从static文件夹下复制一份到dist目录下
-            //   to: config.build.assetsPublicPath, // 复制到dist目录下
-            //   ignore: ['.*']
+            //     from: path.resolve(__dirname, '../static/config/config.js'), // 外部配置js:out-config.js文件：不参与编译打包的，直接从static文件夹下复制一份到dist目录下
+            //     to: config.build.assetsPublicPath, // 复制到dist目录下
+            //     ignore: ['.*']
             // },
             {
                 from: path.resolve(__dirname, '../static/js/jquery-2.1.4.min.js'), // 外部配置js:out-config.js文件：不参与编译打包的，直接从static文件夹下复制一份到dist目录下

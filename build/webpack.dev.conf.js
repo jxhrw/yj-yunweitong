@@ -121,11 +121,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
                 to: config.dev.outConfigPath,
                 ignore: ['.*']
             },
-            // {
-            //   from: path.resolve(__dirname, '../static/config/config.js'),
-            //   to: config.dev.outConfigPath,
-            //   ignore: ['.*']
-            // },
+            {
+                from: path.resolve(__dirname, '../static/config/config.js'),
+                to: config.dev.outConfigPath,
+                ignore: ['.*']
+            },
             {
                 from: path.resolve(__dirname, '../static/js/jquery-2.1.4.min.js'), // 外部配置js:out-config.js文件：不参与编译打包的，直接从static文件夹下复制一份到dist目录下
                 to: config.build.assetsPublicPath + '/static/js', // 复制到dist目录下/static/js

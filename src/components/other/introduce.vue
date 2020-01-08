@@ -11,14 +11,15 @@
                         <p>以通信、数据、策略为手段，多元感知设备姿态，按需、按岗、按类、按级报警及预警，第一时间掌握设备运行态势，辅以集接单、保障、排因、处置、知识库、终端回馈等为一体的综合监管业务，在资产全生命周期内使执行、监管透明化，为各信息化平台提供有效支撑。</p>
                     </div>
                     <div class="code-android-outer">
-                        <a href="http://192.168.106.131:8081/uums-server/control/efoms-app.apk">
+                        <a @click="download">
                             <div class="code-android">
                                 <img :src="require('../../assets/images/introduce/android_icon.png')" alt="">
                                 <p>Android</p>
                                 <p>下载</p>
                             </div>
                         </a>
-                        <img class="app-code" :src="require('../../assets/images/introduce/code.png')" alt="">
+                        <!-- <img class="app-code" :src="require('../../assets/images/introduce/code.png')" alt=""> -->
+                        <canvas id="QRCode" class="app-code"></canvas>
                     </div>
                 </div>
                 <!-- 右 -->
@@ -31,9 +32,30 @@
 </template>
 
 <script>
+    import QRCode from "qrcode";
     export default {
         data() {
-            return {}
+            return {
+                config: {}
+            }
+        },
+        created() {},
+        mounted() {
+            this.getQRCode();
+        },
+        methods: {
+            download() {
+                window.location.href = (this.$config.appAndroidUrl);
+            },
+            getQRCode() {
+                let QRCodeMsg = this.$config.appAndroidCode || this.$config.appAndroidUrl; //生成的二维码为URL地址
+                var msg = document.getElementById("QRCode");
+                msg.setAttribute('height', msg.width);
+                // 将获取到的数据（val）画到msg（canvas）上
+                QRCode.toCanvas(msg, QRCodeMsg, { margin: 2 }, function(error) {
+                    console.log(error);
+                });
+            }
         }
     }
 </script>
@@ -87,8 +109,10 @@
                     justify-content: flex-start;
 
                     .app-code {
-                        width: 48%;
+                        width: 48% !important;
+                        height: auto !important;
                         min-width: 185px;
+                        min-height: 185px;
                     }
 
                     a {
@@ -96,6 +120,7 @@
                         min-width: 175px;
                         display: inline-block;
                         text-decoration: none;
+                        cursor: pointer;
                     }
 
                     .code-android {

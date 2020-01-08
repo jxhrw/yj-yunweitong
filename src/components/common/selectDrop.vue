@@ -1,6 +1,6 @@
 <template>
     <div class="d-select">
-        <el-select v-if="isSearch" v-model="showCode" filterable placeholder="请选择" size='mini' class="content-select" :filter-method="filterMs" :disabled="disabled" :clearable="clearable">
+        <el-select v-if="isSearch" v-model="showCode" filterable placeholder="请选择" size='mini' class="content-select" :filter-method="filterMs" :disabled="disabled" :clearable="clearable" @visible-change="visibleChange">
             <el-option v-for="item in list" :key="item[getAttr]" :label="item[showAttr]" :value="item[getAttr]">
                 <template v-if='isShowCode'>
                     <span>{{item[getAttr]}} -> {{item[showAttr] }}</span>
@@ -8,7 +8,7 @@
             </el-option>
         </el-select>
 
-        <el-select v-else v-model="showCode" filterable placeholder="请选择" size='mini' class="content-select" :disabled="disabled" :clearable="clearable">
+        <el-select v-else v-model="showCode" filterable placeholder="请选择" size='mini' class="content-select" :disabled="disabled" :clearable="clearable" @visible-change="visibleChange">
             <el-option v-for="item in list" :key="item[getAttr]" :label="item[showAttr]" :value="item[getAttr]">
                 <template v-if='showOther'>
                     <span>{{item[showAttr]}}（{{item[showOther] }}） </span>
@@ -79,6 +79,9 @@
         methods: {
             filterMs(val) {
                 this.$emit('netSearch', val);
+            },
+            visibleChange(){
+                this.$emit('visibleChange');
             }
         },
     }

@@ -3,7 +3,7 @@ import Router from 'vue-router';
 Vue.use(Router);
 
 const time = resolve => require(['components/workSheet/timedeft'], resolve);
-
+//设备
 const sheet = resolve => require(['components/workSheet/sheet'], resolve);
 const repair = resolve => require(['components/workSheet/repair'], resolve);
 const detrep = resolve => require(['components/workSheet/det-repair'], resolve);
@@ -15,9 +15,43 @@ const statistics = resolve => require(['components/workSheet/ss-statistics'], re
 const workload = resolve => require(['components/workSheet/ss-workload'], resolve);
 const app = resolve => require(['components/workSheet/app'], resolve);
 
+// 设施
+const sheetss = resolve => require(['components/workSheet_ss/sheet_ss'], resolve);
+const repairss = resolve => require(['components/workSheet_ss/repair_ss'], resolve);
+const detrepss = resolve => require(['components/workSheet_ss/det-repair_ss'], resolve);
+const detsheetss = resolve => require(['components/workSheet_ss/det-sheet_ss'], resolve);
+
 export default new Router({
     mode: 'hash',
     routes: [{
+        path: '/detrepss',
+        name: 'detrepss',
+        component: detrepss,
+        meta: {
+            isUseCache: false,
+            keepAlive: true
+        }
+    }, {
+        path: '/detsheetss',
+        name: 'detsheetss',
+        component: detsheetss
+    }, {
+        path: '/repairss',
+        name: 'repairss',
+        component: repairss,
+        meta: {
+            isUseCache: false,
+            keepAlive: true
+        }
+    }, {
+        path: '/sheetss',
+        name: 'sheetss',
+        component: sheetss,
+        meta: {
+            isUseCache: false,
+            keepAlive: true
+        }
+    }, {
         path: '/app',
         name: 'app',
         component: app,
@@ -25,7 +59,7 @@ export default new Router({
             isUseCache: false,
             keepAlive: true
         }
-    },{
+    }, {
         path: '/workload',
         name: 'workload',
         component: workload
