@@ -21,7 +21,7 @@
                     <template v-if="$route.query.isread=='edit'">
                         <!-- 转单，材料： ORDEROPERTYPE23 -->
                         <!-- 转单，材料： 待维修ORDERSSTATUS02，已驳回ORDERSSTATUS05 -->
-                        <div v-if="(prePage=='维修处置')&&(operatCode.indexOf('ORDEROPERTYPE23')>-1||workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05')" class="ej-content-title-btn ej-content-green" @click="turnWorks">
+                        <div v-if="($config.cityName=='hangzhou')&&(prePage=='维修处置')&&(operatCode.indexOf('ORDEROPERTYPE23')>-1||workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05')" class="ej-content-title-btn ej-content-green" @click="turnWorks">
                             <p>转单</p>
                         </div>
                         <div v-if="(prePage=='维修处置')&&(operatCode.indexOf('ORDEROPERTYPE23')>-1||workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05')" class="ej-content-title-btn ej-content-green" @click="showMaterial" style="width:56px;">
@@ -143,7 +143,7 @@
                                         </el-col>
                                         <el-col :span="9">
                                             <label>语音描述</label>
-                                            <span>{{'------'}}</span>
+                                            <span>{{''}}</span>
                                         </el-col>
 
                                         <el-col :span="24" class="content-row-img">
@@ -377,11 +377,11 @@
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
                                                     <span class="file-name">
-                                                        <div v-for="(item,index) in materialFileList(item.materialRltList)" :key="index" class="file-single">
-                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl]" fit="fill"></el-image>
-                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
-                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
-                                                            <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
+                                                        <div v-for="(item1,index) in materialFileList(item.materialRltList)" :key="index" class="file-single">
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
+                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
+                                                            <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
                                                         </div>
                                                     </span>
                                                 </div>
@@ -432,11 +432,11 @@
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
                                                     <span class="file-name">
-                                                        <div v-for="(item,index) in item.fileInfoList" :key="index" class="file-single">
-                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl]" fit="fill"></el-image>
-                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
-                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
-                                                            <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
+                                                        <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
+                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
+                                                            <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
                                                         </div>
                                                     </span>
                                                 </div>
@@ -630,7 +630,7 @@
                                         <div class="mtl5" v-if="item.fileList && item.fileList.length>0">
                                             <template v-for="(res,ix) in item.fileList">
                                                 <div class="ms-files" :key="ix">
-                                                    <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${this.token}`:res.fileURL" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${this.token}`:res.fileURL]" fit="fill"></el-image>
+                                                    <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${token}`:res.fileURL" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${token}`:res.fileURL]" fit="fill"></el-image>
                                                     <div v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-doc"></div>
                                                     <div v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-xls"></div>
                                                     <div v-else :title="res.fileName" class="icon-file file-other"></div>
@@ -1240,7 +1240,7 @@
                 // this.workordersId.workordersRecordMap = {};
 
                 var obj = JSON.parse(sessionStorage.getItem('transferInfo') || '{}');
-                if (this.$route.query.pre == '转单审核' && obj.handleResult != '1') {
+                if ((this.$route.query.pre == '转单审核' || this.$route.query.pre == '转单查询') && obj.handleResult != '1') {
                     this.getTranferInfo();
                 } else {
                     this.dataDetail();

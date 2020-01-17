@@ -90,22 +90,21 @@
             this.token = Common.getQueryString("token");
             this.workordersInfo = this.data || {};
             let arr = this.workordersInfo.workordersRecordMap ? (this.workordersInfo.workordersRecordMap.dispatchList || []) : []; //派发记录
-            arr = arr.filter(res=>{
+            arr = arr.filter(res => {
                 return res.operResultCode == 'OPERRESULT07'
             });
 
             this.deadlineDate = arr.length > 0 ? arr[arr.length - 1].deadlineDate : '';
-            this.opDeptName = arr.length > 0 ? arr[arr.length - 1].opDeptName : '';
+            this.opDeptName = arr.length > 0 ? arr[arr.length - 1].opDeptName : (this.workordersInfo.oppmDeptName || '');
             // 维护组--运维单位的子部门
-            let opDeptId = arr.length > 0 ? arr[arr.length - 1].opDeptId : '';
-            this.groupCode = opDeptId;
-            this.groupName = this.opDeptName;
+            let opDeptId = arr.length > 0 ? arr[arr.length - 1].opDeptId : (this.workordersInfo.oppmDeptId || '');
 
             this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptInfo.htm`, { parentId: opDeptId }).then(res => {
                 let arr1 = [{ opsDeptId: opDeptId, opsDeptName: this.opDeptName }];
                 let arr2 = res.resultList || [];
-                
+
                 this.groupList = [...arr1, ...arr2];
+                this.groupCode = opDeptId;
             });
         },
         methods: {
@@ -125,12 +124,13 @@
                 }
 
                 this.isAjaxing = true;
-                this.$api.putByQs(`${this.$config.efoms_HOST}/workordersRecord/appointWorkorders`, {
-                        workordersId: this.workordersInfo.workordersId,
+                this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/appointWorkorders`, {
+                        signsWorkordersId: this.workordersInfo.signsWorkordersId,
                         opDeptId: this.groupCode,
                         opDeptName: this.groupName,
                         opPersonId: this.personCode.join(","),
-                        opPersonName: this.personName.join(",")
+                        opPersonName: this.personName.join(","),
+                        operExplain: undefined
                     }, { token: this.token })
                     .then(res => {
                         this.isAjaxing = false;

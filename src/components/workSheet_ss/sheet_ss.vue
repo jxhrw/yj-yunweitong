@@ -14,97 +14,77 @@
 
 
             <template slot="condFirst">
-                <el-col :span="7">
+                <!-- <el-col :span="7">
                     <label>模糊查询</label>
                     <el-input v-model="key" placeholder="设备名称/设备编号" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
-                </el-col>
+                </el-col> -->
                 <el-col :span="7">
                     <label>申报时间</label>
                     <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd" @keyup.enter.native="searchTableInfo">
                     </el-date-picker>
                 </el-col>
-                <el-col :span="7" v-show="title!='工单查询'&&title!='维修申报'">
-                    <label>查询类型</label>
-                    <mInput :list="typeList" :code.sync="typeCode" :name.sync="typeName" :clearable="false" @keyup.enter.native="searchTableInfo"></mInput>
+                <el-col :span="7">
+                    <label>申报单位</label>
+                    <mInput :list="departList" :code.sync="departCode" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
-                <el-col :span="7" v-show="title=='工单查询'||title=='维修申报'">
-                    <label>当前状态</label>
-                    <mSelectMult :list="stateList" :code.sync="stateCode" :name.sync="stateName" @keyup.enter.native="searchTableInfo"></mSelectMult>
+                <el-col :span="7" v-show="title=='工单查询'||title==''">
+                    <label>状态</label>
+                    <mInput :list="stateList" :code.sync="stateCode" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
+                <el-col :span="7" v-show="title!='工单查询'&&title!=''">
+                    <label>状态</label>
+                    <mInput :list="typeList" :code.sync="typeCode" :clearable="false" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
             </template>
 
             <template slot="condSecond">
-                <el-col :span="7" v-if="title!='维修申报'">
-                    <label>申报人员</label>
-                    <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
-                </el-col>
-                <!-- <el-col :span="7">
+                <el-col :span="7">
                     <label>申报编号</label>
-                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
-                </el-col> -->
-                <el-col :span="7">
-                    <label>申报部门</label>
-                    <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
+                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
                 <el-col :span="7">
-                    <label>申报来源</label>
-                    <mSelectMult :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName" @keyup.enter.native="searchTableInfo"></mSelectMult>
-                </el-col>
-                <el-col :span="7">
-                    <label>所属区域</label>
-                    <mSelectMult :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId" @keyup.enter.native="searchTableInfo"></mSelectMult>
-                </el-col>
-                <el-col :span="7">
-                    <label>所属系统</label>
-                    <mSelectMult :list="systemList" :code.sync="systemCode" :name.sync="systemName" @keyup.enter.native="searchTableInfo"></mSelectMult>
-                </el-col>
-                <!-- <el-col :span="7">
                     <label>维修类型</label>
-                    <mInput :list="reptypeList" :code.sync="reptypeCode" :name.sync="reptypeName"></mInput>
-                </el-col> -->
+                    <mInput :list="reptypeList" :code.sync="reptypeCode" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
+                <el-col :span="7">
+                    <label>设施类别</label>
+                    <mInput :list="facTypeList" :code.sync="facTypeCode" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
+                <el-col :span="7" v-show="title=='工单查询'||title=='维修申报'">
+                    <label>所属大队</label>
+                    <mInput :list="battalionList" :code.sync="battalionCode" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
+                <el-col :span="7" v-show="title=='工单查询'||title=='维修申报'">
+                    <label>申报来源</label>
+                    <mInput :list="sourceList" :code.sync="sourceCode" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
             </template>
 
             <template slot="tableBtn">
                 <div v-if="listUrl.download" class="operation export" @click="exportExcel">
                     <p>导出</p>
                 </div>
-                <!-- 撤销：下发列表待撤销状态 -->
-                <!-- <div v-if="title=='工单下发'&&typeCode=='0'" class="operation revoke" @click="showRevoke">
-                    <p>撤销</p>
-                </div> -->
-                <!-- 拒绝： 指派列表待指派+维修处置新工单 -->
-                <!-- <div v-if="(title=='工单指派'&&typeCode=='0')||(title=='维修处置'&&typeCode=='0')" class="operation revoke" @click="showRefuse">
-                    <p>拒绝</p>
-                </div>
-                <div v-if="(title=='工单下发')||(title=='工单指派')" class="operation urge" @click="showUrge">
-                    <p>催办</p>
-                </div> -->
             </template>
 
             <template slot="table">
                 <el-table v-show="tableShowType==1" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
-                    <!-- <el-table-column prop="workordersId" label="申报编号" show-overflow-tooltip>
-                        <template slot-scope="scope">
-                            {{scope.row.workordersId||scope.row.repairsId}}
-                        </template>
-                    </el-table-column> -->
-                    <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="signsWorkordersId" label="申报编号" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报单位" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
-                    <!-- <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column> -->
-                    <!-- <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column> -->
-                    <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
-                    <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
+                    <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devTypeName" label="设施类别" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devDeptName" label="所属大队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="squadronName" label="所属中队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="" label="道路信息" show-overflow-tooltip>
                         <template slot-scope="scope">
-                            {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                            {{scope.row.listSignsWorkordersRoad|roadShow}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="oppmDeptName" label="维修单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip></el-table-column>
+                    <!-- <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column> -->
                     <el-table-column label="操作" min-width="100">
                         <!-- 操作4个表格都一样 -->
                         <template slot-scope="scope">
@@ -116,26 +96,21 @@
             <template slot="table">
                 <el-table v-show="tableShowType==2" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
-                    <!-- <el-table-column prop="workordersId" label="申报编号" show-overflow-tooltip>
+                    <el-table-column prop="signsWorkordersId" label="申报编号" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repPersonName" label="申报人" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devDeptName" label="所属大队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="squadronName" label="所属中队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devTypeName" label="设施类别" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="" label="道路信息" show-overflow-tooltip>
                         <template slot-scope="scope">
-                            {{scope.row.workordersId||scope.row.repairsId}}
-                        </template>
-                    </el-table-column> -->
-                    <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="deadlineTime" label="原定完成时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="aaa" label="申请完成时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="aaa" label="延期理由" show-overflow-tooltip></el-table-column>
-                    <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
-                    <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
-                        <template slot-scope="scope">
-                            {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                            {{scope.row.listSignsWorkordersRoad|roadShow}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip></el-table-column>
                     <el-table-column label="操作" min-width="100">
                         <!-- 操作4个表格都一样 -->
                         <template slot-scope="scope">
@@ -147,28 +122,22 @@
             <template slot="table">
                 <el-table v-show="tableShowType==3" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
-                    <!-- <el-table-column prop="workordersId" label="申报编号" show-overflow-tooltip>
+                    <el-table-column prop="signsWorkordersId" label="申报编号" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devTypeName" label="设施类别" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devDeptName" label="所属大队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="squadronName" label="所属中队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="" label="道路信息" show-overflow-tooltip>
                         <template slot-scope="scope">
-                            {{scope.row.workordersId||scope.row.repairsId}}
-                        </template>
-                    </el-table-column> -->
-                    <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
-                    <!-- <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column> -->
-                    <!-- <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column> -->
-                    <el-table-column prop="deadlineTime" label="期限完成时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
-                    <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
-                        <template slot-scope="scope">
-                            {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                            {{scope.row.listSignsWorkordersRoad|roadShow}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="deadlineTime" label="期限完成时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip></el-table-column>
+                    <!-- <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column> -->
                     <el-table-column label="操作" min-width="100">
                         <!-- 操作4个表格都一样 -->
                         <template slot-scope="scope">
@@ -180,30 +149,54 @@
             <template slot="table">
                 <el-table v-show="tableShowType==4" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
-                    <!-- <el-table-column prop="workordersId" label="申报编号" show-overflow-tooltip>
+                    <el-table-column prop="signsWorkordersId" label="申报编号" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devTypeName" label="设施类别" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devDeptName" label="所属大队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="squadronName" label="所属中队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="" label="道路信息" show-overflow-tooltip>
                         <template slot-scope="scope">
-                            {{scope.row.workordersId||scope.row.repairsId}}
-                        </template>
-                    </el-table-column> -->
-                    <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
-
-                    <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip min-width="120"></el-table-column>
-                    <!-- <el-table-column prop="aaaa" label="下发时间" show-overflow-tooltip min-width="120"></el-table-column> -->
-                    <el-table-column prop="updateDate" label="完成时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
-                    <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
-                        <template slot-scope="scope">
-                            {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                            {{scope.row.listSignsWorkordersRoad|roadShow}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column>
+                    <!-- <el-table-column prop="repDateaaaaa" label="下发时间" show-overflow-tooltip min-width="120"></el-table-column> -->
+                    <el-table-column prop="updateDate" label="维修完成时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip></el-table-column>
+                    <!-- <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column> -->
                     <el-table-column label="操作" min-width="100">
+                        <!-- 操作4个表格都一样 -->
+                        <template slot-scope="scope">
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions" @onOtherEvent="materialDetail"></TableOpertion>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+            <template slot="table">
+                <el-table v-show="tableShowType==5" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
+                    <el-table-column type="index" label="序号"></el-table-column>
+                    <el-table-column prop="signsWorkordersId" label="申报编号" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devTypeName" label="设施类别" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devDeptName" label="所属大队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="squadronName" label="所属中队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="" label="道路信息" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{scope.row.listSignsWorkordersRoad|roadShow}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="deadlineTime" label="期限完成时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <!-- <el-table-column prop="workordersStatusName" label="总金额" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{'mmmmmmm'}}
+                        </template>
+                    </el-table-column> -->
+                    <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="操作" min-width="110">
                         <!-- 操作4个表格都一样 -->
                         <template slot-scope="scope">
                             <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions" @onOtherEvent="materialDetail"></TableOpertion>
@@ -267,9 +260,6 @@
                                 <el-scrollbar class="mtl-scrollbar">
                                     <ul class="mt-list mt-list-scroll">
                                         <li v-for="(item,index) in materialList" :key="index">
-                                            <!-- <el-input v-model="item.materialName" size='mini' class="content-select mtl1" clearable></el-input>
-                                            <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
-                                            <el-input v-model="item.materialUnit" size='mini' class="content-select mtl3" clearable></el-input> -->
                                             <mInput :list="materialDic" :code.sync="item.materialCode" :name.sync="item.materialName" class="content-select mtl1"></mInput>
                                             <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
                                             <mInput :list="materialDUnit" :code.sync="item.materialUnit" :name.sync="item.materialUnit" class="content-select mtl3"></mInput>
@@ -365,19 +355,28 @@
             TableOpertion,
             mSelectMult
         },
+        filters: {
+            roadShow(list) {
+                let arr = [];
+                list.map(item => {
+                    arr.push(item.blockName || item.corssName || '');
+                });
+                return arr.join(',');
+            }
+        },
         watch: {
             $route(newVal, oldVal) {
-                if (newVal.path === '/sheet') {
+                if (newVal.path === '/sheetss') {
                     if (newVal.path === oldVal.path) {
                         this.initPage();
                     }
-                    if (newVal.path != oldVal.path && newVal.query.type != sessionStorage.getItem('sheetPageType')) {
+                    if (newVal.path != oldVal.path && newVal.query.type != sessionStorage.getItem('sheetssPageType')) {
                         this.initPage();
                     }
                     // if (newVal.path != oldVal.path && newVal.query.devId) {
                     //     this.initPage();
                     // }
-                    sessionStorage.setItem('sheetPageType', newVal.query.type);
+                    sessionStorage.setItem('sheetssPageType', newVal.query.type);
                 }
             }
         },
@@ -388,38 +387,28 @@
                 listUrl: {},
                 key: "",
                 times: "",
-                person: "",
-                declareId: "",
-
-                departCode: [],
-                departName: [],
+                declareId: '',
+                departCode: '',
                 departList: [],
-                sourceCode: [],
-                sourceName: [],
-                sourceList: [],
-                regionCode: [],
-                regionName: [],
-                regionList: [],
-                systemCode: [],
-                systemName: [],
-                systemList: [],
-                reptypeCode: "",
-                reptypeName: "",
-                reptypeList: [],
-                stateCode: [],
-                stateName: [],
+                stateCode: '',
                 stateList: [],
-
                 typeCode: '',
-                typeName: '',
                 typeList: [],
+                reptypeCode: "",
+                reptypeList: [],
+                facTypeCode: '',
+                facTypeList: [],
+                battalionCode: '',
+                battalionList: [],
+                sourceCode: '',
+                sourceList: [],
 
                 isTableLoading: false,
                 tableData: [],
                 totalCount: 10,
                 totalPage: 1,
                 queryConditions: {},
-                tableShowType: 0, // 0 基础，1大众，2延期查询，3维修处置，4确认+评价
+                tableShowType: 0, // 0 基础，1查询，2审核，3维修处置，4确认+评价
                 typeTableData: [],
                 // typeTableData: [{ "name": "管理辖区" }, { "name": "维修类型" }],
                 multipleSelection: [], // 选中需显示的内容
@@ -454,19 +443,45 @@
                     pageSize: pageSize,
                     currentPage: 1,
                 };
-                if (this.title == '维修申报' || this.title == '工单查询' || this.title == '停用查询') {
+                if (this.title == '维修申报') {
                     let obj = {
                         key: this.key,
-                        repStartDate: this.times ? this.times[0] : "",
-                        repEndDate: this.times ? this.times[1] : "",
-                        workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode.join(","),
-                        repPersonName: this.person,
-                        // workordersId: this.declareId,
-                        // devDeptId: this.departCode.join(","),
-                        repDeptIds: this.departCode.join(","),
-                        repSourceCode: this.sourceCode.join(","),
-                        devAreaCode: this.regionCode.join(","),
-                        devTypeCode: this.systemCode.join(","),
+                        repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
+                        repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
+                        repDeptId: this.departCode,
+                        type: this.typeCode,
+                        signsWorkordersId: this.declareId,
+                        // 维修类型
+                        devTypeCode: this.facTypeCode, //设施类别
+                        devDeptId: this.battalionCode, // 所属大队
+                        repSourceCode: this.sourceCode,
+                        // workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode,
+                    };
+                    this.queryConditions = { ...this.queryConditions, ...obj }
+                } else if (this.title == '工单查询' || this.title == '停用查询') {
+                    let obj = {
+                        key: this.key,
+                        repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
+                        repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
+                        repDeptId: this.departCode,
+                        workordersStatusCode: this.stateCode,
+                        signsWorkordersId: this.declareId,
+                        // 维修类型
+                        devTypeCode: this.facTypeCode, //设施类别
+                        devDeptId: this.battalionCode, // 所属大队
+                        repSourceCode: this.sourceCode,
+                    };
+                    this.queryConditions = { ...this.queryConditions, ...obj }
+                } else if (this.title == '大队道管审核' || this.title == '大队领导审核' || this.title == '支队设施科审核' || this.title == '秩序处审核') {
+                    let obj = {
+                        key: this.key,
+                        repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
+                        repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
+                        repDeptId: this.departCode,
+                        type: this.typeCode,
+                        signsWorkordersId: this.declareId,
+                        // 维修类型
+                        devTypeCode: this.facTypeCode, //设施类别
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 } else if (this.title == '转单审核' || this.title == '转单查询') {
@@ -476,10 +491,10 @@
                         startTime: this.times ? this.times[0] : "",
                         endTime: this.times ? this.times[1] : "",
                         applyPersonName: this.person,
-                        applyDeptId: this.departCode.join(","),
-                        repSourceCode: this.sourceCode.join(","),
-                        deviceArea: this.regionCode.join(","),
-                        deviceType: this.systemCode.join(","),
+                        applyDeptId: this.departCode,
+                        repSourceCode: this.sourceCode,
+                        deviceArea: this.regionCode,
+                        deviceType: this.systemCode,
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 } else if (this.title == '点位校准') {
@@ -487,25 +502,20 @@
                         deviceId: this.key,
                         startTime: this.times ? this.times[0] : "",
                         endTime: this.times ? this.times[1] : "",
-                        deviceTypeCode: this.systemCode.join(","),
+                        deviceTypeCode: this.systemCode,
                         dealResult: this.typeCode
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 } else {
                     let obj = {
+                        key: this.key,
+                        repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
+                        repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
+                        repDeptId: this.departCode,
                         type: this.typeCode,
-                        keyWord: this.key,
-                        startTime: this.times ? this.times[0] : "",
-                        endTime: this.times ? this.times[1] : "",
-                        applyPersonName: this.person,
-                        applyDeptId: this.departCode.join(","),
-                        repSourceCode: this.sourceCode.join(","),
-                        deviceArea: this.regionCode.join(","),
-                        deviceType: this.systemCode.join(","),
-
-                        // devTypeCode: this.systemCode.join(","),
-                        // workorderId: this.declareId,
-                        workordersStatusCode: this.stateCode.join(",")
+                        signsWorkordersId: this.declareId,
+                        // 维修类型
+                        devTypeCode: this.facTypeCode, //设施类别
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 }
@@ -736,12 +746,12 @@
                         sessionStorage.setItem('transferInfo', JSON.stringify(item));
                     }
                     this.$router.push({
-                        path: "/detsheet",
+                        path: "/detsheetss",
                         query: { pre: this.title, id: item.workordersId, isread: type }
                     });
                 } else {
                     this.$router.push({
-                        path: "/detsheet",
+                        path: "/detsheetss",
                         query: { pre: this.title, id: item.repairsId, isread: type, type: 'optimize' }
                     });
                 }
@@ -860,95 +870,88 @@
             initPage() {
                 this.key = "";
                 this.times = "";
-                this.person = "";
                 this.declareId = "";
-                this.departCode = [];
-                this.departName = [];
-                this.sourceCode = [];
-                this.sourceName = [];
-                this.regionCode = [];
-                this.regionName = [];
-                this.systemCode = [];
-                this.systemName = [];
+                this.departCode = '';
+                this.stateCode = '';
                 this.reptypeCode = "";
-                this.reptypeName = "";
-                this.stateCode = [];
-                this.stateName = [];
+                this.typeCode = '';
+                this.battalionCode = '';
+                this.sourceCode = '';
+
                 this.queryConditions = {};
                 this.multipleSelection = [];
                 this.tableData = [];
                 this.detailInfo = {};
                 this.$refs.layout.conditionVisible = false;
                 this.token = Common.getQueryString("token");
-                this.typeCode = '';
-                this.typeName = '';
                 this.typeList = [];
                 this.tableShowType = 0;
 
                 this.listUrl.download = '';
+                this.listUrl.table = `${this.$config.efoms_HOST}/SignsWorkordersInfo/getSignsWorkordersInfoPage`;
                 let pageType = this.$route.query.type;
                 switch (pageType) {
                     case '0':
                         this.tableShowType = 1;
                         this.title = '维修申报';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/workorders/selectMyWorkordersPage`;
-                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportWXSB`;
-                        break;
-                    case '1':
-                        this.tableShowType = 1;
-                        this.title = '科室审核';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/kssh`;
-                        this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
+                        // this.listUrl.download = `${this.$config.efoms_HOST}/export/exportWXSB`;
+                        this.typeList = [{ dicCode: 'WDSB000', dicName: '待审核' }, { dicCode: 'WDSB001', dicName: '被退回' }, { dicCode: 'WDSB002', dicName: '通过' }, { dicCode: 'WDSB003', dicName: '不通过' }, { dicCode: 'WDSB004', dicName: '已撤回' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
-                    case '2':
-                        this.tableShowType = 1;
-                        this.title = '处室审核';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/cssh`;
-                        this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
-                        this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
+                    case 's1':
+                        this.tableShowType = 2;
+                        this.title = '大队道管审核';
+                        this.typeList = [{ dicCode: 'DDDG001', dicName: '全部' }, { dicCode: 'DDDG002', dicName: '待审核' }, { dicCode: 'DDDG003', dicName: '审核通过' }, { dicCode: 'DDDG004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[1].dicCode;
+                        break;
+                    case 's2':
+                        this.tableShowType = 2;
+                        this.title = '大队领导审核';
+                        this.typeList = [{ dicCode: 'DDLD001', dicName: '全部' }, { dicCode: 'DDLD002', dicName: '待审核' }, { dicCode: 'DDLD003', dicName: '审核通过' }, { dicCode: 'DDLD004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[1].dicCode;
+                        break;
+                    case 's3':
+                        this.tableShowType = 2;
+                        this.title = '设施科审核';
+                        this.typeList = [{ dicCode: 'ZDSSK001', dicName: '全部' }, { dicCode: 'ZDSSK002', dicName: '待审核' }, { dicCode: 'ZDSSK003', dicName: '审核通过' }, { dicCode: 'ZDSSK004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[1].dicCode;
+                        break;
+                    case 's4':
+                        this.tableShowType = 2;
+                        this.title = '秩序处审核';
+                        this.typeList = [{ dicCode: 'ZXC001', dicName: '全部' }, { dicCode: 'ZXC002', dicName: '待审核' }, { dicCode: 'ZXC003', dicName: '审核通过' }, { dicCode: 'ZXC004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[1].dicCode;
                         break;
                     case '3':
                         this.tableShowType = 1;
                         this.title = '转单审核';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/transfer`;
-                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportZDCX`;
+                        // this.listUrl.download = `${this.$config.efoms_HOST}/export/exportZDCX`;
                         this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     case '4':
-                        this.tableShowType = 1;
+                        this.tableShowType = 2;
                         this.title = '延期审核';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/postpone`;
-                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportYQGD`;
-                        this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
+                        // this.listUrl.download = `${this.$config.efoms_HOST}/export/exportYQGD`;
+                        this.typeList = [{ dicCode: 'YQGD000', dicName: '待审核' }, { dicCode: 'YQGD001', dicName: '审核通过' }, { dicCode: 'YQGD002', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     case '5':
-                        this.tableShowType = 1;
+                        this.tableShowType = 2;
                         this.title = '工单下发';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/send`;
-                        this.typeList = [{ dicCode: '0', dicName: '待下发' }, { dicCode: '1', dicName: '被退回' }, { dicCode: '2', dicName: '已下发' }, { dicCode: '3', dicName: '已催办' }, { dicCode: '4', dicName: '超时' }];
+                        // this.typeList = [{ dicCode: '0', dicName: '待下发' }, { dicCode: '1', dicName: '被退回' }, { dicCode: '2', dicName: '已下发' }, { dicCode: '3', dicName: '已催办' }, { dicCode: '4', dicName: '超时' }];
+                        this.typeList = [{ dicCode: 'DXF001', dicName: '待下发' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     case '6':
-                        this.tableShowType = 1;
+                        this.tableShowType = 3;
                         this.title = '工单指派';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/dispatch`;
-                        this.typeList = [{ dicCode: '0', dicName: '待指派' }, { dicCode: '1', dicName: '被退回' }, { dicCode: '2', dicName: '已指派' }, { dicCode: '3', dicName: '已催办' }, { dicCode: '4', dicName: '超时' }];
+                        this.typeList = [{ dicCode: 'DZP001', dicName: '待指派' }, { dicCode: 'DZP002', dicName: '被退回' }, { dicCode: 'DZP003', dicName: '已指派' }, { dicCode: 'DZP004', dicName: '超时' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     case '7':
                         this.tableShowType = 1;
                         this.title = '工单查询';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/workorders/getWorkordersInfoPage`;
-                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportGDSSCX`;
                         if (this.$route.query.devId) {
                             this.key = this.$route.query.devId;
                         }
@@ -956,34 +959,71 @@
                     case '8':
                         this.tableShowType = 2;
                         this.title = '延期查询';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/postpone`;
-                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportYQGD`;
                         this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     case '9':
                         this.tableShowType = 1;
                         this.title = '转单查询';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/transfer`;
-                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportZDCX`;
                         this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     case '10':
                         this.tableShowType = 1;
                         this.title = '停用查询';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/workorders/getWorkordersInfoPage`;
-                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportTYGD`;
                         break;
                     case '11':
                         this.tableShowType = 3;
                         this.title = '维修处置';
-                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/deal`;
-                        this.typeList = [{ dicCode: '0', dicName: '新工单' }, { dicCode: '1', dicName: '待处理' }, { dicCode: '2', dicName: '已催办' }, { dicCode: '3', dicName: '超时' }, { dicCode: '4', dicName: '已修复' }];
+                        this.typeList = [{ dicCode: 'WXCZ005', dicName: '新工单' }, { dicCode: 'WXCZ006', dicName: '待处理' }, { dicCode: 'WXCZ007', dicName: '超时' }, { dicCode: 'WXCZ008', dicName: '已修复' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
+                        break;
+                    case 's5':
+                        this.tableShowType = 5;
+                        this.title = '工程量提报';
+                        this.typeList = [{ dicCode: 'GCL001', dicName: '工程量提报' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        break;
+
+                    case 's6':
+                        this.tableShowType = 4;
+                        this.title = '经理审核';
+                        this.typeList = [{ dicCode: 'MJ001', dicName: '全部' }, { dicCode: 'MJ002', dicName: '待审核' }, { dicCode: 'MJ003', dicName: '审核通过' }, { dicCode: 'MJ004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[1].dicCode;
+                        break;
+                    case 's7':
+                        this.tableShowType = 4;
+                        this.title = '监理审核';
+                        this.typeList = [{ dicCode: 'JL001', dicName: '全部' }, { dicCode: 'JL002', dicName: '待审核' }, { dicCode: 'JL003', dicName: '审核通过' }, { dicCode: 'JL004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[1].dicCode;
+                        break;
+                    case 's8':
+                        this.tableShowType = 4;
+                        this.title = '中队验收';
+                        this.typeList = [{ dicCode: 'ZDYZ001', dicName: '全部' }, { dicCode: 'ZDYZ002', dicName: '待审核' }, { dicCode: 'ZDYZ003', dicName: '审核通过' }, { dicCode: 'ZDYZ004', dicName: '审核不通过' }];
+                        this.typeList = [{ dicCode: 'DYS002', dicName: '待验收' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        break;
+                    case 's9':
+                        this.tableShowType = 4;
+                        this.title = '大队验收';
+                        this.typeList = [{ dicCode: 'DDYZ001', dicName: '全部' }, { dicCode: 'DDYZ002', dicName: '待审核' }, { dicCode: 'DDYZ003', dicName: '审核通过' }, { dicCode: 'DDYZ004', dicName: '审核不通过' }];
+                        this.typeList = [{ dicCode: 'DYS001', dicName: '待验收' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        break;
+                    case 's10':
+                        this.tableShowType = 4;
+                        this.title = '民警验收';
+                        this.typeList = [{ dicCode: 'MJYZ001', dicName: '全部' }, { dicCode: 'MJYZ002', dicName: '待审核' }, { dicCode: 'MJYZ003', dicName: '审核通过' }, { dicCode: 'MJYZ004', dicName: '审核不通过' }];
+                        this.typeList = [{ dicCode: 'DYS004', dicName: '待验收' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        break;
+                    case 's11':
+                        this.tableShowType = 4;
+                        this.title = '干部验收';
+                        this.typeList = [{ dicCode: 'LDYZ001', dicName: '全部' }, { dicCode: 'LDYZ002', dicName: '待审核' }, { dicCode: 'LDYZ003', dicName: '审核通过' }, { dicCode: 'LDYZ004', dicName: '审核不通过' }];
+                        this.typeList = [{ dicCode: 'DYS003', dicName: '待验收' }];
+                        this.typeCode = this.typeList[0].dicCode;
                         break;
                     case '12':
                         this.tableShowType = 4;
@@ -991,7 +1031,6 @@
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/confirm`;
                         this.typeList = [{ dicCode: '0', dicName: '待确认' }, { dicCode: '1', dicName: '已确认' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     case '13':
                         this.tableShowType = 4;
@@ -999,7 +1038,6 @@
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/score`;
                         this.typeList = [{ dicCode: '0', dicName: '待评价' }, { dicCode: '1', dicName: '已评价' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     case '14':
                         this.tableShowType = 3;
@@ -1008,7 +1046,6 @@
                         this.listUrl.download = `${this.$config.efoms_HOST}/export/exportCQGD`;
                         this.typeList = [{ dicCode: '0', dicName: '已超期' }, { dicCode: '1', dicName: '已撤销' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     case '21':
                         this.tableShowType = 1;
@@ -1016,7 +1053,6 @@
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/material`;
                         this.typeList = [{ dicCode: '0', dicName: '待审核' }, { dicCode: '1', dicName: '审核通过' }, { dicCode: '2', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     case '22':
                         this.tableShowType = 1;
@@ -1024,18 +1060,10 @@
                         this.listUrl.table = `${this.$config.efoms_HOST}/deviceConfirm/pageDeviceConfirm`;
                         this.typeList = [{ dicCode: '0', dicName: '未处理' }, { dicCode: '1', dicName: '已处理' }];
                         this.typeCode = this.typeList[0].dicCode;
-                        this.typeName = this.typeList[0].dicName;
                         break;
                     default:
                         break;
                 }
-
-                //维修类型
-                // if (pageType == '0') {
-                //     this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }];
-                // } else {
-                //     this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }];
-                // }
 
                 if (this.source) {
                     this.source.cancel('主动取消'); //这里你可以输出一些信息，可以在catch中拿到
@@ -1058,34 +1086,26 @@
                 });
                 this.departList = [...arr0, ...arr1];
             });
-            // this.getDicInfo(
-            //     `${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}
-            // ).then(res => {
-            //     this.departList = res.resultList || [];
-            // });
+
+            //状态
+            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
+                parentCode: "FACILITYSTATUS"
+            }).then(res => {
+                this.stateList = res.resultList || [];
+            });
+            //维修类型
+            this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }, { dicCode: 'REPAIRTYPE04', dicName: '数字城管' }];
+            // 设施类别
+            this.facTypeList = [{ dicCode: 'REPDEVTYPE24', dicName: '电子设施' }, { dicCode: 'REPDEVTYPE21', dicName: '交通标线' }, { dicCode: 'REPDEVTYPE22', dicName: '交通护栏' }, { dicCode: 'REPDEVTYPE23', dicName: '交通标志' }, { dicCode: 'REPDEVTYPE25', dicName: '临时设施' }, { dicCode: 'REPDEVTYPE26', dicName: '其他设施' }];
+            //所属大队
+            this.$api.get(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptRank: 'DEPTRANK04' }, { token: this.token }).then(res => {
+                this.battalionList = res.resultList || [];
+            });
             //申报来源
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
                 parentCode: "REPAIRSSOURCE"
             }).then(res => {
                 this.sourceList = res.resultList || [];
-            });
-            //所属区域
-            this.getDicInfo(
-                `${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}
-            ).then(res => {
-                this.regionList = res.resultList || [];
-            });
-            //所属系统
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
-                parentCode: "REPDEVCATEGORY01"
-            }).then(res => {
-                this.systemList = res.resultList || [];
-            });
-            //当前状态
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
-                parentCode: "ORDERSSTATUS"
-            }).then(res => {
-                this.stateList = res.resultList || [];
             });
         },
         activated() {
@@ -1111,7 +1131,7 @@
             }
         },
         beforeRouteLeave(to, from, next) {
-            if (to.name == 'detsheet' || to.name == 'detrepss') {
+            if (to.name == 'detsheetss' || to.name == 'detrepss') {
                 from.meta.isUseCache = true;
                 sessionStorage.setItem('menuSeclect', '0');
             } else {

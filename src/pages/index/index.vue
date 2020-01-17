@@ -197,6 +197,180 @@
                         this.rightListsEx = this.userInfo.rightListsEx || [];
                         sessionStorage.setItem("userInfo", JSON.stringify(this.userInfo));
                         window.userInfo = this.userInfo;
+
+                        var arrr = [{
+                                checked: true,
+                                rightName: "设施申报",
+                                rightElCss: "menu-repair",
+                                rightUrl: "",
+                                children: [{
+                                    checked: true,
+                                    rightName: "维修申报",
+                                    rightUrl: "sheetss?type=0"
+                                }]
+                            }, {
+                                checked: true,
+                                rightName: "设施工单",
+                                rightUrl: "",
+                                rightElCss: "menu-repair",
+                                children: [{
+                                        checked: true,
+                                        rightName: "大队道管审核",
+                                        rightUrl: "sheetss?type=s1"
+                                    },
+                                    {
+                                        checked: true,
+                                        rightName: "大队领导审核",
+                                        rightUrl: "sheetss?type=s2",
+                                    },
+                                    {
+                                        checked: true,
+                                        rightName: "支队设施科审核",
+                                        rightUrl: "sheetss?type=s3",
+                                    },
+                                    {
+                                        checked: true,
+                                        rightName: "秩序处审核",
+                                        rightUrl: "sheetss?type=s4",
+                                    },
+                                    // {
+                                    //     checked: true,
+                                    //     rightName: "转单审核",
+                                    //     rightUrl: "sheetss?type=3"
+                                    // },
+                                    {
+                                        checked: true,
+                                        rightName: "延期审核",
+                                        rightUrl: "sheetss?type=4",
+                                    },
+                                    {
+                                        checked: true,
+                                        rightName: "工单下发",
+                                        rightUrl: "sheetss?type=5"
+                                    },
+                                    {
+                                        checked: true,
+                                        rightName: "工单指派",
+                                        rightUrl: "sheetss?type=6"
+                                    }, {
+                                        checked: true,
+                                        rightName: "维修处置",
+                                        rightUrl: "sheetss?type=11",
+                                        children: []
+                                    }, {
+                                        checked: true,
+                                        rightName: "工程量提报",
+                                        rightUrl: "sheetss?type=s5",
+                                        children: []
+                                    }
+                                ]
+                            }, {
+                                checked: true,
+                                rightName: "工单审核",
+                                rightUrl: "",
+                                rightElCss: "menu-repair",
+                                children: [{
+                                        checked: true,
+                                        rightName: "经理审核",
+                                        rightUrl: "sheetss?type=s6"
+                                    },
+                                    {
+                                        checked: true,
+                                        rightName: "监理审核",
+                                        rightUrl: "sheetss?type=s7",
+                                    },
+                                    {
+                                        checked: true,
+                                        rightName: "中队验收",
+                                        rightUrl: "sheetss?type=s8"
+                                    },
+                                    {
+                                        checked: true,
+                                        rightName: "大队验收",
+                                        rightUrl: "sheetss?type=s9",
+                                    }, {
+                                        checked: true,
+                                        rightName: "民警验收",
+                                        rightUrl: "sheetss?type=s10",
+                                    }, {
+                                        checked: true,
+                                        rightName: "干部验收",
+                                        rightUrl: "sheetss?type=s11",
+                                    },
+                                ]
+                            }, {
+                                checked: true,
+                                rightName: "工单查询",
+                                rightUrl: "",
+                                rightElCss: "menu-repair",
+                                children: [{
+                                        checked: true,
+                                        rightName: "工单查询",
+                                        rightUrl: "sheetss?type=7"
+                                    },
+                                    // {
+                                    //     checked: true,
+                                    //     rightName: "延期查询",
+                                    //     rightUrl: "sheet?type=8",
+                                    // },
+                                    // {
+                                    //     checked: true,
+                                    //     rightName: "转单查询",
+                                    //     rightUrl: "sheet?type=9"
+                                    // },
+                                    // {
+                                    //     checked: true,
+                                    //     rightName: "停用查询",
+                                    //     rightUrl: "sheet?type=10",
+                                    // },
+                                ]
+                            },
+                            // {
+                            //     checked: true,
+                            //     rightName: "工单确认",
+                            //     rightUrl: "sheetss?type=12",
+                            //     rightElCss: "menu-repair",
+                            //     children: []
+                            // }, {
+                            //     checked: true,
+                            //     rightName: "工单评价",
+                            //     rightUrl: "sheetss?type=13",
+                            //     rightElCss: "menu-repair",
+                            //     children: []
+                            // }, {
+                            //     checked: true,
+                            //     rightName: "材料审核",
+                            //     rightUrl: "sheetss?type=21",
+                            //     rightElCss: "menu-repair",
+                            //     children: []
+                            // }, 
+                            // {
+                            //     checked: true,
+                            //     rightName: "查询统计",
+                            //     rightUrl: "",
+                            //     rightElCss: "menu-repair",
+                            //     children: [{
+                            //             checked: true,
+                            //             rightName: "工单查询",
+                            //             rightUrl: "data"
+                            //         },
+                            //         {
+                            //             checked: true,
+                            //             rightName: "工单统计",
+                            //             rightUrl: "statistics",
+                            //         },
+                            //         {
+                            //             checked: true,
+                            //             rightName: "工作量查询",
+                            //             rightUrl: "workload"
+                            //         }
+                            //     ]
+                            // }
+                        ];
+                        if (Common.getQueryString('qwer') == '1') {
+                            this.rightListsEx[0].children = [...arrr];
+                        }
+
                     }
                 }).catch(err => {
                     Common.printErrorLog(err);

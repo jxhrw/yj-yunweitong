@@ -138,7 +138,7 @@
                                     <p class="row-1"></p>
                                     <p class="row-2">消息类型</p>
                                     <p class="row-3">消息内容</p>
-                                    <p class="row-5">报修时间</p>
+                                    <!-- <p class="row-5">报修时间</p> -->
                                     <!-- <p class="row-4">区域</p>
                                     <p class="row-6">报修人</p> -->
                                 </div>
@@ -148,7 +148,7 @@
                                             <p class="row-1"><i>{{index}}</i></p>
                                             <p class="row-2" :title="item.type">{{item.type}}</p>
                                             <p class="row-3" :title="item.content">{{item.content}}</p>
-                                            <p class="row-5">{{item.time}}</p>
+                                            <!-- <p class="row-5">{{item.time}}</!--> -->
                                             <!-- <p class="row-4">西湖</p>
                                             <p class="row-6">弓斌功</p> -->
                                         </div>
@@ -170,7 +170,7 @@
                     <div class="h-left">
                         <div class="bg-style h-bottom-left">
                             <div class="bg-title">
-                                <h5>设备数据服务能力排名</h5>
+                                <h5>设备故障频率排名</h5>
                                 <!-- <ul class="btns">
                                     <li class="active">按年</li>
                                     <li>按月</li>
@@ -501,6 +501,7 @@
             getNotice() {
                 let startTime = Common.dateFormat('yyyy-MM-dd', new Date()) + ' 00:00:00';
                 let endTime = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date());
+                this.todoList = [];
                 this.$api.get(`${this.$config.efoms_HOST}/homeDevice/getNoticeHisCollect`, { startTime: startTime, endTime: endTime }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
@@ -669,7 +670,7 @@
                         _this.todoList.unshift({
                             content: res.content,
                             type: _this.getType(res.class),
-                            time: res.noticeTime
+                            time: res.recordTime
                         });
                     }
                 });

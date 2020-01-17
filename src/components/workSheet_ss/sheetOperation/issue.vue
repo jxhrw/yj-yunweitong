@@ -85,11 +85,12 @@
                 }
 
                 this.isAjaxing = true;
-                this.$api.putByQs(`${this.$config.efoms_HOST}/workordersRecord/dispatchWorkorders`, {
-                        workordersId: this.workordersInfo.workordersId,
+                this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/dispatchWorkorders`, {
+                        signsWorkordersId: this.workordersInfo.signsWorkordersId,
                         deadlineDate: this.deadlineDate,
                         opDeptId: this.opDeptCode,
-                        opDeptName: this.opDeptName
+                        opDeptName: this.opDeptName,
+                        operExplain: undefined
                     }, { token: this.token })
                     .then(res => {
                         this.isAjaxing = false;

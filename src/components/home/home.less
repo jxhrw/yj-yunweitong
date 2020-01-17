@@ -281,7 +281,7 @@
                             font-size: 12px;
 
                             &:first-child {
-                                width: 50px;
+                                width: 60px;
                             }
 
                             &:last-child {
@@ -804,8 +804,14 @@
 
             span {
                 font-size: 12px;
-                color: #18F9FF;
+                color: rgba(244, 254, 255, 0.6);
                 float: right;
+                margin-left: 10px;
+                cursor: pointer;
+
+                &.active {
+                    color: #18F9FF;
+                }
             }
 
             i {
@@ -1092,6 +1098,84 @@
                         position: absolute;
                         top: 10px;
                         right: 5px;
+                    }
+
+                    .c-echart {
+                        width: 100%;
+                        height: 100%;
+
+                        .c-bar {
+                            width: 100%;
+                            height: 100%;
+                        }
+
+                        .c-ul {
+                            height: 100%;
+                            padding: 5% 0;
+                            box-sizing: border-box;
+                            .flex-column;
+                            justify-content: space-between;
+
+                            li {
+                                color: #c5d0d4;
+                                display: flex;
+                                align-items: center;
+
+                                span {
+                                    width: 30%;
+                                    text-align: right;
+                                    .text-overflow;
+                                    margin-right: 8px;
+                                }
+
+                                .b-box {
+                                    flex: 1;
+                                    height: 12px;
+                                    border: 1px solid #122b3e;
+                                    position: relative;
+                                    padding: 2px 1.2%;
+                                    box-sizing: border-box;
+
+                                    .interval {
+                                        position: absolute;
+                                        top: 2px;
+                                        left: 2%;
+                                        width: 96%;
+                                        height: 6px;
+                                        background: transparent;
+                                        background-size: 8.5% 1.5%;
+                                        background-image: linear-gradient(270deg, rgba(0, 19, 41, .5) 20%, transparent 0);
+                                        z-index: 1;
+                                    }
+
+                                    .color {
+                                        max-width: 100%;
+                                        height: 100%;
+                                        background: linear-gradient(to right, #721c26 0%, #fc3131 100%);
+                                    }
+                                }
+
+                                &:nth-child(1) .b-box .color {
+                                    background: linear-gradient(to right, #721c26 0%, #fc3131 100%);
+                                }
+
+                                &:nth-child(2) .b-box .color {
+                                    background: linear-gradient(to right, #73470d 0%, #fb8e11 100%);
+                                }
+
+                                &:nth-child(3) .b-box .color {
+                                    background: linear-gradient(to right, #5e7602 0%, #d6ed00 100%);
+                                }
+
+                                &:nth-child(4) .b-box .color {
+                                    background: linear-gradient(to right, #002d55 0%, #22f6f5 100%);
+                                }
+
+                                &:nth-child(5) .b-box .color {
+                                    background: linear-gradient(to right, #002d56 0%, #21f0f2 100%);
+                                }
+                            }
+                        }
                     }
 
                     .img {

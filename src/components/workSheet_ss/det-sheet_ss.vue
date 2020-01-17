@@ -11,7 +11,8 @@
                         <li :class="{'active': activeIndex=='zp'}" @click="scrollIntoView('zp')" v-if="workordersInfo.workordersRecordMap.appointList&&workordersInfo.workordersRecordMap.appointList.length>0">指派</li>
                         <li :class="{'active': activeIndex=='fk'}" @click="scrollIntoView('fk')" v-if="workordersInfo.workordersRecordMap.fackbackList&&workordersInfo.workordersRecordMap.fackbackList.length>0">反馈</li>
                         <li :class="{'active': activeIndex=='qr'}" @click="scrollIntoView('qr')" v-if="workordersInfo.workordersRecordMap.sureList&&workordersInfo.workordersRecordMap.sureList.length>0">确认</li>
-                        <li :class="{'active': activeIndex=='pj'}" @click="scrollIntoView('pj')" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0">评价</li>
+                        <li :class="{'active': activeIndex=='ys'}" @click="scrollIntoView('ys')" v-if="workordersInfo.workordersRecordMap.reviewList&&workordersInfo.workordersRecordMap.reviewList.length>0">验收</li>
+                        <li :class="{'active': activeIndex=='ys_aaaa'}" @click="scrollIntoView('ys')" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0">评价</li>
                         <li :class="{'active': activeIndex=='cx'}" @click="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">撤销</li>
                     </ul>
                 </div>
@@ -21,37 +22,36 @@
                     <template v-if="$route.query.isread=='edit'">
                         <!-- 转单，材料： ORDEROPERTYPE23 -->
                         <!-- 转单，材料： 待维修ORDERSSTATUS02，已驳回ORDERSSTATUS05 -->
-                        <div v-if="(prePage=='维修处置')&&(operatCode.indexOf('ORDEROPERTYPE23')>-1||workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05')" class="ej-content-title-btn ej-content-green" @click="turnWorks">
+                        <!-- <div v-if="($config.cityName=='hangzhou')&&(prePage=='维修处置')&&(operatCode.indexOf('ORDEROPERTYPE23')>-1||workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05')" class="ej-content-title-btn ej-content-green" @click="turnWorks">
                             <p>转单</p>
-                        </div>
-                        <div v-if="(prePage=='维修处置')&&(operatCode.indexOf('ORDEROPERTYPE23')>-1||workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05')" class="ej-content-title-btn ej-content-green" @click="showMaterial" style="width:56px;">
-                            <p>材料申请</p>
-                        </div>
+                        </div> -->
+                        <!-- <div v-if="(prePage=='工程量提报')&&(operatCode.indexOf('FACILITYOPERTYPE15')>-1)" class="ej-content-title-btn ej-content-green" @click="showMaterial" style="width:56px;">
+                            <p>材料提交</p>
+                        </div> -->
                         <!-- 可申请延期：ORDEROPERTYPE05 -->
-                        <!-- 可申请延期：待指派ORDERSSTATUS11，指派已拒绝ORDERSSTATUS13,待维修ORDERSSTATUS02,已驳回ORDERSSTATUS05 -->
-                        <div v-if="((prePage=='工单指派')&&(workordersStatusCode=='ORDERSSTATUS11'||workordersStatusCode=='ORDERSSTATUS13'))||((prePage=='维修处置')&&(workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05'))" class="ej-content-title-btn ej-content-green" @click="showDelay" style="width:56px;">
+                        <!-- 可申请延期：待指派FACILITYSTATUS07，指派已拒绝FACILITYSTATUS08,待维修FACILITYSTATUS09,已驳回FACILITYSTATUS10，已到达 FACILITYSTATUS11 -->
+                        <div v-if="((prePage=='工单指派')&&(workordersStatusCode=='FACILITYSTATUS07'||workordersStatusCode=='FACILITYSTATUS08'))||((prePage=='维修处置')&&(workordersStatusCode=='FACILITYSTATUS09'||workordersStatusCode=='FACILITYSTATUS10'||workordersStatusCode=='FACILITYSTATUS11'))" class="ej-content-title-btn ej-content-green" @click="showDelay" style="width:56px;">
                             <p>申请延期</p>
                         </div>
-                        <!-- 可催办：ORDEROPERTYPE03，REPOPERTYPE03 -->
-                        <!-- 可催办：待维修ORDERSSTATUS02,已驳回ORDERSSTATUS05 -->
-                        <!-- <div v-if="(operatCode.indexOf('ORDEROPERTYPE03')>-1)||(workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05')" class="ej-content-title-btn ej-content-green" @click="showUrge">
+                        <!-- 可催办：FACILITYOPERTYPE07 -->
+                        <div v-if="(operatCode.indexOf('FACILITYOPERTYPE07')>-1)" class="ej-content-title-btn ej-content-green" @click="showUrge">
                             <p>催办</p>
-                        </div> -->
-                        <!-- 可拒绝："ORDEROPERTYPE14", "下发拒绝","ORDEROPERTYPE17", "指派拒绝" -->
-                        <div v-if="((prePage=='工单指派')&&operatCode.indexOf('ORDEROPERTYPE14')>-1)||((prePage=='维修处置')&&operatCode.indexOf('ORDEROPERTYPE17')>-1)" class="ej-content-title-btn ej-content-yellow" @click="showRefuse">
+                        </div>
+                        <!-- 可拒绝："FACILITYOPERTYPE10", "指派拒绝" -->
+                        <div v-if="((prePage=='维修处置')&&operatCode.indexOf('FACILITYOPERTYPE10')>-1)" class="ej-content-title-btn ej-content-yellow" @click="showRefuse">
                             <p>拒绝</p>
                         </div>
-                        <!-- 可撤销： ORDEROPERTYPE02，REPOPERTYPE02-->
+                        <!-- 可撤销： FACILITYOPERTYPE06，REPOPERTYPE02-->
                         <!-- 或者 超期工单并且状态为非 已撤销状态ORDERSSTATUS08 已完结ORDERSSTATUS07-->
-                        <div v-if="(operatCode.indexOf('ORDEROPERTYPE02')>-1||operatCode.indexOf('REPOPERTYPE02')>-1 ||(prePage=='超期工单'&&(workordersStatusCode!='ORDERSSTATUS08'||workordersStatusCode!='ORDERSSTATUS07')))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
+                        <div v-if="(operatCode.indexOf('FACILITYOPERTYPE06')>-1||(prePage=='超期工单'&&(workordersStatusCode!='ORDERSSTATUS08'||workordersStatusCode!='ORDERSSTATUS07')))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
                             <p>撤销</p>
                         </div>
                     </template>
 
                     <!-- 已撤销ORDERSSTATUS08，已完结ORDERSSTATUS07不能催办 -->
-                    <div v-if="(prePage=='工单下发'||prePage=='工单指派'||prePage=='维修处置'||prePage=='工单确认'||prePage=='维修申报'||prePage=='优化申报'||prePage=='科室审核'||prePage=='处室审核')&&(workordersStatusCode!='ORDERSSTATUS08'&&workordersStatusCode!='ORDERSSTATUS07')" class="ej-content-title-btn ej-content-green" @click="showUrge">
+                    <!-- <div v-if="(prePage=='工单下发'||prePage=='工单指派'||prePage=='维修处置'||prePage=='工单确认'||prePage=='维修申报'||prePage=='优化申报'||prePage=='科室审核'||prePage=='处室审核')&&(workordersStatusCode!='ORDERSSTATUS08'&&workordersStatusCode!='ORDERSSTATUS07')" class="ej-content-title-btn ej-content-green" @click="showUrge">
                         <p>催办</p>
-                    </div>
+                    </div> -->
                     <div class="ej-content-title-btn ej-content-black" @click="goBack">
                         <p>返回</p>
                     </div>
@@ -64,15 +64,14 @@
                             <el-row class="content-row-detail">
                                 <el-col :span="9">
                                     <label>申报编号</label>
-                                    <span>{{workordersInfo.workordersId || workordersInfo.repairsId}}</span>
-                                    <!-- <div class="fix-state"><span>{{workordersInfo.workordersStatusName}}</span></div> -->
+                                    <span>{{workordersInfo.signsWorkordersId}}</span>
                                     <span class="date-state" style="flex:none" v-if="workordersInfo.isOverdue">{{workordersInfo.isOverdue|filterOverdue}}</span>
                                 </el-col>
                                 <el-col :span="9" class="detail-warning">
                                     <template v-if="prePage=='转单审核'">
                                         <label>原工单ID</label>
                                         <span>
-                                            <router-link :to="{path:'/detsheet',query:{id: workordersInfo.transferId}}">{{workordersInfo.transferId}}</router-link>
+                                            <router-link :to="{path:'/detsheetss',query:{id: workordersInfo.transferId}}">{{workordersInfo.transferId}}</router-link>
                                         </span>
                                     </template>
                                     <template v-else><span>&nbsp;</span></template>
@@ -89,14 +88,14 @@
                                     <label>当前状态</label>
                                     <span>{{workordersInfo.workordersStatusName || workordersInfo.repStatusName}}</span>
                                 </el-col>
-                                <el-col :span="9" class="detail-warning">
+                                <!-- <el-col :span="9" class="detail-warning">
                                     <label>路口点位</label>
                                     <span>{{workordersInfo.devName}}</span>
                                 </el-col>
                                 <el-col :span="9">
                                     <label>管理辖区</label>
                                     <span>{{workordersInfo.devAreaName}}</span>
-                                </el-col>
+                                </el-col> -->
                                 <el-col :span="9">
                                     <label>详细地址</label>
                                     <span>{{workordersInfo.detailAddr}}</span>
@@ -106,12 +105,12 @@
                                 <div v-show="isShow">
                                     <el-row class="content-row-detail">
                                         <el-col :span="9">
-                                            <label>所属系统</label>
-                                            <span>{{workordersInfo.devTypeName}}</span>
-                                        </el-col>
-                                        <el-col :span="9">
                                             <label>维修类型</label>
                                             <span>{{workordersInfo.typeName}}</span>
+                                        </el-col>
+                                        <el-col :span="9">
+                                            <label>设施类别</label>
+                                            <span>{{workordersInfo.devTypeName}}</span>
                                         </el-col>
                                         <el-col :span="9">
                                             <label>申报来源</label>
@@ -122,12 +121,32 @@
                                             <span>{{workordersInfo.repDate}}</span>
                                         </el-col>
                                         <el-col :span="9">
-                                            <label>维护单位</label>
-                                            <span>{{dispatchInfoLast.opDeptName}}</span>
+                                            <label>道路信息</label>
+                                            <span>{{workordersInfo.listSignsWorkordersRoad|roadShow}}</span>
                                         </el-col>
                                         <el-col :span="9">
                                             <label>期限完成时间</label>
                                             <span>{{workordersInfo.deadlineTime}}</span>
+                                        </el-col>
+                                        <el-col :span="9">
+                                            <label>所属大队</label>
+                                            <span>{{workordersInfo.devDeptName}}</span>
+                                        </el-col>
+                                        <el-col :span="9">
+                                            <label>所属中队</label>
+                                            <span>{{workordersInfo.squadronName}}</span>
+                                        </el-col>
+                                        <el-col :span="9">
+                                            <label>维护单位</label>
+                                            <span>{{dispatchInfoLast.opDeptName}}</span>
+                                        </el-col>
+                                        <!-- <el-col :span="9">
+                                            <label>期限完成时间</label>
+                                            <span>{{workordersInfo.deadlineTime}}</span>
+                                        </el-col> -->
+                                        <el-col :span="9">
+                                            <label>管理辖区</label>
+                                            <span>{{workordersInfo.devAreaName}}</span>
                                         </el-col>
                                         <el-col :span="9">
                                             <label>维修组</label>
@@ -143,7 +162,7 @@
                                         </el-col>
                                         <el-col :span="9">
                                             <label>语音描述</label>
-                                            <span>{{'------'}}</span>
+                                            <span>{{''}}</span>
                                         </el-col>
 
                                         <el-col :span="24" class="content-row-img">
@@ -170,7 +189,7 @@
                                 <el-step title="指派" :class="{'active': activeIndex=='zp'}" @click.native="scrollIntoView('zp')" v-if="workordersInfo.workordersRecordMap.appointList&&workordersInfo.workordersRecordMap.appointList.length>0"></el-step>
                                 <el-step title="反馈" :class="{'active': activeIndex=='fk'}" @click.native="scrollIntoView('fk')" v-if="workordersInfo.workordersRecordMap.fackbackList&&workordersInfo.workordersRecordMap.fackbackList.length>0"></el-step>
                                 <el-step title="确认" :class="{'active': activeIndex=='qr'}" @click.native="scrollIntoView('qr')" v-if="workordersInfo.workordersRecordMap.sureList&&workordersInfo.workordersRecordMap.sureList.length>0"></el-step>
-                                <el-step title="评价" :class="{'active': activeIndex=='pj'}" @click.native="scrollIntoView('pj')" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0"></el-step>
+                                <el-step title="评价" :class="{'active': activeIndex=='ys'}" @click.native="scrollIntoView('ys')" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0"></el-step>
                                 <el-step title="撤销" :class="{'active': activeIndex=='cx'}" @click.native="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0"></el-step>
                             </el-steps>
                         </div>
@@ -250,7 +269,7 @@
                                         </template>
 
                                         <!-- 下发 -->
-                                        <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE04'">
+                                        <template v-else-if="item.operTypeCode == 'FACILITYOPERTYPE08'">
                                             <div class="content">
                                                 <label for="">运维单位</label>
                                                 <span style="width: 349px;">{{item.opDeptName}}</span>
@@ -284,7 +303,7 @@
                                             </div>
                                         </template>
                                         <!-- 指派 -->
-                                        <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE15'">
+                                        <template v-else-if="item.operTypeCode == 'FACILITYOPERTYPE09'">
                                             <div class="content">
                                                 <label for="">运维组</label>
                                                 <span style="width: 349px;">{{item.opDeptName}}</span>
@@ -301,7 +320,7 @@
                                         </template>
 
                                         <!-- 延期申请 -->
-                                        <template v-else-if="item.operTypeCode=='ORDEROPERTYPE05'">
+                                        <template v-else-if="item.operTypeCode=='FACILITYOPERTYPE12'">
                                             <div class="content">
                                                 <label for="">延期原因</label>
                                                 <span style="width: 349px;">{{item.operExplain}}</span>
@@ -311,7 +330,7 @@
                                         </template>
 
                                         <!-- 延期审核 -->
-                                        <template v-else-if="item.operTypeCode=='ORDEROPERTYPE06'">
+                                        <template v-else-if="item.operTypeCode=='FACILITYOPERTYPE13'">
                                             <div class="content">
                                                 <label for="">审核结果</label>
                                                 <span>{{item.operResult}}</span>
@@ -366,8 +385,8 @@
                                                 </div>
                                             </template>
 
-                                            <!-- 材料申请ORDEROPERTYPE26，材料申请受理ORDEROPERTYPE21，材料申请拒绝ORDEROPERTYPE22 -->
-                                            <template v-else-if="item.operTypeCode=='ORDEROPERTYPE26'||item.operTypeCode=='ORDEROPERTYPE21'||item.operTypeCode=='ORDEROPERTYPE22'">
+                                            <!-- 工程量提报FACILITYOPERTYPE15，材料申请受理ORDEROPERTYPE21，材料申请拒绝ORDEROPERTYPE22 -->
+                                            <template v-else-if="item.operTypeCode=='FACILITYOPERTYPE15'||item.operTypeCode=='ORDEROPERTYPE21'||item.operTypeCode=='ORDEROPERTYPE22'">
                                                 <div class="content">
                                                     <label for="">申请材料</label>
                                                     <span :title="item.materialRltList|materialShow" style="width:349px;">{{item.materialRltList|materialShow}}</span>
@@ -377,18 +396,18 @@
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
                                                     <span class="file-name">
-                                                        <div v-for="(item,index) in materialFileList(item.materialRltList)" :key="index" class="file-single">
-                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl]" fit="fill"></el-image>
-                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
-                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
-                                                            <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
+                                                        <div v-for="(item1,index) in materialFileList(item.materialRltList)" :key="index" class="file-single">
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
+                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
+                                                            <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
                                                         </div>
                                                     </span>
                                                 </div>
                                             </template>
 
                                             <!-- 延期申请 -->
-                                            <template v-else-if="item.operTypeCode=='ORDEROPERTYPE05'">
+                                            <template v-else-if="item.operTypeCode=='FACILITYOPERTYPE12'">
                                                 <div class="content">
                                                     <label for="">延期原因</label>
                                                     <span style="width: 349px;">{{item.operExplain}}</span>
@@ -398,7 +417,7 @@
                                             </template>
 
                                             <!-- 延期审核 -->
-                                            <template v-else-if="item.operTypeCode=='ORDEROPERTYPE06'">
+                                            <template v-else-if="item.operTypeCode=='FACILITYOPERTYPE13'">
                                                 <div class="content">
                                                     <label for="">审核结果</label>
                                                     <span>{{item.operResult}}</span>
@@ -422,21 +441,21 @@
                                                 <div class="content">
                                                     <label for="">操作类型</label>
                                                     <span>{{item.operResult}}</span>
-                                                    <label for="">故障类型</label>
-                                                    <span>{{item.failureTypeName}}</span>
+                                                    <!-- <label for="">故障类型</label>
+                                                    <span>{{item.failureTypeName}}</span> -->
                                                     <label for="">故障原因</label>
                                                     <span>{{item.failureReason}}</span>
                                                     <label for="">结果反馈</label>
-                                                    <span style="width: 351px;">{{item.operExplain}}</span>
+                                                    <span style="width: 566px;">{{item.operExplain}}</span>
                                                 </div>
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
                                                     <span class="file-name">
-                                                        <div v-for="(item,index) in item.fileInfoList" :key="index" class="file-single">
-                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${this.token}`:res.fileUrl]" fit="fill"></el-image>
-                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
-                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
-                                                            <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
+                                                        <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
+                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
+                                                            <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
                                                         </div>
                                                     </span>
                                                 </div>
@@ -463,17 +482,45 @@
                                         <template v-else>
                                             <div class="content">
                                                 <label for="">确认结果</label>
-                                                <span>{{item.operResult}}</span>
-                                                <label for="">反馈时间</label>
-                                                <span>{{item.operDate}}</span>
+                                                <span style="width:349px;">{{item.operResult}}</span>
+                                                <!-- <label for="">反馈时间</label>
+                                                <span>{{item.operDate}}</span> -->
                                                 <label for="">确认意见</label>
                                                 <span style="width: 567px;">{{item.operExplain}}</span>
                                             </div>
                                         </template>
                                     </li>
                                 </ul>
-                                <!-- 评价 -->
-                                <ul id="pj" class="sp-info assess-info" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0">
+                                <!-- 验收 -->
+                                <ul id="ys" class="sp-info accept-info" v-if="workordersInfo.workordersRecordMap.reviewList&&workordersInfo.workordersRecordMap.reviewList.length>0">
+                                    <li class="confirm-normal" v-for="(item,index) in workordersInfo.workordersRecordMap.reviewList" :key="index">
+                                        <div class="title">
+                                            <label for="" class="title-name">{{item.operTypeName}}</label>
+                                            <span class="title-date">{{item.operDate}}</span>
+                                            <span class="title-person">{{item.operPerson}}</span>
+                                        </div>
+                                        <!-- 催办 -->
+                                        <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
+                                            <div class="content">
+                                                <label for="">催办原因</label>
+                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
+
+                                        <template v-else>
+                                            <div class="content">
+                                                <label for="">确认结果</label>
+                                                <span style="width:349px;">{{item.operResult}}</span>
+                                                <!-- <label for="">反馈时间</label>
+                                                <span>{{item.operDate}}</span> -->
+                                                <label for="">确认意见</label>
+                                                <span style="width: 567px;">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
+                                    </li>
+                                </ul>
+                                <!-- 评价(设施里不存在了) -->
+                                <ul id="ys_aaaaaaaaaaaaaaa" class="sp-info assess-info" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0">
                                     <li v-for="(item,index) in workordersInfo.workordersRecordMap.evaluateList" :key="index">
                                         <div class="title">
                                             <label for="" class="title-name">{{item.operTypeName}}</label>
@@ -522,22 +569,33 @@
                 </el-scrollbar>
             </div>
             <template>
-                <!-- 科室+处室审核 -->
-                <auditApply v-if="(prePage=='科室审核'&&(operatCode.indexOf('REPOPERTYPE05')>-1 ||operatCode.indexOf('REPOPERTYPE06')>-1))||(prePage=='处室审核'&&(operatCode.indexOf('REPOPERTYPE09')>-1 ||operatCode.indexOf('REPOPERTYPE10')>-1))" :data="workordersInfo" @callback="dataDetail"></auditApply>
+                <!-- 流程审核 -->
+                <auditApply v-if="(prePage=='大队道管审核'&&(operatCode.indexOf('FACILITYOPERTYPE02Y')>-1 ||operatCode.indexOf('FACILITYOPERTYPE02N')>-1))" :data="workordersInfo" @callback="dataDetail" title="大队道管审核"></auditApply>
+                <auditApply v-if="(prePage=='大队领导审核'&&(operatCode.indexOf('FACILITYOPERTYPE03Y')>-1 ||operatCode.indexOf('FACILITYOPERTYPE03N')>-1))" :data="workordersInfo" @callback="dataDetail" title="大队领导审核"></auditApply>
+                <auditApply v-if="(prePage=='设施科审核'&&(operatCode.indexOf('FACILITYOPERTYPE04Y')>-1 ||operatCode.indexOf('FACILITYOPERTYPE04N')>-1))" :data="workordersInfo" @callback="dataDetail" title="设施科审核"></auditApply>
+                <auditApply v-if="(prePage=='秩序处审核'&&(operatCode.indexOf('FACILITYOPERTYPE05Y')>-1 ||operatCode.indexOf('FACILITYOPERTYPE05N')>-1))" :data="workordersInfo" @callback="dataDetail" title="秩序处审核"></auditApply>
+                <auditApply v-if="(prePage=='经理审核'&&(operatCode.indexOf('FACILITYOPERTYPE16Y')>-1 ||operatCode.indexOf('FACILITYOPERTYPE16N')>-1))" :data="workordersInfo" @callback="dataDetail" title="经理审核"></auditApply>
+                <auditApply v-if="(prePage=='监理审核'&&(operatCode.indexOf('FACILITYOPERTYPE17Y')>-1 ||operatCode.indexOf('FACILITYOPERTYPE17N')>-1))" :data="workordersInfo" @callback="dataDetail" title="监理审核"></auditApply>
+                <auditApply v-if="(prePage=='中队验收'&&(operatCode.indexOf('FACILITYOPERTYPE18Y')>-1 ||operatCode.indexOf('FACILITYOPERTYPE18N')>-1))" :data="workordersInfo" @callback="dataDetail" title="中队验收"></auditApply>
+                <auditApply v-if="(prePage=='大队验收'&&(operatCode.indexOf('FACILITYOPERTYPE19Y')>-1 ||operatCode.indexOf('FACILITYOPERTYPE19N')>-1))" :data="workordersInfo" @callback="dataDetail" title="大队验收"></auditApply>
+                <auditApply v-if="(prePage=='民警验收'&&(operatCode.indexOf('FACILITYOPERTYPE20Y')>-1 ||operatCode.indexOf('FACILITYOPERTYPE20N')>-1))" :data="workordersInfo" @callback="dataDetail" title="民警验收"></auditApply>
+                <auditApply v-if="(prePage=='干部验收'&&(operatCode.indexOf('FACILITYOPERTYPE21Y')>-1 ||operatCode.indexOf('FACILITYOPERTYPE21N')>-1))" :data="workordersInfo" @callback="dataDetail" title="干部验收"></auditApply>
                 <!-- 转单审核 -->
                 <auditTransfer v-if="(prePage=='转单审核'&&$route.query.isread=='edit'&&workordersInfo.handleResult===null)" :data="workordersInfo" @callback="dataDetail" @updateTransfer="setTransferInfo"></auditTransfer>
-                <!-- 反馈操作 "ORDEROPERTYPE07", "反馈"；"ORDEROPERTYPE19", "进度反馈"；"ORDEROPERTYPE20", "完成反馈" -->
-                <feedback v-if="(prePage=='维修处置')&&((operatCode.indexOf('ORDEROPERTYPE07')>-1||operatCode.indexOf('ORDEROPERTYPE19')>-1||operatCode.indexOf('ORDEROPERTYPE20')>-1))" :data="workordersInfo" @callback="dataDetail"></feedback>
+                <!-- 反馈操作 "FACILITYOPERTYPE14", "反馈"； -->
+                <feedback v-if="(prePage=='维修处置')&&((operatCode.indexOf('FACILITYOPERTYPE14')>-1))" :data="workordersInfo" @callback="dataDetail"></feedback>
+                <!-- 材料提交 "FACILITYOPERTYPE15", "工程量提报"； -->
+                <materialSubmit v-if="(prePage=='工程量提报')&&((operatCode.indexOf('FACILITYOPERTYPE15')>-1))" :data="workordersInfo" @callback="dataDetail"></materialSubmit>
                 <!-- 确认操作 "ORDEROPERTYPE11", "确认通过"；"ORDEROPERTYPE12", "确认不通过"-->
                 <confirm v-if="(prePage=='工单确认')&&((operatCode.indexOf('ORDEROPERTYPE11')>-1||operatCode.indexOf('ORDEROPERTYPE12')>-1))" :data="workordersInfo" @callback="dataDetail"></confirm>
-                <!-- 延期审核操作 "ORDEROPERTYPE06", "延期审核", isDefer -->
-                <delay v-if="((prePage=='延期审核')&&((operatCode.indexOf('ORDEROPERTYPE06')>-1)||(workordersInfo.isDefer)))" :data="workordersInfo" @callback="dataDetail"></delay>
+                <!-- 延期审核操作 "FACILITYOPERTYPE13", "延期审核", isDefer -->
+                <delay v-if="((prePage=='延期审核')&&((operatCode.indexOf('FACILITYOPERTYPE13')>-1)||(workordersInfo.isDefer)))" :data="workordersInfo" @callback="dataDetail"></delay>
                 <!-- 评价操作 "ORDEROPERTYPE10", "评价" -->
                 <evaluate v-if="(prePage=='工单评价')&&(operatCode.indexOf('ORDEROPERTYPE10')>-1)" :data="workordersInfo" @callback="dataDetail"></evaluate>
-                <!-- 下发操作 "ORDEROPERTYPE04", "下发" -->
-                <issue v-if="(prePage=='工单下发')&&(operatCode.indexOf('ORDEROPERTYPE04')>-1)" :data="workordersInfo" @callback="dataDetail"></issue>
-                <!-- 指派操作 "ORDEROPERTYPE15", "指派"-->
-                <assign v-if="(prePage=='工单指派')&&(operatCode.indexOf('ORDEROPERTYPE15')>-1)" :data="workordersInfo" @callback="dataDetail"></assign>
+                <!-- 下发操作 "FACILITYOPERTYPE08", "下发" -->
+                <issue v-if="(prePage=='工单下发')&&(operatCode.indexOf('FACILITYOPERTYPE08')>-1)" :data="workordersInfo" @callback="dataDetail"></issue>
+                <!-- 指派操作 "FACILITYOPERTYPE09", "指派"-->
+                <assign v-if="(prePage=='工单指派')&&(operatCode.indexOf('FACILITYOPERTYPE09')>-1)" :data="workordersInfo" @callback="dataDetail"></assign>
             </template>
 
             <el-dialog title="延期申请" :visible.sync="dialogDelayVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
@@ -692,14 +750,15 @@
     </div>
 </template>
 <script>
-    import feedback from "components/workSheet/sheetOperation/feedback";
-    import confirm from "components/workSheet/sheetOperation/confirm";
-    import delay from "components/workSheet/sheetOperation/delay";
-    import evaluate from "components/workSheet/sheetOperation/evaluate";
-    import issue from "components/workSheet/sheetOperation/issue";
-    import assign from "components/workSheet/sheetOperation/assign";
-    import auditApply from "components/workSheet/sheetOperation/auditApply";
-    import auditTransfer from "components/workSheet/sheetOperation/auditTransfer";
+    import feedback from "./sheetOperation/feedback";
+    import confirm from "./sheetOperation/confirm";
+    import delay from "./sheetOperation/delay";
+    import evaluate from "./sheetOperation/evaluate";
+    import issue from "./sheetOperation/issue";
+    import assign from "./sheetOperation/assign";
+    import auditApply from "./sheetOperation/auditApply";
+    import auditTransfer from "./sheetOperation/auditTransfer";
+    import materialSubmit from "./sheetOperation/materialSubmit";
     import mInput from "components/common/selectDrop";
 
     import Common from "@/assets/js/common.js";
@@ -713,6 +772,7 @@
             assign,
             auditApply,
             auditTransfer,
+            materialSubmit,
             mInput
         },
         filters: {
@@ -749,6 +809,14 @@
                 });
                 return arr.join(",");
             },
+            roadShow(list) {
+                let arr = [];
+                list = list || [];
+                list.map(item => {
+                    arr.push(item.blockName || item.corssName || '');
+                });
+                return arr.join(',');
+            }
         },
         data() {
             return {
@@ -797,7 +865,7 @@
         },
         watch: {
             $route(newVal, oldVal) {
-                if (newVal.path === oldVal.path && newVal.path === '/detsheet') {
+                if (newVal.path === oldVal.path && newVal.path === '/detsheetss') {
                     this.initPage();
                 }
             }
@@ -822,8 +890,8 @@
                 }
 
                 this.isAjaxing = true;
-                this.$api.putByQs(`${this.$config.efoms_HOST}/workordersRecord/postponeWorkorders`, {
-                        workordersId: this.workordersInfo.workordersId,
+                this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/postponeWorkorders`, {
+                        signsWorkordersId: this.workordersInfo.signsWorkordersId,
                         deadlineDate: this.delayTime,
                         operExplain: this.delayExplain
                     }, { token: this.token })
@@ -885,12 +953,17 @@
                 if (this.cancelReasonCode == "") {
                     return Common.ejMessage("warning", "请选择撤销原因");
                 }
+                let cancelReasonName = '';
+                this.cancelReasonList.map(item => {
+                    if (item.dicCode == this.cancelReasonCode) cancelReasonName = item.dicName;
+                });
 
                 this.isAjaxing = true;
-                this.$api.putByQs(`${this.$config.efoms_HOST}/workordersRecord/cancelWorkorders`, {
-                        workordersId: this.workordersInfo.workordersId || this.workordersInfo.repairsId,
+                this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/cancelWorkorders`, {
+                        signsWorkordersId: this.workordersInfo.signsWorkordersId,
                         operExplain: this.operExplain4Cancel,
-                        operReasonCode: this.cancelReasonCode
+                        operReasonCode: this.cancelReasonCode,
+                        operReasonName: cancelReasonName
                     }, { token: this.token })
                     .then(res => {
                         this.isAjaxing = false;
@@ -914,27 +987,27 @@
                     return;
                 }
                 // 下发拒绝 handleAppoWorkorders 状态待指派 ORDERSSTATUS11，指派已拒绝 ORDERSSTATUS13
-                // 指派拒绝 handleDispWorkorders 状态待维修 ORDERSSTATUS02
-                let mturl = '';
-                switch (this.workordersStatusCode) {
-                    case 'ORDERSSTATUS11':
-                    case 'ORDERSSTATUS13':
-                        mturl = `${this.$config.efoms_HOST}/workordersRecord/handleDispWorkorders`;
-                        break;
-                    case 'ORDERSSTATUS02':
-                        mturl = `${this.$config.efoms_HOST}/workordersRecord/handleAppoWorkorders`;
-                        break;
-                    default:
-                        break;
-                }
-                if (mturl == '') {
-                    this.$message.error("状态不正确无法进行拒绝操作");
-                    return;
-                }
+                // 指派拒绝 handleDispWorkorders 状态待维修 FACILITYSTATUS09
+                let mturl = `${this.$config.efoms_HOST}/signsWorkordersRecord/handleAppoWorkorders`;
+                // switch (this.workordersStatusCode) {
+                //     case 'ORDERSSTATUS11':
+                //     case 'ORDERSSTATUS13':
+                //         mturl = `${this.$config.efoms_HOST}/workordersRecord/handleDispWorkorders`;
+                //         break;
+                //     case 'ORDERSSTATUS02':
+                //         mturl = `${this.$config.efoms_HOST}/workordersRecord/handleAppoWorkorders`;
+                //         break;
+                //     default:
+                //         break;
+                // }
+                // if (mturl == '') {
+                //     this.$message.error("状态不正确无法进行拒绝操作");
+                //     return;
+                // }
 
                 this.isAjaxing = true;
                 this.$api.putByQs(mturl, {
-                        workordersId: this.workordersInfo.workordersId,
+                        signsWorkordersId: this.workordersInfo.signsWorkordersId,
                         isHandle: 0, //1为受理，0为拒绝
                         operExplain: this.operRefuseExplain
                     }, { token: this.token })
@@ -961,10 +1034,10 @@
                 }
 
                 this.isAjaxing = true;
-                this.$api.post(`${this.$config.efoms_HOST}/workorders/opr/materialApply`, {
-                        workordersId: this.workordersInfo.workordersId,
-                        materialList: this.materialList,
-                        fileList: this.materialFiles,
+                this.$api.post(`${this.$config.efoms_HOST}/signsWorkordersRecord/signsWorkordersMaterial`, {
+                        signsWorkordersId: this.workordersInfo.signsWorkordersId,
+                        materialDtoList: this.materialList,
+                        // fileList: this.materialFiles,
                         operExplain: this.operMaterialExplain
                     }, { token: this.token })
                     .then(res => {
@@ -1114,14 +1187,10 @@
             },
             // 材料申请处理结束
             dataDetail() {
-                if (this.$route.query.type == 'optimize') {
-                    this.getRepairInfo();
-                } else {
-                    this.getWorkordersInfo();
-                }
+                this.getWorkordersInfo();
             },
             getWorkordersInfo() {
-                this.$api.get(`${this.$config.efoms_HOST}/workorders/getWorkordersInfoById`, { workordersId: this.$route.query.id }, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/SignsWorkordersInfo/getSignsWorkordersInfo`, { signsWorkordersId: this.$route.query.id }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
                             this.workordersInfo = res.resultList || {};
@@ -1133,8 +1202,16 @@
                             let arr2 = this.workordersInfo.workordersRecordMap.appointList || [];
                             arr2 = arr2.filter(res => res.operResultCode === 'OPERRESULT07');
                             this.appointInfoLast = arr2.length > 0 ? arr2[arr2.length - 1] : {};
+                            // 工程量提报的材料
+                            let arr3 = this.workordersInfo.workordersRecordMap.fackbackList || [];
+                            for (let i = arr3.length - 1; i >= 0; i--) {
+                                if (arr3[i].operTypeCode == 'FACILITYOPERTYPE15') {
+                                    arr3[i].materialRltList = this.workordersInfo.listMaterialRlt || [];
+                                    break;
+                                }
+                            }
 
-                            let fileInfoList = this.workordersInfo.fileInfoList;
+                            let fileInfoList = this.workordersInfo.fileInfoList || [];
                             this.imgFileList = [];
                             fileInfoList.forEach(item => {
                                 if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName)) {
@@ -1158,39 +1235,6 @@
                     .catch(err => {
                         Common.printErrorLog(err);
                     });
-            },
-            getRepairInfo() {
-                this.$api.get(`${this.$config.efoms_HOST}/repairs/getRepairsInfoById`, { repairsId: this.$route.query.id }, { token: this.token })
-                    .then(res => {
-                        if (res.appCode == 0) {
-                            this.workordersInfo = res.resultList || {};
-                            this.workordersStatusCode = this.workordersInfo.workordersStatusCode || '';
-
-                            let fileInfoList = this.workordersInfo.fileInfoList;
-                            this.imgFileList = [];
-                            fileInfoList.forEach(item => {
-                                if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName)) {
-                                    let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
-                                    fileUrl = fileUrl.replace('&fileName=', '/');
-                                    item.mappingAddress = fileUrl;
-
-                                    if (this.$config.baseimgs) {
-                                        this.imgFileList.push(`${this.$config.baseimgs}?path=${item.mappingAddress}&token=${this.token}`);
-                                    } else {
-                                        this.imgFileList.push(item.mappingAddress);
-                                    }
-                                }
-                            });
-
-                            this.getNextStep();
-                        } else {
-                            Common.printErrorLog(res);
-                        }
-                    })
-                    .catch(err => {
-                        Common.printErrorLog(err);
-                    });
-
             },
             getTranferInfo() {
                 this.workordersInfo = JSON.parse(sessionStorage.getItem('transferInfo') || '{}');
@@ -1221,8 +1265,8 @@
                 if (this.$route.query.isread != 'edit') {
                     return;
                 }
-                this.$api.putByQs(`${this.$config.efoms_HOST}/workordersRecord/getNextProcess`, {
-                        workordersId: this.workordersInfo.workordersId || this.workordersInfo.repairsId
+                this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/getNextProcess`, {
+                        workordersId: this.workordersInfo.signsWorkordersId
                     }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
@@ -1239,7 +1283,7 @@
                 this.prePage = this.$route.query.pre;
                 // this.workordersId.workordersRecordMap = {};
 
-                var obj = JSON.parse(sessionStorage.getItem('transferInfo') || '{}');
+                var obj = JSON.parse(sessionStorage.getItem('transferssInfo') || '{}');
                 if (this.$route.query.pre == '转单审核' && obj.handleResult != '1') {
                     this.getTranferInfo();
                 } else {
@@ -1259,14 +1303,14 @@
                         let t4 = document.querySelector('#zp') ? document.querySelector('#zp').offsetTop : -1;
                         let t5 = document.querySelector('#fk') ? document.querySelector('#fk').offsetTop : -1;
                         let t6 = document.querySelector('#qr') ? document.querySelector('#qr').offsetTop : -1;
-                        let t7 = document.querySelector('#pj') ? document.querySelector('#pj').offsetTop : -1;
+                        let t7 = document.querySelector('#ys') ? document.querySelector('#ys').offsetTop : -1;
                         let t8 = document.querySelector('#cx') ? document.querySelector('#cx').offsetTop : -1;
                         if (t8 >= 0 && scrollbarEl.scrollTop >= t8) {
                             _this.stepPosition = 'fixed';
                             _this.activeIndex = 'cx';
                         } else if (t7 >= 0 && scrollbarEl.scrollTop >= t7) {
                             _this.stepPosition = 'fixed';
-                            _this.activeIndex = 'pj';
+                            _this.activeIndex = 'ys';
                         } else if (t6 >= 0 && scrollbarEl.scrollTop >= t6) {
                             _this.stepPosition = 'fixed';
                             _this.activeIndex = 'qr';
@@ -1620,6 +1664,12 @@
                 // .feedback-defer .defer-date {
                 //     width: 567px;
                 // }
+            }
+
+            &.accept-info {
+                &::before {
+                    content: "\9a8c\6536";
+                }
             }
 
             &.confirm-info {

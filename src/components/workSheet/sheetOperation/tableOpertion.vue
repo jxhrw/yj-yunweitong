@@ -35,7 +35,7 @@
                     sessionStorage.setItem('relaodPage', '1');
                 }
                 if (item.workordersId) {
-                    if (this.title == '转单审核') {
+                    if (this.title == '转单审核' || this.title == '转单查询') {
                         sessionStorage.setItem('transferInfo', JSON.stringify(item));
                     }
                     this.$router.push({

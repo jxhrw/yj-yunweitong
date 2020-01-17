@@ -5,13 +5,21 @@
     "loginUrl": "http://192.168.91.158:10006/efoms-web/hz/index.html",
     "systemUrl": "http://192.168.91.158:8081/uums-server/index.html",
     "baseimgs": "http://192.168.91.158:12345/pic-proxy/pic/picShow.htm",
+
+    "nc_efoms_HOST": "http://192.168.106.121:10005/efoms-rest",
+    "nc_ubms_HOST": "http://192.168.106.130:8080/ubms-server",
+    "nc_serverPushUrl": "http://192.168.106.132:6201/serverpush.js",
+    "nc_loginUrl": "http://192.168.106.121:10006/efoms-web/hz/index.html",
+    "nc_systemUrl": "http://192.168.106.131:8081/uums-server/index.html",
+    "nc_baseimgs": "http://192.168.106.130:12345/pic-proxy/pic/picShow.htm",
+
     "appAndroidUrl": "http://59.52.254.218:6090/proxy/file/proxyFile.htm?path=ftp://kkeq:kkeq@jxjt.com.cn/plugin/efoms-app.apk",
     "appAndroidCode": "",
     "cityName": "nanchang",
 
     "?maxboxMap": "地图链接",
-    "maxboxMap": "http://192.168.104.102:8080/ejmap2/api/mapbox.js",
     "?mapPattonData": "路口图层数据",
+    "maxboxMap": "http://192.168.104.102:8080/ejmap2/api/mapbox.js",
     "mapPattonData": "http://192.168.103.100:8090/geoserver/cite/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=cite%3AV_GIS_CROSS&maxFeatures=50000&outputFormat=application%2Fjson",
 
     "?Gaode_Map": "高德地图配置信息（备注）",

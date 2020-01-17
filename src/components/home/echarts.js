@@ -234,6 +234,154 @@ var EchartsJs = {
         },
         color: ['#1ca2fe', '#1062e1', '#b257f5', '#ff799a', '#28dcad'],
         series: []
+    },
+
+    // 设施柱状图
+    // 条状
+    getBarss: {
+        tooltip: {
+            trigger: 'item',
+            formatter: "{b}: {c}"
+        },
+        grid: {
+            top: '20%',
+            right: '0%',
+            left: '10%',
+            bottom: '15%'
+        },
+        xAxis: [{
+            type: 'category',
+            data: [
+                '工作票', '操作票', '抢修', '用电调查', '设备巡视', '现场勘查', '到岗到位'
+            ],
+            axisLine: {
+                lineStyle: {
+                    color: '#061b30'
+                }
+            },
+            axisLabel: {
+                interval: 0,
+                margin: 10,
+                color: '#98a8b3',
+                textStyle: {
+                    fontSize: 12
+                },
+            },
+        }],
+        yAxis: [{
+            axisLabel: {
+                formatter: '{value}',
+                color: '#98a8b3',
+                textStyle: {
+                    fontSize: 12
+                },
+            },
+            axisLine: {
+                show: false
+            },
+            axisTick: {
+                show: false
+            },
+            splitLine: {
+                lineStyle: {
+                    color: '#061b30'
+                }
+            },
+            name: "使用年限",
+            nameGap: 21,
+            nameTextStyle: {
+                color: '#98a8b3'
+            }
+        }],
+        series: [{
+            type: 'bar',
+            data: [
+                30, 45, 77, 20, 25, 18, 15
+            ],
+            barWidth: '10px',
+            itemStyle: {
+                normal: {
+                    color: new graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: '#18b4bf' // 0% 处的颜色
+                    }, {
+                        offset: 1,
+                        color: '#002a50' // 100% 处的颜色
+                    }], false),
+                }
+            },
+            label: {
+                normal: {
+                    show: false
+                }
+            }
+        }]
+    },
+    // 圆多层次
+    getCircularss: {
+        tooltip: {
+            trigger: 'item',
+            formatter: "{b}: {c} ({d}%)"
+        },
+        color: ['#36bdec', '#1392d0', '#2472c1', '#114589', '#02357a', '#0c275e'],
+        visualMap: {
+            show: false,
+            min: 80,
+            max: 600,
+            inRange: {
+                colorLightness: [0, 1]
+            }
+        },
+        series: [{
+            name: '',
+            type: 'pie',
+            radius: ['0%', '80%'],
+            center: ['50%', '50%'],
+            hoverOffset: 5,
+            label: {
+                position: 'outside',
+                formatter: '{a|{b}}',
+                // formatter: '{c|{d}%} \n {b|{b}}',
+                fontSize: 12,
+                align: 'center',
+                rich: {
+                    a: {
+                        color: "#809ebc",
+                    },
+                    c: {
+                        align: 'center',
+                        color: "#ffffff",
+                        fontSize: 16
+                    },
+                    b: {
+                        align: 'center',
+                        color: "#5C78A4",
+                        fontSize: 12
+                    }
+                }
+            },
+            labelLine: {
+                normal: {
+                    lineStyle: {
+                        color: 'rgba(255, 255, 255, 0.6)'
+                    },
+                    smooth: 0,
+                    length: 20,
+                    length2: 10
+                }
+            },
+            roseType: 'radius',
+            data: [
+                { value: 90, name: '直达' },
+                { value: 70, name: '邮件营销' },
+                { value: 50, name: '联盟广告' },
+            ],
+            animationType: 'scale',
+            animationEasing: 'elasticOut',
+            animationDelay: function(idx) {
+                return Math.random() * 200;
+            }
+        }]
     }
 };
 

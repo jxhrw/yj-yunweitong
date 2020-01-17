@@ -24,11 +24,11 @@
                 </el-col>
             </template>
 
-            <template slot="tableBtn">
+            <!-- <template slot="tableBtn">
                 <div class="operation export" @click="exportExcel">
                     <p>导出</p>
                 </div>
-            </template>
+            </template> -->
 
             <template slot="table">
                 <el-table :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">

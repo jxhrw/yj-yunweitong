@@ -23,23 +23,23 @@
                         </div>
                     </div>
                     <div class="s-left-middle">
-                        <h5>路口标牌总数 <span>前5名</span></h5>
+                        <h5>路口标牌总数 <span class="active">前5名</span></h5>
                         <div class="s-left-middle-content">
                             <ul>
-                                <li v-for="(item, index) in crossRankList" :key="index" :title="`${item.CROSSNAME} ${item.TOTAL_SUM}`">
-                                    {{item.CROSSNAME}} {{item.TOTAL_SUM}}
+                                <li v-for="(item, index) in crossRankList" :key="index" :title="`${filterNullFuc(item.CROSSNAME)} ${item.TOTAL_SUM}`">
+                                    {{item.CROSSNAME|filterNullFtl}} {{item.TOTAL_SUM}}
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div class="s-left-bottom">
-                        <h5>路段标牌总数 <span>前5名</span></h5>
+                        <h5>路段标牌总数 <span class="active">前5名</span></h5>
                         <div class="s-left-bottom-content">
                             <ul>
                                 <li v-for="(item, index) in blockRankList" :key="index">
                                     <div class="b-text">
                                         <p class="b-p">
-                                            <span class="l-auto" :title="item.BLOCKNAME">{{item.BLOCKNAME}}</span>
+                                            <span class="l-auto" :title="filterNullFuc(item.BLOCKNAME)">{{item.BLOCKNAME|filterNullFtl}}</span>
                                             <span>长度{{item.BLOCKLEN}}m</span>
                                         </p>
                                         <span>标牌 {{item.TOTAL_SUM}}</span>
@@ -84,7 +84,7 @@
 
                 <div class="s-right">
                     <div class="s-right-top">
-                        <h5><i @click="getNextData('week')">下周工作</i> / <i @click="getNextData('month')">下月工作</i></h5>
+                        <h5>工作计划 <span :class="{'active':periodType=='month'}" @click="getNextData('month')">下月</span><span :class="{'active':periodType!='month'}" @click="getNextData('week')">下周</span></h5>
                         <div class="s-right-top-content">
                             <div class="srtc-scroll-box">
                                 <el-scrollbar class="srtc-scroll">
@@ -102,6 +102,9 @@
                         <div class="s-right-a-content" style="padding-top: 10px;">
                             <h6>标牌平均寿命30月</h6>
                             <div class="img img1"></div>
+                            <!-- <div class="c-echart">
+                <ECharts class="c-bar" :options="barss" ref="echarts1"></ECharts>
+              </div> -->
                         </div>
                     </div>
                     <div class="s-right-middle2">
@@ -109,6 +112,17 @@
                         <div class="s-right-a-content">
                             <h6>标线平均寿命20月</h6>
                             <div class="img img2"></div>
+                            <!-- <div class="c-echart">
+                <ul class="c-ul">
+                  <li v-for="(item, index) in 5" :key="index">
+                    <span>禁止掉头线{{index}}</span>
+                    <div class="b-box">
+                      <div class="color" :style="{'width':100-index*10+'%'}"></div>
+                      <div class="interval"></div>
+                    </div>
+                  </li>
+                </ul>
+              </div> -->
                         </div>
                     </div>
                     <div class="s-right-bottom">
@@ -116,6 +130,9 @@
                         <div class="s-right-a-content">
                             <h6>护栏平均寿命20月</h6>
                             <div class="img img3"></div>
+                            <!-- <div class="c-echart">
+                <ECharts class="c-bar" :options="circularss" ref="echarts2"></ECharts>
+              </div> -->
                         </div>
                     </div>
                 </div>
@@ -126,15 +143,33 @@
 <script>
     import Common from "@/assets/js/common.js";
     import Header from "./headerss.vue";
+    import EchartsJs from "./echarts.js";
+    import ECharts from 'vue-echarts/components/ECharts';
+    // 按需导入echarts的图形类型
+    import 'echarts/lib/chart/bar'
+    import 'echarts/lib/chart/pie'
+    // 导入工具部分
+    import 'echarts/lib/component/tooltip'
+    import 'echarts/lib/component/title';
+    // register component to use
+    import 'echarts/lib/component/legendScroll';
     var _map;
     export default {
         components: {
-            Header
+            Header,
+            ECharts
+        },
+        filters: {
+            filterNullFtl(str) {
+                return str.replace(/['null']/g, "");
+            }
         },
         data() {
             return {
                 title: '',
                 token: "",
+                barss: {},
+                circularss: {},
                 roadLeftTopIndex: 0,
                 roadList: [],
                 crossRankList: [],
@@ -145,6 +180,7 @@
                 videosVisible: false,
                 bottomVideoList: [],
                 layerCode: '', // 地图显示图层对应的code
+                periodType: '', // 工作计划类型
 
                 userInfo: {},
                 isHeadVisible: false,
@@ -183,6 +219,7 @@
                     });
             },
             getNextData(type) {
+                this.periodType = type;
                 this.$api.get(`${this.$config.efoms_HOST}/homeFacility/facilityNextOppmData`, { period: type ? type : 'week' }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
@@ -321,16 +358,16 @@
                                 });
                                 _map.creatInfoSymbol("lay_popup",
                                     `<div class="case-four">
-                                        <div class="four-one">
-                                            ${imgs.length>0?('<img src="'+imgs[0]+'"  alt="image"/>'):'<i class="el-icon-picture-outline"></i>'}
+                                        <div class="four-one f-center">
+                                            ${imgs.length > 0 ? ('<img src="' + imgs[0] + '"  alt="image"/>') : '<i class="el-icon-picture-outline"></i>'}
                                         </div>
-                                        <div class="four-one">
-                                            ${imgs.length>0?('<video src="'+videos[0]+'" autoplay="autoplay"></video>'):'<i class="el-icon-video-camera"></i>'}
+                                        <div class="four-one f-center">
+                                            ${imgs.length > 0 ? ('<video src="' + videos[0] + '" autoplay="autoplay"></video>') : '<i class="el-icon-video-camera"></i>'}
                                         </div>
                                     </div>
                                     <div class="case-four">
-                                        <div class="four-one">
-                                            ${imgs.length>0?('<img src="'+imgs[0]+'"  alt="image"/>'):'<i class="el-icon-picture-outline"></i>'}
+                                        <div class="four-one f-center">
+                                            ${imgs.length > 0 ? ('<img src="' + imgs[0] + '"  alt="image"/>') : '<i class="el-icon-picture-outline"></i>'}
                                         </div>
                                         <div class="four-one">
                                             <p>路口名称：<span title="${obj.crossName}">${obj.crossName}</span></p>
@@ -419,6 +456,13 @@
                     Common.printErrorLog(err);
                 });
             },
+            getUseAge() {
+                let bar = EchartsJs.getBarss;
+                this.barss = bar;
+
+                let circular = EchartsJs.getCircularss;
+                this.circularss = circular;
+            },
             initGet() {
                 this.getFacCrossRank();
                 this.getFacBlockRank();
@@ -426,6 +470,11 @@
                 this.getFacTotal();
                 this.getBottomVideo();
                 this.roadList = [{ name: '赣江中大道' }, { name: '迎宾大道' }, { name: '沿江南大道' }, { name: '九龙大道龙虎山大道' }, { name: '东祥路（东莲路-汇仁大道）' }, { name: '象山北路叠山路' }];
+
+                this.getUseAge();
+            },
+            filterNullFuc(str) {
+                return str.replace(/['null']/g, "");
             }
         },
         created() {
@@ -450,9 +499,10 @@
             }, 1 * 60 * 1000);
 
             // 监听窗口的变化，实时调用 echarts的 resize事件
-            // window.onresize = () => {
-            //     this.$refs.echarts1.resize();
-            // }
+            window.onresize = () => {
+                this.$refs.echarts1.resize();
+                this.$refs.echarts2.resize();
+            }
 
             _map = new EJMap("mapcontent", {
                 zoom: 12,
@@ -488,15 +538,15 @@
 <style lang="less">
     .s-map {
         .mapboxgl-popup-anchor-bottom {
-            max-width: 320px !important;
+            max-width: 420px !important;
 
             .mapboxgl-popup-tip {
-                border-top-color: #05203A;
+                border-top-color: #05203a;
             }
         }
 
         .mapboxgl-popup-content {
-            background: #05203A;
+            background: #05203a;
             padding: 4px;
 
             .mapboxgl-popup-close-button {
@@ -520,13 +570,19 @@
                 }
 
                 .four-one {
-                    width: 150px;
-                    height: 100px;
-                    color: #9ACACF;
+                    width: 200px;
+                    height: 140px;
+                    color: #9acacf;
                     text-align: center;
 
                     &+.four-one {
                         margin-left: 2px;
+                    }
+
+                    &.f-center {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
                     }
 
                     img,
@@ -538,7 +594,6 @@
 
                     i {
                         font-size: 36px;
-                        margin-top: 32px;
                     }
 
                     p {
@@ -554,8 +609,8 @@
 
             .the-one {
                 width: 180px;
-                height: 100px;
-                color: #9ACACF;
+                height: 120px;
+                color: #9acacf;
 
                 p {
                     transform: scale(0.9);

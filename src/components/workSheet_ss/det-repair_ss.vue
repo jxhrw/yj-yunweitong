@@ -32,7 +32,15 @@
                                 </el-col>
                                 <el-col :span="9">
                                     <label>所属中队</label>
-                                    <mInput :list="squadronList" :code.sync="squadronCode" :name.sync="squadronName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead" :clearable="false"></mInput>
+                                    <mInput :list="squadronList" :code.sync="squadronCode" :name.sync="squadronName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead"></mInput>
+                                </el-col>
+                                <el-col :span="9">
+                                    <label>所属辖区</label>
+                                    <mInput :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId" :disabled="isOnlyRead"></mInput>
+                                </el-col>
+                                <el-col :span="9">
+                                    <label>数据来源</label>
+                                    <mInput :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName" :disabled="isOnlyRead"></mInput>
                                 </el-col>
 
                                 <!-- <el-col :span="9">
@@ -44,9 +52,9 @@
                                     <div class="Warning" v-show="isWarning" title="该点位已有工单，点击查看" @click="gotoDetail"><span></span></div>
                                 </el-col> -->
                                 <el-col :span="9">
-                                    <i class="redStar">*</i>
-                                    <label>维修类型</label>
-                                    <mInput :list="tainList" :code.sync="tainCode" :name.sync="tainName" :disabled="isOnlyRead" :clearable="false"></mInput>
+                                    <!-- <i class="redStar">*</i> -->
+                                    <label>维护单位</label>
+                                    <mInput :list="opDeptList" :code.sync="opDeptCode" :name.sync="opDeptName" showAttr="opsDeptName" getAttr="opsDeptId"></mInput>
                                 </el-col>
                                 <el-col :span="9">
                                     <label>详细地址</label>
@@ -55,11 +63,16 @@
                                         </i>
                                     </el-input>
                                 </el-col>
+                                <el-col :span="9">
+                                    <i class="redStar">*</i>
+                                    <label>维修类型</label>
+                                    <mInput :list="tainList" :code.sync="tainCode" :name.sync="tainName" :disabled="isOnlyRead" :clearable="false"></mInput>
+                                </el-col>
                                 <el-col :span="18" class="col-alone">
                                     <i class="redStar">*</i>
                                     <label>设施类别</label>
                                     <div>
-                                        <el-tag v-for="item in facTypeList" :key="item.dicCode" type="info" effect="light" :class="['a-tag','disabled!',facTypeCode.indexOf(item.dicCode)>-1?'active':'']" @click="selectTypeCode(item.dicCode)">
+                                        <el-tag v-for="item in facTypeList" :key="item.dicCode" type="info" effect="light" :class="['a-tag',canChoosefacType.indexOf(item.dicCode)==-1?'disabled':'',facTypeCode.indexOf(item.dicCode)>-1?'active':'']" @click="selectTypeCode(item.dicCode)">
                                             {{ item.dicName }}
                                         </el-tag>
                                     </div>
@@ -67,23 +80,27 @@
                                 <el-col :span="24" class="col-notlone">
                                     <i class="redStar">*</i>
                                     <label>道路信息</label>
-                                    <div class="button" @click="addRoadInfo">添加路段</div>
-                                    <div class="button" @click="addRoadInfo">添加路口</div>
-                                    <div class="button" @click="addRoadInfo">添加设施</div>
+                                    <div class="button" @click="addRoadInfo('block')">添加路段</div>
+                                    <div class="button" @click="addRoadInfo('cross')">添加路口</div>
+                                    <!-- <div class="button" @click="addRoadInfo('fac')">添加设施</div> -->
                                     <ul>
                                         <template v-for="(item,index) in roadInfoList">
                                             <li v-if="item.isUse" :key="index">
-                                                <i class="redStar">*</i>
-                                                <label>所属道路</label>
-                                                <mInput :list="item.roadList" :code.sync="item.roadId" showAttr="roadName" getAttr="roadId" @netSearch="getDevInfo" :isSearch="true" :isShowCode="true" :disabled="isOnlyRead" @visibleChange="getRoadIndex(index)"></mInput>
-                                                <i class="redStar">*</i>
-                                                <label>路段起点</label>
-                                                <mInput :list="item.roadList" :code.sync="item.aaa" :disabled="isOnlyRead">
-                                                </mInput>
-                                                <i class="redStar">*</i>
-                                                <label>路段终点</label>
-                                                <mInput :list="item.roadList" :code.sync="item.aaa" :disabled="isOnlyRead">
-                                                </mInput>
+                                                <template v-if="item.type=='block'">
+                                                    <i class="redStar">*</i>
+                                                    <label>所属路段</label>
+                                                    <mInput :list="item.blockList" :code.sync="item.blockId" :name.sync="item.blockName" showAttr="blockName" getAttr="blockId" @netSearch="getBlockInfo" :isSearch="true" :isShowCode="true" :disabled="isOnlyRead" @visibleChange="getRoadIndex(index)"></mInput>
+                                                </template>
+                                                <template v-if="item.type=='cross'">
+                                                    <i class="redStar">*</i>
+                                                    <label>所属路口</label>
+                                                    <mInput :list="item.crossList" :code.sync="item.crossId" :name.sync="item.crossName" showAttr="crossName" getAttr="crossId" @netSearch="getCrossInfo" :isSearch="true" :isShowCode="true" :disabled="isOnlyRead" @visibleChange="getRoadIndex(index)"></mInput>
+                                                </template>
+                                                <template v-if="item.type=='fac'">
+                                                    <i class="redStar">*</i>
+                                                    <label>关联设施</label>
+                                                    <mInput :list="item.facList" :code.sync="item.facId" :name.sync="item.facName" showAttr="blockName" getAttr="blockId" @netSearch="getFacInfo" :isSearch="true" :disabled="isOnlyRead" @visibleChange="getRoadIndex(index)"></mInput>
+                                                </template>
                                                 <div class="button" @click="item.isUse=false">删除</div>
                                             </li>
                                         </template>
@@ -185,14 +202,14 @@
                                     </el-input>
                                 </el-col>
                             </el-row>
-                            <!-- <el-row class="content-row-select" v-if="title=='优化申报'">
+                            <el-row class="content-row-select" v-if="this.tainCode === 'REPAIRTYPE03'">
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
                                     <label class="content-label">优化方案</label>
                                     <el-input type="textarea" :rows="3" placeholder="" class="content-textarea" v-model="yhdesc" resize='none' :disabled="isOnlyRead">
                                     </el-input>
                                 </el-col>
-                            </el-row> -->
+                            </el-row>
                         </div>
                     </div>
                 </el-scrollbar>
@@ -235,9 +252,21 @@
                 tainCode: '',
                 tainName: '',
                 tainList: [],
+                opDeptCode: '',
+                opDeptName: '',
+                opDeptList: [],
+                regionCode: '',
+                regionName: '',
+                regionList: [],
+                sourceCode: '',
+                sourceName: '',
+                sourceList: [],
+                canChoosefacType: [],
                 facTypeCode: [],
                 facTypeList: [],
-                roadOldList: [], // 原始的道路信息
+                blockOldList: [], // 原始的路段信息
+                crossOldList: [], // 原始的路口信息
+                facOldList: [], // 原始的设施信息
                 roadIndex: 0, // 当前修改的道路的索引
                 roadInfoList: [], // 道路的所有相关信息
                 facCode: '',
@@ -274,46 +303,62 @@
         },
         watch: {
             battalionCode(val) {
-                this.facCode = '';
-                this.facName = '';
+                this.squadronCode = '';
                 if (val == '') {
                     this.squadronList = [];
                 } else {
                     //所属中队
-                    this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, { parentId: val }).then(res => {
+                    this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { parentId: val }).then(res => {
                         this.squadronList = res.resultList || [];
                     });
                 }
             },
-            facCode(val) {
-                this.facRepeatCheck();
-            },
             tainCode(val) {
                 this.facTypeCode = [];
             },
-            roadInfoList: {
-                handler(newVal, oldVal) {
-                    let oldArr = window.roadIds || []; //单纯的全局遍量
-                    let newArr = [];
-                    newVal.map((item) => {
-                        newArr.push(item.roadId);
-                    });
-                    if (newArr.length == oldArr.length) {
-                        newArr.map((item, index) => {
-                            if (newArr[index] != oldArr[index]) {
-                                console.log(index)
-                                if (!newArr[index]) {
+            facTypeCode(val) {
+                // 数字城管REPAIRTYPE04下，电子类REPDEVTYPE24和非电子类互斥
+                // if (this.tainCode == 'REPAIRTYPE04') {
+                let arr = [];
+                this.facTypeList.map(item => {
+                    arr.push(item.dicCode);
+                });
+                if (val.length == 0) {
+                    this.canChoosefacType = arr;
+                } else if (val.indexOf('REPDEVTYPE24') == -1) {
+                    this.canChoosefacType = arr.filter(res => res != 'REPDEVTYPE24');
+                } else {
+                    this.canChoosefacType = ['REPDEVTYPE24'];
+                }
 
-                                } else {
-
-                                }
-                            }
-                        });
-                    }
-                    window.roadIds = newArr;
-                },
-                deep: true
+                // }
             }
+            // facCode(val) {
+            //     this.facRepeatCheck();
+            // },
+            // roadInfoList: {
+            //     handler(newVal, oldVal) {
+            //         let oldArr = window.roadIds || []; //单纯的全局遍量
+            //         let newArr = [];
+            //         newVal.map((item) => {
+            //             newArr.push(item.roadId);
+            //         });
+            //         if (newArr.length == oldArr.length) {
+            //             newArr.map((item, index) => {
+            //                 if (newArr[index] != oldArr[index]) {
+            //                     console.log(index)
+            //                     if (!newArr[index]) {
+
+            //                     } else {
+
+            //                     }
+            //                 }
+            //             });
+            //         }
+            //         window.roadIds = newArr;
+            //     },
+            //     deep: true
+            // }
         },
         activated() {
             // this.pageMounted();
@@ -332,14 +377,31 @@
             this.userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
 
             //所属大队
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, { deptRankCode: 'DEPTRANK04' }).then(res => {
+            this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptRank: 'DEPTRANK04' }).then(res => {
                 this.battalionList = res.resultList || [];
             });
-            // 维修类型
-            this.facTypeList = [{ dicCode: '1', dicName: '电子标志类' }, { dicCode: '2', dicName: '标志类' }, { dicCode: '3', dicName: '标线类' }, { dicCode: '4', dicName: '隔离设施类' }, { dicCode: '5', dicName: '临时设施类' }, { dicCode: '6', dicName: '其他类' }];
-            // 所属道路
-            this.addRoadInfo();
-            this.getDevInfo('firstLoad');
+            // 设施类别
+            this.facTypeList = [{ dicCode: 'REPDEVTYPE24', dicName: '电子设施' }, { dicCode: 'REPDEVTYPE21', dicName: '交通标线' }, { dicCode: 'REPDEVTYPE22', dicName: '交通护栏' }, { dicCode: 'REPDEVTYPE23', dicName: '交通标志' }, { dicCode: 'REPDEVTYPE25', dicName: '临时设施' }, { dicCode: 'REPDEVTYPE26', dicName: '其他设施' }];
+            let arr = [];
+            this.facTypeList.map(item => {
+                arr.push(item.dicCode);
+            });
+            this.canChoosefacType = arr;
+
+            //所属辖区
+            this.getDicInfo(`${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}).then(res => {
+                this.regionList = res.resultList || [];
+            });
+            //申报来源
+            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
+                parentCode: "REPAIRSSOURCE"
+            }).then(res => {
+                this.sourceList = res.resultList || [];
+            });
+            //维护单位
+            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {}).then(res => {
+                this.opDeptList = res.resultList || [];
+            });
         },
         methods: {
             submitForm() {
@@ -347,17 +409,45 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                // if (this.battalionCode != 'REPDEVTYPE17') {
-                //     if (this.battalionCode == "" || this.tainCode == "" || this.facCode == "" || this.sourceCode == "") {
-                //         Common.ejMessage("warning", "请选择设备基本信息");
-                //         return;
-                //     }
-                // } else {
-                //     if (this.departCode == "" || this.tainCode == "" || this.facName == "" || this.sourceCode == "") {
-                //         Common.ejMessage("warning", "请选择设备基本信息");
-                //         return;
-                //     }
-                // }
+                if (this.battalionCode == "") {
+                    Common.ejMessage("warning", "请选择所属大队");
+                    return;
+                }
+                if (this.facTypeList.length <= 0) {
+                    Common.ejMessage("warning", "请选择设施类别");
+                }
+                let isChooseRoal = true;
+                let arrs = this.roadInfoList.filter(res => res.isUse);
+                let listSignsWorkordersRoad = [];
+                arrs.map(item => {
+                    switch (item.type) {
+                        case "block":
+                            isChooseRoal = isChooseRoal && item.blockId != '';
+                            break;
+                        case "cross":
+                            isChooseRoal = isChooseRoal && item.crossId != '';
+                            break;
+                        case "fac":
+                            isChooseRoal = isChooseRoal && item.facId != '';
+                            break;
+                        default:
+                            break;
+                    }
+                    listSignsWorkordersRoad.push({
+                        roadId: "",
+                        roadName: "",
+                        blockId: item.blockId,
+                        blockName: item.blockName,
+                        crossId: item.crossId,
+                        crossName: item.crossName,
+                        devId: item.facId,
+                        devName: item.facName,
+                    });
+                });
+                if (arrs.length == 0 || !isChooseRoal) {
+                    Common.ejMessage("warning", "道路信息不能空着");
+                    return;
+                }
                 // if (this.isWarning) {
                 //     Common.ejMessage("warning", "该设备已经报修过了，请勿重复提交");
                 //     return;
@@ -370,43 +460,46 @@
                     Common.ejMessage("warning", "填写故障描述");
                     return;
                 }
-                // if (this.$route.query.type === 'optimize' && this.yhdesc == "") {
-                //     Common.ejMessage("warning", "填写优化方案");
-                //     return;
-                // }
+                if (this.tainCode === 'REPAIRTYPE03' && this.yhdesc == "") {
+                    Common.ejMessage("warning", "填写优化方案");
+                    return;
+                }
+
+                let facTypeName = [];
+                this.facTypeCode.map(item => {
+                    let arr = this.facTypeList.filter(res => res.dicCode == item);
+                    if (arr.length > 0) facTypeName.push(arr[0].dicName);
+                });
 
                 let obj = {
-                    facCategoryCode: 'REPDEVCATEGORY01',
-                    facCategoryName: '外场智能设备',
-                    battalionCode: this.battalionCode,
-                    battalionName: this.battalionName,
-                    typeCode: this.tainCode,
-                    typeName: this.tainName,
-                    facId: this.facCode,
-                    facName: this.facName,
-                    facAreaCode: this.areaCode,
-                    facAreaName: this.areaName,
-                    facDeptId: this.departCode,
-                    facDeptName: this.departName,
+                    devCategoryCode: 'REPDEVCATEGORY02',
+                    devCategoryName: '外场交通设施',
+                    devDeptId: this.battalionCode,
+                    devDeptName: this.battalionName,
+                    squadron: this.squadronCode,
+                    squadronName: this.squadronName,
+                    devAreaCode: this.regionCode,
+                    devAreaName: this.regionName,
                     repSourceCode: this.sourceCode,
                     repSourceName: this.sourceName,
+                    typeCode: this.tainCode,
+                    typeName: this.tainName,
+                    oppmDeptId: this.opDeptCode,
+                    oppmDeptName: this.opDeptName,
                     detailAddr: this.address,
+                    devTypeCode: this.facTypeCode.join(','),
+                    devTypeName: facTypeName.join(','),
+                    listSignsWorkordersRoad: listSignsWorkordersRoad,
                     failureDescrible: this.gzdesc,
-                    failureTypeCode: this.gzCode,
-                    failureTypeName: this.gzName,
                     fileInfoList: this.imgSceneList,
-
                     optimeScheme: this.yhdesc,
                     transferId: this.$route.query.transferId // 转单：原先的工单编号
                 };
 
-                let murl = '/workorders/createWorkordersInfo';
-                if (this.$route.query.type === 'optimize') {
-                    murl = '/repairs/createRepairsInfo';
-                }
-                if (this.$route.query.transferId) {
-                    murl = '/workorders/opr/transferApply';
-                }
+                let murl = '/SignsWorkordersInfo/insertSignsWorkordersInfo';
+                // if (this.$route.query.transferId) {
+                //     murl = '/workorders/opr/transferApply';
+                // }
 
                 this.isAjaxing = true;
                 this.$api.post(`${this.$config.efoms_HOST}${murl}`, obj, { token: this.token }).then(res => {
@@ -437,45 +530,53 @@
                 this.battalionName = '';
                 this.squadronCode = '';
                 this.squadronName = '';
+                this.opDeptCode = '';
+                this.opDeptName = '';
+                this.regionCode = '';
+                this.regionName = '';
+                this.sourceCode = '';
+                this.sourceName = '';
                 this.tainCode = this.tainList[0].dicCode;
                 this.tainName = this.tainList[0].dicName;
                 this.address = '';
                 this.facTypeCode = [];
                 this.roadInfoList = [];
-                this.addRoadInfo();
+                this.roadIndex = 0;
+                // this.addRoadInfo();
                 this.gzdesc = '';
+                this.yhdesc = '';
 
                 this.imgSceneUrl = [];
                 this.imgSceneList = [];
                 this.imgSceneHide = [];
             },
-            facRepeatCheck() {
-                if (!this.facCode || !this.battalionCode || this.isOnlyRead) {
-                    this.isWarning = false;
-                    return;
-                }
+            // facRepeatCheck() {
+            //     if (!this.facCode || !this.battalionCode || this.isOnlyRead) {
+            //         this.isWarning = false;
+            //         return;
+            //     }
 
-                let murl = '/workorders/facCheckWorkorders'; // 维修校验重复
-                if (this.$route.query.type === 'optimize') {
-                    murl = '/repairs/facCheckRepairs'; // 优化校验重复
-                }
-                this.$api.get(`${this.$config.efoms_HOST}${murl}`, {
-                        facId: this.facCode,
-                        battalionCode: this.battalionCode
-                    }, { token: this.token })
-                    .then(res => {
-                        this.relationId = res.resultList || '';
-                        if (res.appCode == 2103) {
-                            this.isWarning = true;
-                        } else {
-                            this.isWarning = false;
-                        }
-                    })
-                    .catch(err => {
-                        this.isWarning = false;
-                        Common.printErrorLog(err);
-                    });
-            },
+            //     let murl = '/workorders/facCheckWorkorders'; // 维修校验重复
+            //     if (this.$route.query.type === 'optimize') {
+            //         murl = '/repairs/facCheckRepairs'; // 优化校验重复
+            //     }
+            //     this.$api.get(`${this.$config.efoms_HOST}${murl}`, {
+            //             facId: this.facCode,
+            //             battalionCode: this.battalionCode
+            //         }, { token: this.token })
+            //         .then(res => {
+            //             this.relationId = res.resultList || '';
+            //             if (res.appCode == 2103) {
+            //                 this.isWarning = true;
+            //             } else {
+            //                 this.isWarning = false;
+            //             }
+            //         })
+            //         .catch(err => {
+            //             this.isWarning = false;
+            //             Common.printErrorLog(err);
+            //         });
+            // },
             selectTypeCode(code) {
                 let index = this.facTypeCode.indexOf(code);
                 if (index == -1) {
@@ -592,31 +693,96 @@
                     this.title = '维修申报';
                 }
             },
-            getDevInfo(val) {
-                //路口点位,在设备类别已有的情况下
-                this.getDicInfo(`${'http://192.168.91.121:8080/ubms-server' || this.$config.ubms_HOST}/RoadInfo/getPageRoadInfo.htm`, {
-                    pageSize: 50,
-                    currentPage: 1,
-                    roadName: val == 'firstLoad' ? '' : val
-                }).then(res => {
-                    if (val == 'firstLoad') {
-                        this.roadOldList = res.resultList.rows || [];
-                        this.roadInfoList[0].roadList = res.resultList.rows || [];;
-                    } else {
-                        this.roadInfoList[this.roadIndex].roadList = res.resultList.rows || [];
-                    }
+            // 关联道路
+            getBlockInfo(val) {
+                let _this = this;
+                return new Promise(function(resolve, reject) {
+                    //路口点位,在设备类别已有的情况下
+                    _this.getDicInfo(`${_this.$config.ubms_HOST}/BlockInfo/getPageBlockInfo.htm`, {
+                        pageSize: 50,
+                        currentPage: 1,
+                        blockName: val || ''
+                    }).then(res => {
+                        if (_this.blockOldList.length == 0) {
+                            _this.blockOldList = res.resultList.rows || [];
+                        } else {
+                            _this.roadInfoList[_this.roadIndex].blockList = res.resultList.rows || [];
+                        }
+                        resolve();
+                    }).catch(err => {
+                        reject(err);
+                    });
+                });
+            },
+            // 关联路口
+            getCrossInfo(val) {
+                let _this = this;
+                return new Promise(function(resolve, reject) {
+                    //路口点位,在设备类别已有的情况下
+                    _this.getDicInfo(`${_this.$config.ubms_HOST}/CrossInfo/getPageCrossInfo.htm`, {
+                        pageSize: 50,
+                        currentPage: 1,
+                        crossName: val || ''
+                    }).then(res => {
+                        if (_this.crossOldList.length == 0) {
+                            _this.crossOldList = res.resultList.rows || [];
+                        } else {
+                            _this.roadInfoList[_this.roadIndex].crossList = res.resultList.rows || [];
+                        }
+                        resolve();
+                    }).catch(err => {
+                        reject(err);
+                    });
+                });
+            },
+            // 关联设施
+            getFacInfo(val) {
+                let _this = this;
+                return new Promise(function(resolve, reject) {
+                    //路口点位,在设备类别已有的情况下
+                    // _this.getDicInfo(`${_this.$config.ubms_HOST}/BlockInfo/getPageBlockInfo.htm`, {
+                    //     pageSize: 50,
+                    //     currentPage: 1,
+                    //     blockName: val || ''
+                    // }).then(res => {
+                    //     if (_this.facOldList.length == 0) {
+                    //         _this.facOldList = res.resultList.rows || [];
+                    //     } else {
+                    //         _this.roadInfoList[_this.roadIndex].facList = res.resultList.rows || [];
+                    //     }
+                    //     resolve();
+                    // }).catch(err => {
+                    //     reject(err);
+                    // });
+                    resolve();
                 });
             },
             getRoadIndex(i) {
                 this.roadIndex = i;
             },
-            addRoadInfo() {
+            async addRoadInfo(type) {
+                if (type == 'block' && this.blockOldList.length == 0) {
+                    await this.getBlockInfo();
+                }
+                if (type == 'cross' && this.crossOldList.length == 0) {
+                    await this.getCrossInfo();
+                }
+                if (type == 'fac' && this.facOldList.length == 0) {
+                    await this.getFacInfo();
+                }
                 this.roadInfoList.push({
-                    roadId: '',
-                    roadList: this.roadOldList || [],
-                    aaa: '1',
+                    blockId: '',
+                    blockName: '',
+                    blockList: this.blockOldList || [],
+                    crossId: '',
+                    crossName: '',
+                    crossList: this.crossOldList || [],
+                    facId: '',
+                    facName: '',
+                    facList: this.facOldList || [],
+                    type: type,
                     isUse: true, // 当前数据是否有效
-                })
+                });
             },
             gotoList() {
                 if (this.mtimes > 0) {
@@ -701,6 +867,7 @@
                 &.disabled {
                     opacity: 0.5;
                     cursor: no-drop;
+                    pointer-events: none;
                 }
 
                 &.active {
@@ -732,9 +899,9 @@
                 li {
                     margin-top: 10px;
 
-                    /deep/ .d-select {
-                        width: 160px;
-                    }
+                    // /deep/ .d-select {
+                    //     width: 160px;
+                    // }
 
                     .redStar {
                         float: none;

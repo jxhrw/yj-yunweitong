@@ -9,11 +9,10 @@
             <div class="operation-content">
                 <div class="complete-content">
                     <el-row class="content-row-select">
-                        <el-col :span="9">
+                        <!-- <el-col :span="9">
                             <label><span>*</span>故障类型</label>
                             <mInput :list="failureTypeList" :code.sync="failureTypeCode" :name.sync="failureTypeName"></mInput>
-
-                        </el-col>
+                        </el-col> -->
                         <el-col :span="9">
                             <label><span>*</span>维修结果</label>
                             <mInput :list="devStatusList" :code.sync="devStatusCode" :name.sync="devStatusName"></mInput>
@@ -112,10 +111,10 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                if (this.failureTypeCode == '') {
-                    Common.ejMessage("warning", "故障类型必填");
-                    return;
-                }
+                // if (this.failureTypeCode == '') {
+                //     Common.ejMessage("warning", "故障类型必填");
+                //     return;
+                // }
                 if (this.devStatusCode == '') {
                     Common.ejMessage("warning", "维修结果必填");
                     return;
@@ -128,8 +127,8 @@
                     Common.ejMessage("warning", "结果反馈必填");
                     return;
                 }
-                var url = `${this.$config.efoms_HOST}/workordersRecord/fackbackWorkorders`;
-                url = url + '?workordersId=' + this.workordersInfo.workordersId +
+                var url = `${this.$config.efoms_HOST}/signsWorkordersRecord/fackbackWorkorders`;
+                url = url + '?signsWorkordersId=' + this.workordersInfo.signsWorkordersId +
                     '&failureTypeCode=' + this.failureTypeCode +
                     '&failureTypeName=' + this.failureTypeName +
                     '&failureReason=' + this.failureReason +
@@ -183,11 +182,11 @@
                     }, { "Content-Type": "application/x-www-form-urlencoded" })
                     .then(res => {
                         if (res.appCode == 0) {} else {
-                            Common.printErrorLog(res);
+                            // Common.printErrorLog(res);
                         }
                     })
                     .catch(err => {
-                        Common.printErrorLog(err);
+                        // Common.printErrorLog(err);
                     });
             },
             upload(fileId, type, arrNamePre) {

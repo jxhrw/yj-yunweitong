@@ -277,7 +277,7 @@
                                             <div class="mtl5" v-if="item.fileList && item.fileList.length>0">
                                                 <template v-for="(res,ix) in item.fileList">
                                                     <div class="ms-files" :key="ix">
-                                                        <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${this.token}`:res.fileURL" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${this.token}`:res.fileURL]" fit="fill"></el-image>
+                                                        <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${token}`:res.fileURL" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${token}`:res.fileURL]" fit="fill"></el-image>
                                                         <div v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-doc"></div>
                                                         <div v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-xls"></div>
                                                         <div v-else :title="res.fileName" class="icon-file file-other"></div>
@@ -732,7 +732,7 @@
                     sessionStorage.setItem('relaodPage', '1');
                 }
                 if (item.workordersId) {
-                    if (this.title == '转单审核') {
+                    if (this.title == '转单审核' || this.title == '转单查询') {
                         sessionStorage.setItem('transferInfo', JSON.stringify(item));
                     }
                     this.$router.push({

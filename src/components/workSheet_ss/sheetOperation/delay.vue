@@ -62,8 +62,8 @@
             var postponeList = [...from1, ...from2];
             if (postponeList.length > 0) {
                 postponeList.map(res => {
-                    // ORDEROPERTYPE05 延期申请;OPERRESULT05 未处理
-                    if (res.operTypeCode == 'ORDEROPERTYPE05' && res.operResultCode == 'OPERRESULT05') {
+                    // FACILITYOPERTYPE12 延期申请;OPERRESULT05 未处理
+                    if (res.operTypeCode == 'FACILITYOPERTYPE12' && res.operResultCode == 'OPERRESULT05') {
                         this.deadlineDate = res.deadlineDate;
                     }
                 });
@@ -77,8 +77,8 @@
                     return;
                 }
                 this.isAjaxing = true;
-                this.$api.putByQs(`${this.$config.efoms_HOST}/workordersRecord/checkWorkorders`, {
-                        workordersId: this.workordersInfo.workordersId,
+                this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/checkWorkorders`, {
+                        signsWorkordersId: this.workordersInfo.signsWorkordersId,
                         deadlineDate: this.deadlineDate,
                         isPass: isPass,
                         operExplain: this.operExplain

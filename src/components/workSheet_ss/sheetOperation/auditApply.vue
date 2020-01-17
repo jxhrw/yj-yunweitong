@@ -1,5 +1,5 @@
 <template>
-    <!-- 科室/处室审核 -->
+    <!-- 流程审核 -->
     <div class="operation-info">
         <div class="operation-main" v-show="isShow">
             <div class="operation-title">
@@ -18,8 +18,14 @@
                         <div class="submit" @click="auditMRepairs('1')">
                             <p>同意</p>
                         </div>
-                        <div class="cancel" @click="auditMRepairs('0')">
+                        <div v-if="title!='经理审核'" class="cancel" @click="auditMRepairs('0')">
                             <p>拒绝</p>
+                        </div>
+                        <div v-if="title=='经理审核'" class="cancel" @click="auditMRepairs('01')">
+                            <p>工程量驳回</p>
+                        </div>
+                        <div v-if="title=='经理审核'" class="cancel" @click="auditMRepairs('02')">
+                            <p>维修驳回</p>
                         </div>
                     </div>
                 </div>
@@ -33,7 +39,7 @@
 <script>
     import Common from "@/assets/js/common.js";
     export default {
-        props: ['data'],
+        props: ['data', 'title'],
         data() {
             return {
                 token: "",
@@ -56,9 +62,40 @@
                 }
 
                 this.isAjaxing = true;
-                this.$api.putByQs(`${this.$config.efoms_HOST}/repairs/auditRepairsInfo`, {
-                        repairsId: this.workordersInfo.repairsId,
+                let murl = '';
+                let apType;
+                if (this.title == '大队道管审核') {
+                    murl = '/signsWorkordersRecord/checkWorkordersByRoad';
+                } else if (this.title == '大队领导审核') {
+                    murl = '/signsWorkordersRecord/checkWorkordersByLeader';
+                } else if (this.title == '设施科审核') {
+                    murl = '/signsWorkordersRecord/checkWorkordersBySigns';
+                } else if (this.title == '秩序处审核') {
+                    murl = '/signsWorkordersRecord/checkWorkordersByOrder';
+                } else if (this.title == '经理审核') {
+                    murl = '/signsWorkordersRecord/checkWorkordersByManager';
+                } else if (this.title == '监理审核') {
+                    murl = '/signsWorkordersRecord/checkWorkordersBySuper';
+                } else if (this.title == '中队验收') {
+                    murl = '/signsWorkordersRecord/acceptWorkorders';
+                    apType = '1';
+                } else if (this.title == '大队验收') {
+                    murl = '/signsWorkordersRecord/acceptWorkorders';
+                    apType = '2';
+                } else if (this.title == '民警验收') {
+                    murl = '/signsWorkordersRecord/acceptWorkorders';
+                    apType = '3';
+                } else if (this.title == '干部验收') {
+                    murl = '/signsWorkordersRecord/acceptWorkorders';
+                    apType = '4';
+                } else {
+                    return;
+                }
+                this.$api.putByQs(`${this.$config.efoms_HOST}${murl}`, {
+                        signsWorkordersId: this.workordersInfo.signsWorkordersId,
                         isPass: isPass,
+                        typeCode: this.workordersInfo.typeCode,
+                        type: apType,
                         operExplain: this.operExplain
                     }, { token: this.token })
                     .then(res => {
