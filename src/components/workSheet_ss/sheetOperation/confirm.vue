@@ -55,6 +55,10 @@
         methods: {
             // 确认接口
             sureWorkorders(isPass) {
+                if (isPass == 0 && this.operExplain == '') {
+                    Common.ejMessage("warning", "退回请填写意见");
+                    return;
+                }
                 if (this.isAjaxing) {
                     alert('数据请求中，请稍等！');
                     return;

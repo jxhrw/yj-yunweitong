@@ -1,5 +1,84 @@
 import { graphic } from 'echarts/lib/export';
 var EchartsJs = {
+    // 圆环图实心
+    getRingSolid: {
+        tooltip: {
+            trigger: 'item',
+            formatter: "{b}: {c} ({d}%)"
+        },
+        legend: {
+            orient: 'horizontal',
+            itemWidth: 6,
+            itemHeight: 6,
+            icon: 'circle',
+            // top: 'bottom',
+            left: 'center',
+            bottom: '5%',
+            itemGap: 10,
+            textStyle: {
+                color: '#C0DAFF'
+            },
+            fontSize: 10,
+            data: [
+                // '直达', '邮件营销', '联盟广告'
+            ]
+        },
+        color: ['#49517C', '#1180ff', '#3bd1f1'],
+        series: [{
+                name: '',
+                type: 'pie',
+                legendHoverLink: false,
+                selectedMode: false,
+                hoverAnimation: false,
+                hoverOffset: 5,
+                radius: ['0%', '15%'],
+                cursor: 'default',
+                center: ['50%', '40%'],
+                label: {
+                    show: false
+                },
+                labelLine: {
+                    show: false
+                },
+                tooltip: {
+                    show: false
+                },
+                data: [
+                    { value: 1, name: '' }
+                ]
+            },
+            {
+                name: '',
+                type: 'pie',
+                radius: ['40%', '60%'],
+                center: ['50%', '40%'],
+                hoverOffset: 8,
+                legendHoverLink: true,
+                hoverAnimation: true,
+                selectedMode: 'single',
+                selectedOffset: 0,
+                label: {
+                    show: true,
+                    position: 'outer',
+                    formatter: '{d}%',
+                    fontSize: 8,
+                    color: '#C0DAFF',
+                    padding: [-10, -25],
+                },
+                labelLine: {
+                    show: false
+                },
+                tooltip: {
+                    show: false
+                },
+                data: [
+                    // { value: 335, name: '直达' },
+                    // { value: 310, name: '邮件营销' },
+                    // { value: 234, name: '联盟广告' },
+                ]
+            }
+        ]
+    },
     // 圆环图
     getRing: {
         tooltip: {
@@ -76,7 +155,8 @@ var EchartsJs = {
             trigger: 'item',
             formatter: "{b}: {c} ({d}%)"
         },
-        color: ['#0C275E', '#0C4086', '#22B05D', '#9A56F6', '#FF8A7D', '#0397FF', '#22B05D'],
+        color: ['#22B05D', '#9A56F6', '#FF8A7D', '#0397FF', '#22B05D'],
+        // '#0B78FD',原第一号色, '#0C4086' 原第二号色
         visualMap: {
             show: false,
             min: 80,
@@ -88,7 +168,7 @@ var EchartsJs = {
         series: [{
             name: '',
             type: 'pie',
-            radius: ['0%', '60%'],
+            radius: ['20%', '60%'],
             center: ['50%', '50%'],
             hoverOffset: 5,
             label: {
@@ -381,6 +461,51 @@ var EchartsJs = {
             animationDelay: function(idx) {
                 return Math.random() * 200;
             }
+        }]
+    },
+
+    // 3d饼图
+    get3dPie: {
+        chart: {
+            backgroundColor: 'transparent',
+            type: 'pie', //饼图
+            options3d: {
+                enabled: true, //使用3d功能
+                alpha: 60, //延y轴向内的倾斜角度
+                beta: 0,
+            }
+        },
+        title: {
+            text: ''
+        },
+        colors: ['#22B05D', '#9A56F6', '#FF8A7D', '#0397FF', '#9A56F6', '#0397FF'],
+        tooltip: {
+            enabled: false
+        },
+        plotOptions: {
+            pie: {
+                animation: true, //初始化动画
+                allowPointSelect: true, //每个扇块能否选中
+                cursor: 'pointer', //鼠标指针
+                depth: 20, //饼图的厚度
+                dataLabels: {
+                    enabled: true, //是否显示饼图的线形tip
+                    format: '<i style="color:#bdbdbd;">{point.name}</i><br/> <i style="color:#5C78A4;font-size:10px;">{point.percentage:.1f} %</i>',
+                    connectorColor: '#5C78A4',
+                    style: { "color": "red", "fontSize": "11px", "fontWeight": "normal", "textOutline": "0" },
+                    crop: false //显示不下是否省略
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: '测试用1', //统一的前置词,非必须
+            data: [
+                // { name: '测试1', y: 12, },
+                // { name: '测试2', y: 12 },
+                // { name: '测试3', y: 12 },
+                // { name: '测试4', y: 12 },
+            ]
         }]
     }
 };

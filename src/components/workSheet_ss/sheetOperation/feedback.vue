@@ -30,7 +30,7 @@
                     </el-row>
                     <el-row class="content-row-explain content-row-first">
                         <el-col :span="24" class="content-row-img">
-                            <label>图片上传</label>
+                            <label><span>*</span>图片上传</label>
                             <template v-for="(item,index) in imgSceneUrl">
                                 <div class="img-preview" :key="index">
                                     <el-image style="width: 100%; height: 100%" :src="item" :preview-src-list="imgSceneUrl">
@@ -127,6 +127,10 @@
                     Common.ejMessage("warning", "结果反馈必填");
                     return;
                 }
+                if (this.imgSceneList.length < 1) {
+                    Common.ejMessage("warning", "请上传图片");
+                    return;
+                }
                 var url = `${this.$config.efoms_HOST}/signsWorkordersRecord/fackbackWorkorders`;
                 url = url + '?signsWorkordersId=' + this.workordersInfo.signsWorkordersId +
                     '&failureTypeCode=' + this.failureTypeCode +
@@ -161,8 +165,8 @@
             close() {
                 this.isShow = false;
             },
-            showFeedback() {
-                if (!this.$parent.stopOpertion()) return;
+            async showFeedback() {
+                if (!(await this.$parent.stopOpertion())) return;
                 this.isShow = true;
             },
             delImg(index, arrNamePre) {
@@ -190,16 +194,21 @@
                     });
             },
             upload(fileId, type, arrNamePre) {
-                var flag = false;
+                var fileList = document.getElementById(fileId).files;
+                for (let i = 0; i < fileList.length; i++) {
+                    setTimeout(() => {
+                        this.uploadLoop(fileList[i], type, arrNamePre);
+                        if (i == fileList.length - 1) document.getElementById(fileId).value = '';
+                    }, i * 300);
+                }
+            },
+            uploadLoop(file, type, arrNamePre) {
                 var header = {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Accept": "application/json;charset=UTF-8",
                     token: this.token
                 };
-                var formData = new FormData();
-                var file = document.getElementById(fileId).files[0];
-                formData.append("file", file);
-
+                var flag = false;
                 switch (type) {
                     case "img":
                         if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(file.name)) {
@@ -216,6 +225,8 @@
                 }
                 if (!flag) return;
 
+                var formData = new FormData();
+                formData.append("file", file);
                 this.$api.post(`${this.$config.efoms_HOST}/file/uploadFile`, formData, header).then(res => {
                         if (res.appCode == 0) {
                             switch (type) {

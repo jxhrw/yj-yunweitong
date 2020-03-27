@@ -140,6 +140,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
                 from: path.resolve(__dirname, '../static/js/'),
                 to: config.dev.assetsSubDirectory + '/js',
                 ignore: ['.*']
+            },
+            {
+                from: path.resolve(__dirname, '../static/UEditor/'),
+                to: config.dev.assetsSubDirectory + '/UEditor',
+                ignore: ['.*']
             }
         ])
     ].concat(utils.htmlPlugin())

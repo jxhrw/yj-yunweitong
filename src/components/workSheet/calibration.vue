@@ -146,7 +146,7 @@
                 sessionStorage.setItem('relaodPage', '1'); // 返回需要刷新当前页数据
                 this.$router.push({
                     path: "/detCab",
-                    query: { id: item.deviceId }
+                    query: { id: item.deviceId, type: item.deviceTypeCode }
                 });
             },
             // 字典类型接口
@@ -167,6 +167,9 @@
                 this.detailInfo = {};
                 this.$refs.layout.conditionVisible = false;
                 this.token = Common.getQueryString("token");
+                this.typeList = [{ dicCode: '0', dicName: '未处理' }, { dicCode: '1', dicName: '已处理' }];
+                this.typeCode = this.typeList[0].dicCode;
+                this.typeName = this.typeList[0].dicName;
 
                 this.searchTableInfo();
             }
@@ -179,11 +182,11 @@
             }).then(res => {
                 this.systemList = res.resultList || [];
             });
-            this.typeList = [{ dicCode: '0', dicName: '未处理' }, { dicCode: '1', dicName: '已处理' }];
-            this.$nextTick(() => {
-                this.typeCode = this.typeList[0].dicCode;
-                this.typeName = this.typeList[0].dicName;
-            });
+            // this.typeList = [{ dicCode: '0', dicName: '未处理' }, { dicCode: '1', dicName: '已处理' }];
+            // this.$nextTick(() => {
+            //     this.typeCode = this.typeList[0].dicCode;
+            //     this.typeName = this.typeList[0].dicName;
+            // });
         },
         activated() {
             if (!this.$route.meta.isUseCache) {

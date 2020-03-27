@@ -10,7 +10,7 @@
                 <div class="complete-content">
                     <el-row class="content-row-select">
                         <el-col :span="3" v-for="(item,i) in evalItemList" :key="item.evalItemId">
-                            <label style="width: 80px;">{{item.evalItemName}}</label>
+                            <label>{{item.evalItemName}}</label>
                             <ul class="ul">
                                 <li @click="setEvalGrades(i,index)" v-for="index in 5" :key="index" :class="{'active':index<=evalGradeList[i].evalGrades}"></li>
                             </ul>
@@ -62,6 +62,7 @@
                     this.evalItemList.forEach(e => {
                         this.evalGradeList.push({
                             evalItemId: e.evalItemId,
+                            evalItemName: e.evalItemName,
                             evalGrades: 0,
                             evalExplain: e.evalItemExplain
                         });

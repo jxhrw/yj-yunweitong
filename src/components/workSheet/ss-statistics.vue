@@ -7,7 +7,7 @@
                     <mSelectMult :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
-                    <label>所属部门</label>
+                    <label style="white-space: nowrap;">现管理单位</label>
                     <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
@@ -45,7 +45,7 @@
             <template slot="table">
                 <el-table :highlight-current-row="false" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
-                    <el-table-column prop="REP_DEPT_NAME" label="所属部门" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="REP_DEPT_NAME" label="现管理单位" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="GDZC" label="工单总数" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="YWC" label="已完成" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="WWC" label="未完成" show-overflow-tooltip></el-table-column>

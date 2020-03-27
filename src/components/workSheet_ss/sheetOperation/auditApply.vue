@@ -56,6 +56,14 @@
         methods: {
             // 审核接口
             auditMRepairs(isPass) {
+                if (isPass == 0 && this.operExplain == '') {
+                    Common.ejMessage("warning", "拒绝请填写审核意见");
+                    return;
+                }
+                if ((isPass == '01' || isPass == '02') && this.operExplain == '') {
+                    Common.ejMessage("warning", "驳回请填写审核意见");
+                    return;
+                }
                 if (this.isAjaxing) {
                     alert('数据请求中，请稍等！');
                     return;

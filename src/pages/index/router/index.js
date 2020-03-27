@@ -14,10 +14,11 @@ const data = resolve => require(['components/workSheet/ss-data'], resolve);
 const statistics = resolve => require(['components/workSheet/ss-statistics'], resolve);
 const workload = resolve => require(['components/workSheet/ss-workload'], resolve);
 const app = resolve => require(['components/workSheet/app'], resolve);
+const knowledge = resolve => require(['components/workSheet/knowledge'], resolve);
+const detKnow = resolve => require(['components/workSheet/det-know'], resolve);
 
 // 设施
 const sheetss = resolve => require(['components/workSheet_ss/sheet_ss'], resolve);
-const repairss = resolve => require(['components/workSheet_ss/repair_ss'], resolve);
 const detrepss = resolve => require(['components/workSheet_ss/det-repair_ss'], resolve);
 const detsheetss = resolve => require(['components/workSheet_ss/det-sheet_ss'], resolve);
 
@@ -35,14 +36,6 @@ export default new Router({
         path: '/detsheetss',
         name: 'detsheetss',
         component: detsheetss
-    }, {
-        path: '/repairss',
-        name: 'repairss',
-        component: repairss,
-        meta: {
-            isUseCache: false,
-            keepAlive: true
-        }
     }, {
         path: '/sheetss',
         name: 'sheetss',
@@ -79,6 +72,18 @@ export default new Router({
         path: '/calibration',
         name: 'calibration',
         component: calibration,
+        meta: {
+            isUseCache: false,
+            keepAlive: true
+        }
+    }, {
+        path: '/detKnow',
+        name: 'detKnow',
+        component: detKnow,
+    }, {
+        path: '/knowledge',
+        name: 'knowledge',
+        component: knowledge,
         meta: {
             isUseCache: false,
             keepAlive: true

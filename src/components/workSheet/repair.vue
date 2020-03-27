@@ -28,13 +28,13 @@
                     <label>申报人员</label>
                     <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col> -->
-                <!-- <el-col :span="7">
-                    <label>申报编号</label>
+                <el-col :span="7">
+                    <label>工单编号</label>
                     <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
-                </el-col> -->
+                </el-col>
                 <el-col :span="7">
                     <label>申报部门</label>
-                    <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
+                    <mSelectMult class="spc-height" :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>申报来源</label>
@@ -52,6 +52,10 @@
                     <label>维修类型</label>
                     <mInput :list="reptypeList" :code.sync="reptypeCode" :name.sync="reptypeName"></mInput>
                 </el-col> -->
+                <el-col :span="7">
+                    <label>维护单位</label>
+                    <mInput :list="oppmDeptList" :code.sync="oppmDeptId" showAttr="opsDeptName" getAttr="opsDeptId" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
             </template>
 
             <template slot="tableBtn">
@@ -69,11 +73,11 @@
             <template slot="table">
                 <el-table :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
-                    <!-- <el-table-column prop="repairsId" label="申报编号" show-overflow-tooltip>
-            <template slot-scope="scope">
-              {{scope.row.workordersId||scope.row.repairsId}}
-            </template>
-          </el-table-column> -->
+                    <el-table-column prop="repairsId" label="申报编号" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{scope.row.workordersId||scope.row.repairsId}}
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
@@ -81,6 +85,7 @@
                     <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
                     <!-- <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column> -->
                     <el-table-column prop="repStatusName" label="当前状态" show-overflow-tooltip>
@@ -178,6 +183,8 @@
                 stateCode: [],
                 stateName: [],
                 stateList: [],
+                oppmDeptId: '',
+                oppmDeptList: [],
                 isTableLoading: false,
                 tableData: [],
                 totalCount: 10,
@@ -203,14 +210,15 @@
                     pageSize: pageSize,
                     currentPage: 1,
                     key: this.key,
-                    startTime: this.times ? this.times[0] : "",
-                    endTime: this.times ? this.times[1] : "",
+                    startTime: this.times ? `${this.times[0]} 00:00:00` : "",
+                    endTime: this.times ? `${this.times[1]} 23:59:59` : "",
                     repStatusCode: this.stateCode.join(','),
                     repairsId: this.declareId,
                     repDeptIds: this.departCode.join(','),
                     repSourceCode: this.sourceCode.join(','),
                     devAreaCode: this.regionCode.join(','),
                     devTypeCode: this.systemCode.join(','),
+                    oppmDeptId: this.oppmDeptId,
                 };
                 this.searchPageInfo();
             },
@@ -368,9 +376,9 @@
         },
         mounted() {
             this.token = Common.getQueryString("token");
-            //申报部门
+            //申报部门(交警部门+维护单位)
             let a1 = this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {});
-            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {});
+            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptInfoV2.htm`, {});
             Promise.all([a1, a2]).then(res => {
                 let arr0 = res[0].resultList || [];
                 let arr1 = res[1].resultList || [];
@@ -379,6 +387,7 @@
                     item.deptName = item.opsDeptName;
                 });
                 this.departList = [...arr0, ...arr1];
+                this.oppmDeptList = arr1;
             });
             // this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}).then(res => {
             //     this.departList = res.resultList || [];

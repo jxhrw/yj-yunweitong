@@ -1,18 +1,22 @@
 .blueBodyHd .ej-header {
-    background: linear-gradient(to right, #03294a, #020d2f) !important;
+    /* background: linear-gradient(to right, #03294a, #020d2f) !important; */
+    background: #020d2f !important;
 }
 
 .blueBodyHd .scrollview {
-    background-color: #f5f5f7 !important;
+    /* background-color: #f5f5f7 !important; */
+    background-color: #ffffff !important;
     border-right: 1px solid #bdc9d4;
 }
 
 .blueBodyHd .el-menu-vertical-demo {
-    background-color: #f5f5f7 !important;
+    /* background-color: #f5f5f7 !important; */
+    background-color: #ffffff !important;
 }
 
 .blueBodyHd .el-menu-vertical-demo .el-submenu__title {
-    background-color: #f5f5f7 !important;
+    /* background-color: #f5f5f7 !important; */
+    background-color: #ffffff !important;
 }
 
 .blueBodyHd .el-menu-vertical-demo .el-submenu.is-active .el-submenu__title,
@@ -47,7 +51,8 @@
 }
 
 .blueBodyHd .el-menu--vertical .el-menu--popup {
-    background: #f5f5f7 !important;
+    /* background: #f5f5f7 !important; */
+    background: #ffffff !important;
 }
 
 /* 

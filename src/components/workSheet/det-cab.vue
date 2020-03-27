@@ -148,7 +148,7 @@
                                     <mInput :list="attributeList" :code.sync="attributeCode" :name.sync="attributeName" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
                                 <el-col :span="10">
-                                    <label>所属项目</label>
+                                    <label>管理标项</label>
                                     <mInput :list="underList" :code.sync="underCode" :name.sync="underName" :disabled="isOnlyRead" :clearable="true"></mInput>
                                 </el-col>
                                 <el-col :span="10">
@@ -336,7 +336,7 @@
                 this.manDeptList = res.resultList || [];
                 this.conUnitList = res.resultList || [];
             });
-            // 所属项目
+            // 管理标项
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "DEVICEPROJECT" }).then(res => {
                 this.underList = res.resultList || [];
             });
@@ -398,6 +398,7 @@
                     this.coordinate.y = this.lnglatShow.split(',')[1];
                 }
                 let obj = {
+                    deviceCheckId: this.pointInfo.deviceCheckId,
                     deviceId: this.devCode,
                     devName: this.devName, //设备名称；
                     manageId: this.onlyId,
@@ -549,7 +550,7 @@
                 window.history.back();
             },
             getPointInfo() {
-                this.$api.get(`${this.$config.efoms_HOST}/deviceConfirm/pageDeviceConfirm`, { pageSize: 10, currentPage: 1, deviceId: this.$route.query.id }, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/deviceConfirm/pageDeviceConfirm`, { pageSize: 10, currentPage: 1, deviceId: this.$route.query.id, deviceTypeCode: this.$route.query.type }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
                             this.pointInfo = res.resultList.result[0] || {};
@@ -570,7 +571,12 @@
             },
             // 自动校准
             automatic() {
-                this.$api.get(`${this.$config.efoms_HOST}/deviceDetail/selectDeviceDetailInfoById`, { manageId: this.pointInfo.deviceId }, { token: this.token })
+                // console.log(this.pointInfo)
+                if (!this.pointInfo.deviceId) {
+                    console.log('不自动校准');
+                    return;
+                }
+                this.$api.get(`${this.$config.efoms_HOST}/deviceDetail/selectDeviceDetailInfoById`, { manageId: this.pointInfo.deviceId, devTypeCode: this.pointInfo.deviceTypeCode }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
                             if (res.resultList) {
@@ -622,8 +628,8 @@
 
                 /deep/ .el-input__inner {
                     border-radius: 0;
-                    background: #F9FAFC;
-                    border: 1px solid #E1E7ED;
+                    background: #f9fafc;
+                    border: 1px solid #e1e7ed;
                 }
             }
         }

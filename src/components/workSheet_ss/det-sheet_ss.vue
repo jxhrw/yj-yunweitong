@@ -17,7 +17,6 @@
                     </ul>
                 </div>
 
-
                 <div>
                     <template v-if="$route.query.isread=='edit'">
                         <!-- 转单，材料： ORDEROPERTYPE23 -->
@@ -43,7 +42,7 @@
                         </div>
                         <!-- 可撤销： FACILITYOPERTYPE06，REPOPERTYPE02-->
                         <!-- 或者 超期工单并且状态为非 已撤销状态ORDERSSTATUS08 已完结ORDERSSTATUS07-->
-                        <div v-if="(operatCode.indexOf('FACILITYOPERTYPE06')>-1||(prePage=='超期工单'&&(workordersStatusCode!='ORDERSSTATUS08'||workordersStatusCode!='ORDERSSTATUS07')))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
+                        <div v-if="(operatCode.indexOf('FACILITYOPERTYPE06')>-1||(prePage=='超期工单'&&(workordersStatusCode!='ORDERSSTATUS08'&&workordersStatusCode!='ORDERSSTATUS07')))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
                             <p>撤销</p>
                         </div>
                     </template>
@@ -155,6 +154,18 @@
                                         <el-col :span="9">
                                             <label>维修人员</label>
                                             <span>{{appointInfoLast.workordersPersonRltList|opPersonNameShow}}</span>
+                                        </el-col>
+                                        <el-col :span="9" v-show="workordersInfo. countdownTime">
+                                            <label>维修倒计时</label>
+                                            <span>{{workordersInfo. countdownTime}}</span>
+                                        </el-col>
+                                        <el-col :span="9" v-show="workordersInfo.overTime">
+                                            <label>超时时间</label>
+                                            <span>{{workordersInfo.overTime}}</span>
+                                        </el-col>
+                                        <el-col :span="9" v-show="workordersInfo.consumingTime">
+                                            <label>维修耗时</label>
+                                            <span>{{workordersInfo.consumingTime}}</span>
                                         </el-col>
                                         <el-col :span="9">
                                             <label>情况描述</label>
@@ -322,10 +333,12 @@
                                         <!-- 延期申请 -->
                                         <template v-else-if="item.operTypeCode=='FACILITYOPERTYPE12'">
                                             <div class="content">
+                                                <!-- <label for="">申请期限</label>
+                                                    <span>{{item.deadlineDate}}</span> -->
+                                                <label for="">申请天数</label>
+                                                <span style="width:349px;">{{item.score}}</span>
                                                 <label for="">延期原因</label>
-                                                <span style="width: 349px;">{{item.operExplain}}</span>
-                                                <label for="">申请期限</label>
-                                                <span style="width: 567px;">{{item.deadlineDate}}</span>
+                                                <span style="width: 567px;">{{item.operExplain}}</span>
                                             </div>
                                         </template>
 
@@ -334,10 +347,10 @@
                                             <div class="content">
                                                 <label for="">审核结果</label>
                                                 <span>{{item.operResult}}</span>
+                                                <label for="">期限时间</label>
+                                                <span>{{item.deadlineDate}}</span>
                                                 <label for="">审核意见</label>
-                                                <span>{{item.operExplain}}</span>
-                                                <label for="">申请期限</label>
-                                                <span style="width: 567px;">{{item.deadlineDate}}</span>
+                                                <span style="width: 567px;">{{item.operExplain}}</span>
                                             </div>
                                         </template>
 
@@ -409,10 +422,12 @@
                                             <!-- 延期申请 -->
                                             <template v-else-if="item.operTypeCode=='FACILITYOPERTYPE12'">
                                                 <div class="content">
+                                                    <!-- <label for="">申请期限</label>
+                                                    <span>{{item.deadlineDate}}</span> -->
+                                                    <label for="">申请天数</label>
+                                                    <span style="width:349px;">{{item.score}}</span>
                                                     <label for="">延期原因</label>
-                                                    <span style="width: 349px;">{{item.operExplain}}</span>
-                                                    <label for="">申请期限</label>
-                                                    <span style="width: 567px;">{{item.deadlineDate}}</span>
+                                                    <span style="width: 567px;">{{item.operExplain}}</span>
                                                 </div>
                                             </template>
 
@@ -421,10 +436,10 @@
                                                 <div class="content">
                                                     <label for="">审核结果</label>
                                                     <span>{{item.operResult}}</span>
+                                                    <label for="">期限时间</label>
+                                                    <span>{{item.deadlineDate}}</span>
                                                     <label for="">审核意见</label>
-                                                    <span>{{item.operExplain}}</span>
-                                                    <label for="">申请期限</label>
-                                                    <span style="width: 567px;">{{item.deadlineDate}}</span>
+                                                    <span style="width: 567px;">{{item.operExplain}}</span>
                                                 </div>
                                             </template>
 
@@ -539,11 +554,11 @@
                                         <template v-else>
                                             <div class="content">
                                                 <template v-for="(res,rdx) in item.evalGradeList">
-                                                    <label for="" :key="'lb'+rdx">{{res.evalItemName}}</label>
+                                                    <label for="" :key="'lb'+rdx">{{res.evalItemName||res.evalExplain}}</label>
                                                     <span :key="'sp'+rdx">{{res.evalGrades}}星</span>
                                                 </template>
                                                 <label for="">意见</label>
-                                                <span :title="item.operExplain">{{item.operExplain}}</span>
+                                                <span :title="item.operExplain" :style="(!item.evalGradeList)?'width:996px;':''">{{item.operExplain}}</span>
                                             </div>
                                         </template>
                                     </li>
@@ -558,7 +573,9 @@
                                         </div>
                                         <div class="content">
                                             <label for="">撤销原因</label>
-                                            <span style="width: 996px;">{{item.operExplain}}</span>
+                                            <span style="width: 349px;">{{item.operReasonName}}</span>
+                                            <label for="">备注</label>
+                                            <span style="width: 567px;">{{item.operExplain}}</span>
                                         </div>
                                     </li>
                                 </ul>
@@ -589,7 +606,7 @@
                 <!-- 确认操作 "ORDEROPERTYPE11", "确认通过"；"ORDEROPERTYPE12", "确认不通过"-->
                 <confirm v-if="(prePage=='工单确认')&&((operatCode.indexOf('ORDEROPERTYPE11')>-1||operatCode.indexOf('ORDEROPERTYPE12')>-1))" :data="workordersInfo" @callback="dataDetail"></confirm>
                 <!-- 延期审核操作 "FACILITYOPERTYPE13", "延期审核", isDefer -->
-                <delay v-if="((prePage=='延期审核')&&((operatCode.indexOf('FACILITYOPERTYPE13')>-1)||(workordersInfo.isDefer)))" :data="workordersInfo" @callback="dataDetail"></delay>
+                <delay v-if="((prePage=='延期审核')&&((operatCode.indexOf('FACILITYOPERTYPE13')>-1)||(workordersInfo.isDefer&&$route.query.isread=='edit')))" :data="workordersInfo" @callback="dataDetail"></delay>
                 <!-- 评价操作 "ORDEROPERTYPE10", "评价" -->
                 <evaluate v-if="(prePage=='工单评价')&&(operatCode.indexOf('ORDEROPERTYPE10')>-1)" :data="workordersInfo" @callback="dataDetail"></evaluate>
                 <!-- 下发操作 "FACILITYOPERTYPE08", "下发" -->
@@ -601,9 +618,10 @@
             <el-dialog title="延期申请" :visible.sync="dialogDelayVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                 <div class="dialog-main">
                     <div class="revoke-reason">
-                        <label class="dialog-label"><span>*</span>申请时间</label>
-                        <el-date-picker v-model="delayTime" type="datetime" size='mini' value-format="yyyy-MM-dd hh:mm:ss" placeholder="选择日期" style="width: 290px;">
-                        </el-date-picker>
+                        <label class="dialog-label"><span>*</span>延期天数</label>
+                        <!-- <el-date-picker v-model="delayTime" type="datetime" size='mini' value-format="yyyy-MM-dd hh:mm:ss" placeholder="选择日期" style="width: 290px;">
+                        </el-date-picker> -->
+                        <el-input placeholder="请输入" v-model="delayTime" class="dialog-input" style="width:290px;"></el-input>
                     </div>
                     <div>
                         <label class="dialog-label"><span>*</span>延期原因</label>
@@ -630,7 +648,7 @@
             <el-dialog title="拒绝申请" :visible.sync="dialogRefuseVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                 <div class="dialog-main">
                     <div class="revoke-reason">
-                        <label class="dialog-label">备注</label>
+                        <label class="dialog-label"><span style="left:15px;">*</span>备注</label>
                         <el-input rows="6" type="textarea" placeholder="请输入" v-model="operRefuseExplain" class="dialog-textarea" style="width:290px;">
                         </el-input>
                     </div>
@@ -805,7 +823,7 @@
             materialShow(val) {
                 let arr = [];
                 val.map(res => {
-                    arr.push(`${res.materialName||''}${res.materialNum||''}${res.materialUnit||''}`);
+                    arr.push(`${res.materialName || ''}${res.materialNum || ''}${res.materialUnit || ''}`);
                 });
                 return arr.join(",");
             },
@@ -881,7 +899,11 @@
                     return;
                 }
                 if (this.delayTime == '') {
-                    Common.ejMessage("warning", "申请完成时间必填");
+                    Common.ejMessage("warning", "申请天数必填");
+                    return;
+                }
+                if (!(/^\d+(\.\d{1})?$/.test(this.delayTime))) {
+                    Common.ejMessage("warning", "申请天数最多一位小数");
                     return;
                 }
                 if (this.delayExplain == '') {
@@ -892,7 +914,7 @@
                 this.isAjaxing = true;
                 this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/postponeWorkorders`, {
                         signsWorkordersId: this.workordersInfo.signsWorkordersId,
-                        deadlineDate: this.delayTime,
+                        dayNum: this.delayTime,
                         operExplain: this.delayExplain
                     }, { token: this.token })
                     .then(res => {
@@ -946,6 +968,7 @@
             },
             // 撤销
             cancelWorkorders() {
+                let cancelReasonName = '';
                 if (this.isAjaxing) {
                     alert('数据请求中，请稍等！');
                     return;
@@ -953,10 +976,13 @@
                 if (this.cancelReasonCode == "") {
                     return Common.ejMessage("warning", "请选择撤销原因");
                 }
-                let cancelReasonName = '';
-                this.cancelReasonList.map(item => {
-                    if (item.dicCode == this.cancelReasonCode) cancelReasonName = item.dicName;
-                });
+                if (this.cancelReasonCode == "") {
+                    return Common.ejMessage("warning", "请选择撤销原因");
+                } else {
+                    this.cancelReasonList.map(res => {
+                        if (res.dicCode == this.cancelReasonCode) cancelReasonName = res.dicName;
+                    });
+                }
 
                 this.isAjaxing = true;
                 this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/cancelWorkorders`, {
@@ -982,6 +1008,10 @@
             },
             // 拒绝
             handleWorkorders() {
+                if (this.operRefuseExplain == '') {
+                    Common.ejMessage("warning", "请填写备注");
+                    return;
+                }
                 if (this.isAjaxing) {
                     alert('数据请求中，请稍等！');
                     return;
@@ -1069,19 +1099,19 @@
                 });
                 this.dialogRevokeVisible = true;
             },
-            showRefuse() {
-                if (!this.stopOpertion()) return;
+            async showRefuse() {
+                if (!(await this.stopOpertion())) return;
                 this.dialogRefuseVisible = true;
             },
             showUrge() {
                 this.dialogUrgeVisible = true;
             },
-            showDelay() {
-                if (!this.stopOpertion()) return;
+            async showDelay() {
+                if (!(await this.stopOpertion())) return;
                 this.dialogDelayVisible = true;
             },
-            showMaterial() {
-                if (!this.stopOpertion()) return;
+            async showMaterial() {
+                if (!(await this.stopOpertion())) return;
                 this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { "parentCode": "DEVMATERTYPE" }).then(res => {
                     if (res.appCode == 0) {
                         this.materialDic = res.resultList;
@@ -1097,23 +1127,47 @@
                 });
                 return arr;
             },
-            turnWorks() {
-                if (!this.stopOpertion()) return;
+            async turnWorks() {
+                if (!(await this.stopOpertion())) return;
                 this.$router.push({
                     path: '/detrep',
                     query: { transferId: this.workordersInfo.workordersId }
                 })
             },
             stopOpertion() {
-                if (this.prePage == '维修处置' && ((this.operatCode.indexOf('ORDEROPERTYPE06') > -1) || (this.workordersInfo.isDefer))) {
-                    Common.ejMessage("warning", "存在申请延期未审核，不能执行该操作");
-                    return false;
-                } else if (this.prePage == '工单指派' && ((this.workordersInfo.isDefer))) {
-                    Common.ejMessage("warning", "存在申请延期未审核，不能执行该操作");
-                    return false;
-                } else {
-                    return true;
-                }
+                // if (this.prePage == '维修处置' && ((this.operatCode.indexOf('ORDEROPERTYPE06') > -1) || (this.workordersInfo.isDefer))) {
+                //     Common.ejMessage("warning", "存在申请延期未审核，不能执行该操作");
+                //     return false;
+                // } else if (this.prePage == '工单指派' && ((this.workordersInfo.isDefer))) {
+                //     Common.ejMessage("warning", "存在申请延期未审核，不能执行该操作");
+                //     return false;
+                // } else {
+                //     return true;
+                // }
+
+                return new Promise((resolve, reject) => {
+                    if (this.prePage == '维修处置' || this.prePage == '工单指派') {
+                        this.$api.get(`${this.$config.efoms_HOST}/SignsWorkordersInfo/getSignsWorkordersInfo`, { workOtherId: this.$route.query.id }, { token: this.token })
+                            .then(res => {
+                                if (res.appCode == 0) {
+                                    let obj = res.resultList || {};
+                                    if (obj.isDefer) {
+                                        Common.ejMessage("warning", "存在申请延期未审核，不能执行该操作");
+                                    }
+                                    resolve(!obj.isDefer);
+                                } else {
+                                    Common.printErrorLog(res);
+                                    resolve(false);
+                                }
+                            })
+                            .catch(err => {
+                                Common.printErrorLog(err);
+                                resolve(false);
+                            });
+                    } else {
+                        resolve(false);
+                    }
+                });
             },
             goBack() {
                 window.history.back();
@@ -1368,22 +1422,22 @@
 
                     li {
                         cursor: pointer;
-                        border: 1px solid #C0C4CC;
+                        border: 1px solid #c0c4cc;
                         padding: 1px 3px;
                         border-radius: 3px;
-                        color: #C0C4CC;
+                        color: #c0c4cc;
                         margin-right: 10px;
                         position: relative;
                         background: #fff;
                         z-index: 2;
 
                         &::before {
-                            content: '';
+                            content: "";
                             display: block;
                             position: absolute;
                             width: 10px;
                             height: 1px;
-                            background: #C0C4CC;
+                            background: #c0c4cc;
                             z-index: 1;
                             top: 50%;
                             right: -11px;
@@ -1641,15 +1695,15 @@
                                 height: 20px;
 
                                 &.file-doc {
-                                    background: url('../../assets/images/file-word.png') no-repeat center/24px;
+                                    background: url("../../assets/images/file-word.png") no-repeat center/24px;
                                 }
 
                                 &.file-xls {
-                                    background: url('../../assets/images/file-execl.png') no-repeat center/24px;
+                                    background: url("../../assets/images/file-execl.png") no-repeat center/24px;
                                 }
 
                                 &.file-other {
-                                    background: url('../../assets/images/file-file.png') no-repeat center/24px;
+                                    background: url("../../assets/images/file-file.png") no-repeat center/24px;
                                 }
                             }
                         }

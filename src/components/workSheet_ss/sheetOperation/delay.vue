@@ -10,9 +10,11 @@
                 <div class="complete-content">
                     <el-row class="content-row-select">
                         <el-col :span="20">
-                            <label style="width: 80px;">批准完成时间</label>
+                            <!-- <label style="width: 80px;">批准完成时间</label>
                             <el-date-picker style="margin-left: 0px;width: 400px;" v-model="deadlineDate" type="datetime" size='mini' value-format="yyyy-MM-dd hh:mm:ss" placeholder="选择日期">
-                            </el-date-picker>
+                            </el-date-picker> -->
+                            <label style="width: 80px;">延期天数</label>
+                            <el-input placeholder="请输入" v-model="dayNum" class="dialog-input" style="width:400px;height:28px;" size='mini' clearable></el-input>
                         </el-col>
                     </el-row>
                     <el-row class="content-row-select">
@@ -50,6 +52,7 @@
                 isShow: false,
                 workordersInfo: {},
                 deadlineDate: "",
+                dayNum: "",
                 operExplain: "",
                 isAjaxing: false
             };
@@ -65,6 +68,8 @@
                     // FACILITYOPERTYPE12 延期申请;OPERRESULT05 未处理
                     if (res.operTypeCode == 'FACILITYOPERTYPE12' && res.operResultCode == 'OPERRESULT05') {
                         this.deadlineDate = res.deadlineDate;
+                        this.dayNum = res.score;
+                        this.maxNum = parseFloat(res.score);
                     }
                 });
             }
@@ -72,14 +77,27 @@
         methods: {
             // 确认接口
             checkWorkorders(isPass) {
+                if (isPass == 0 && this.operExplain == '') {
+                    Common.ejMessage("warning", "退回请填写审核意见");
+                    return;
+                }
                 if (this.isAjaxing) {
                     alert('数据请求中，请稍等！');
+                    return;
+                }
+                if (!(/^\d+(\.\d{1})?$/.test(this.dayNum))) {
+                    Common.ejMessage("warning", "延期天数最多一位小数");
+                    return;
+                }
+                if (!(parseFloat(this.dayNum) > 0 && parseFloat(this.dayNum) <= this.maxNum)) {
+                    Common.ejMessage("warning", "延期天数需小于等于申请天数且大于零");
                     return;
                 }
                 this.isAjaxing = true;
                 this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/checkWorkorders`, {
                         signsWorkordersId: this.workordersInfo.signsWorkordersId,
-                        deadlineDate: this.deadlineDate,
+                        // deadlineDate: this.deadlineDate,
+                        dayNum: this.dayNum,
                         isPass: isPass,
                         operExplain: this.operExplain
                     }, { token: this.token })

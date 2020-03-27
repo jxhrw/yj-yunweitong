@@ -7,7 +7,7 @@
                     <mSelectMult :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
-                    <label>所属部门</label>
+                    <label style="white-space: nowrap;">现管理单位</label>
                     <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
@@ -52,7 +52,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="DEV_NAME" label="点位" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="DEV_DEPT_NAME" label="所属部门" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="DEV_DEPT_NAME" label="现管理单位" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="DEV_TYPE_NAME" label="所属系统" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="WORKORDERS_STATUS_NAME" label="当前状态" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="REP_SOURCE_NAME" label="来源" show-overflow-tooltip></el-table-column>

@@ -8,7 +8,7 @@
                     <mInput :list="ssTypeList" :code.sync="ssTypeCode" :name.sync="ssTypeName" :clearable="false"></mInput>
                 </el-col>
                 <el-col :span="7">
-                    <label>所属部门</label>
+                    <label style="white-space: nowrap;">现管理单位</label>
                     <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">

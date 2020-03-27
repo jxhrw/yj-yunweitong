@@ -40,6 +40,12 @@
             width: 280px;
         }
 
+        .dialog-input {
+            /deep/ .el-input__inner {
+                height: 30px;
+            }
+        }
+
         .dialog-textarea {
             &.height100 {
                 /deep/ .el-textarea__inner {
@@ -193,7 +199,7 @@
                     display: inline-block;
                     overflow: hidden;
                     width: 48px;
-                    height: 28px;
+                    height: 26px;
                     box-sizing: border-box;
                     border: 1px solid #d8d9da;
                     position: relative;

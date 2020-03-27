@@ -34,17 +34,17 @@
             </template>
 
             <template slot="condSecond">
+                <el-col :span="7">
+                    <label>工单编号</label>
+                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
+                </el-col>
                 <el-col :span="7" v-if="title!='维修申报'">
                     <label>申报人员</label>
                     <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
-                <!-- <el-col :span="7">
-                    <label>申报编号</label>
-                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
-                </el-col> -->
                 <el-col :span="7">
                     <label>申报部门</label>
-                    <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
+                    <mSelectMult class="spc-height" :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>申报来源</label>
@@ -62,6 +62,10 @@
                     <label>维修类型</label>
                     <mInput :list="reptypeList" :code.sync="reptypeCode" :name.sync="reptypeName"></mInput>
                 </el-col> -->
+                <el-col :span="7">
+                    <label>维护单位</label>
+                    <mInput :list="oppmDeptList" :code.sync="oppmDeptId" showAttr="opsDeptName" getAttr="opsDeptId" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
             </template>
 
             <template slot="tableBtn">
@@ -84,11 +88,11 @@
             <template slot="table">
                 <el-table v-show="tableShowType==1" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
-                    <!-- <el-table-column prop="workordersId" label="申报编号" show-overflow-tooltip>
+                    <el-table-column prop="workordersId" label="工单编号" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersId||scope.row.repairsId}}
                         </template>
-                    </el-table-column> -->
+                    </el-table-column>
                     <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
@@ -96,6 +100,7 @@
                     <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column> -->
                     <!-- <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column> -->
                     <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
@@ -116,19 +121,19 @@
             <template slot="table">
                 <el-table v-show="tableShowType==2" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
-                    <!-- <el-table-column prop="workordersId" label="申报编号" show-overflow-tooltip>
+                    <el-table-column prop="workordersId" label="工单编号" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersId||scope.row.repairsId}}
                         </template>
-                    </el-table-column> -->
+                    </el-table-column>
                     <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="deadlineTime" label="原定完成时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="aaa" label="申请完成时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="aaa" label="延期理由" show-overflow-tooltip></el-table-column>
+                    <!-- <el-table-column prop="aaa" label="申请完成时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="aaa" label="延期理由" show-overflow-tooltip></el-table-column> -->
                     <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
                     <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
@@ -147,11 +152,11 @@
             <template slot="table">
                 <el-table v-show="tableShowType==3" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
-                    <!-- <el-table-column prop="workordersId" label="申报编号" show-overflow-tooltip>
+                    <el-table-column prop="workordersId" label="工单编号" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersId||scope.row.repairsId}}
                         </template>
-                    </el-table-column> -->
+                    </el-table-column>
                     <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
@@ -159,6 +164,7 @@
                     <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column> -->
                     <!-- <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column> -->
                     <el-table-column prop="deadlineTime" label="期限完成时间" show-overflow-tooltip min-width="120"></el-table-column>
@@ -180,11 +186,11 @@
             <template slot="table">
                 <el-table v-show="tableShowType==4" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
-                    <!-- <el-table-column prop="workordersId" label="申报编号" show-overflow-tooltip>
+                    <el-table-column prop="workordersId" label="工单编号" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersId||scope.row.repairsId}}
                         </template>
-                    </el-table-column> -->
+                    </el-table-column>
                     <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
@@ -274,10 +280,10 @@
                                             <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
                                             <mInput :list="materialDUnit" :code.sync="item.materialUnit" :name.sync="item.materialUnit" class="content-select mtl3"></mInput>
 
-                                            <div class="mtl5" v-if="item.fileList && item.fileList.length>0">
-                                                <template v-for="(res,ix) in item.fileList">
+                                            <div class="mtl5" v-if="item.fileInfoList && item.fileInfoList.length>0">
+                                                <template v-for="(res,ix) in item.fileInfoList">
                                                     <div class="ms-files" :key="ix">
-                                                        <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${token}`:res.fileURL" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${token}`:res.fileURL]" fit="fill"></el-image>
+                                                        <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${token}`:res.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileUrl}&token=${token}`:res.fileUrl]" fit="fill"></el-image>
                                                         <div v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-doc"></div>
                                                         <div v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-xls"></div>
                                                         <div v-else :title="res.fileName" class="icon-file file-other"></div>
@@ -413,6 +419,8 @@
                 typeCode: '',
                 typeName: '',
                 typeList: [],
+                oppmDeptId: '',
+                oppmDeptList: [],
 
                 isTableLoading: false,
                 tableData: [],
@@ -457,36 +465,39 @@
                 if (this.title == '维修申报' || this.title == '工单查询' || this.title == '停用查询') {
                     let obj = {
                         key: this.key,
-                        repStartDate: this.times ? this.times[0] : "",
-                        repEndDate: this.times ? this.times[1] : "",
+                        repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
+                        repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
                         workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode.join(","),
                         repPersonName: this.person,
-                        // workordersId: this.declareId,
+                        workordersId: this.declareId,
                         // devDeptId: this.departCode.join(","),
                         repDeptIds: this.departCode.join(","),
                         repSourceCode: this.sourceCode.join(","),
                         devAreaCode: this.regionCode.join(","),
                         devTypeCode: this.systemCode.join(","),
+                        oppmDeptId: this.oppmDeptId,
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 } else if (this.title == '转单审核' || this.title == '转单查询') {
                     let obj = {
                         type: this.typeCode,
                         keyWord: this.key,
-                        startTime: this.times ? this.times[0] : "",
-                        endTime: this.times ? this.times[1] : "",
+                        startTime: this.times ? `${this.times[0]} 00:00:00` : "",
+                        endTime: this.times ? `${this.times[1]} 23:59:59` : "",
                         applyPersonName: this.person,
                         applyDeptId: this.departCode.join(","),
                         repSourceCode: this.sourceCode.join(","),
                         deviceArea: this.regionCode.join(","),
                         deviceType: this.systemCode.join(","),
+                        applyId: this.declareId,
+                        oppmDeptId: this.oppmDeptId,
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 } else if (this.title == '点位校准') {
                     let obj = {
                         deviceId: this.key,
-                        startTime: this.times ? this.times[0] : "",
-                        endTime: this.times ? this.times[1] : "",
+                        startTime: this.times ? `${this.times[0]} 00:00:00` : "",
+                        endTime: this.times ? `${this.times[1]} 23:59:59` : "",
                         deviceTypeCode: this.systemCode.join(","),
                         dealResult: this.typeCode
                     };
@@ -495,8 +506,8 @@
                     let obj = {
                         type: this.typeCode,
                         keyWord: this.key,
-                        startTime: this.times ? this.times[0] : "",
-                        endTime: this.times ? this.times[1] : "",
+                        startTime: this.times ? `${this.times[0]} 00:00:00` : "",
+                        endTime: this.times ? `${this.times[1]} 23:59:59` : "",
                         applyPersonName: this.person,
                         applyDeptId: this.departCode.join(","),
                         repSourceCode: this.sourceCode.join(","),
@@ -504,8 +515,9 @@
                         deviceType: this.systemCode.join(","),
 
                         // devTypeCode: this.systemCode.join(","),
-                        // workorderId: this.declareId,
-                        workordersStatusCode: this.stateCode.join(",")
+                        workorderId: this.declareId,
+                        workordersStatusCode: this.stateCode.join(","),
+                        oppmDeptId: this.oppmDeptId,
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 }
@@ -698,6 +710,10 @@
             },
             // 材料申请
             submitMaterial(isPass) {
+                if (isPass == 0 && this.operMaterialExplain == '') {
+                    Common.ejMessage("warning", "不通过请填写备注");
+                    return;
+                }
                 if (this.isAjaxing) {
                     alert('数据请求中，请稍等！');
                     return;
@@ -773,7 +789,7 @@
                 this.$nextTick(() => {
                     setTimeout(() => {
                         this.materialList = abc; // dom加载完成后再赋值数据才能渲染成功
-                    })
+                    }, 300)
                 });
             },
             // 字典类型接口
@@ -791,7 +807,7 @@
                         secondDir: res.secondDir,
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
-                        fileURL: res.downloadPath,
+                        fileUrl: res.downloadPath,
                         fileMode: res.fileOldName
                             .slice(res.fileOldName.lastIndexOf(".") + 1)
                             .toLowerCase()
@@ -802,12 +818,12 @@
                 console.log(response);
                 if (response.appCode == '0') {
                     let res = response.resultList || {};
-                    this.materialList[this.materialListIndex].fileList = this.materialList[this.materialListIndex].fileList || [];
-                    this.materialList[this.materialListIndex].fileList.push({
+                    this.materialList[this.materialListIndex].fileInfoList = this.materialList[this.materialListIndex].fileInfoList || [];
+                    this.materialList[this.materialListIndex].fileInfoList.push({
                         secondDir: res.secondDir,
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
-                        fileURL: res.downloadPath,
+                        fileUrl: res.downloadPath,
                         fileMode: res.fileOldName
                             .slice(res.fileOldName.lastIndexOf(".") + 1)
                             .toLowerCase()
@@ -816,7 +832,7 @@
             },
             handleRemove(e, index, source, parentIndex) {
                 if (parseInt(parentIndex) == parentIndex) {
-                    this.materialList[parentIndex].fileList.splice(index, 1);
+                    this.materialList[parentIndex].fileInfoList.splice(index, 1);
                 } else {
                     if (source == 'old') {
                         this.materialOldFiles.splice(index, 1);
@@ -833,11 +849,8 @@
                     }, { "Content-Type": "application/x-www-form-urlencoded" })
                     .then(res => {
                         if (res.appCode == 0) {} else {
-                            Common.printErrorLog(res);
+                            // Common.printErrorLog(res);
                         }
-                    })
-                    .catch(err => {
-                        Common.printErrorLog(err);
                     });
             },
             handleDownload(e) {
@@ -849,7 +862,7 @@
                     materialName: '',
                     materialNum: '1',
                     materialUnit: '',
-                    fileList: []
+                    fileInfoList: []
                 });
             },
             removeMaterial(index) {
@@ -862,6 +875,7 @@
                 this.times = "";
                 this.person = "";
                 this.declareId = "";
+                this.oppmDeptId = "";
                 this.departCode = [];
                 this.departName = [];
                 this.sourceCode = [];
@@ -1048,7 +1062,7 @@
             this.token = Common.getQueryString("token");
             //申报部门(交警部门+维护单位)
             let a1 = this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {});
-            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {});
+            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptInfoV2.htm`, {});
             Promise.all([a1, a2]).then(res => {
                 let arr0 = res[0].resultList || [];
                 let arr1 = res[1].resultList || [];
@@ -1057,6 +1071,7 @@
                     item.deptName = item.opsDeptName;
                 });
                 this.departList = [...arr0, ...arr1];
+                this.oppmDeptList = arr1;
             });
             // this.getDicInfo(
             //     `${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}

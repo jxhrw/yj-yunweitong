@@ -102,7 +102,7 @@
         flex-flow: row nowrap;
         justify-content: space-between;
         background: #272C38;
-        min-height: 58px;
+        min-height: 50px;
         bottom: 0;
         left: 0;
         top: 0;
@@ -110,11 +110,12 @@
     }
 
     .ej-header h1 {
-        margin-top: 13px;
+        margin-top: 10px;
         margin-left: 15px;
         font-size: 20px;
         line-height: 30px;
         padding-left: 36px;
+        font-weight: bold;
         color: #FFFFFF;
         display: inline-block;
         background: url('../../assets/images/icon-platform.png') no-repeat center left;
@@ -123,14 +124,14 @@
     .ej-header .ej-date {
         font-size: 12px;
         line-height: 20px;
-        margin-top: 19px;
+        margin-top: 14px;
         margin-right: 30px;
         color: #FFFFFF;
     }
 
     .ej-header .ej-user {
         display: flex;
-        margin-top: 18px;
+        margin-top: 13px;
         margin-right: 20px;
         cursor: pointer;
     }
@@ -173,20 +174,20 @@
         min-width: 50px !important;
     }
 
-    .logout li{
+    .logout li {
         display: flex;
         align-items: center;
         cursor: pointer;
     }
 
-    .logout li i{
+    .logout li i {
         color: #262626;
         /* font-weight: bold; */
         font-size: 14px;
         margin-right: 4px;
     }
 
-    .logout li+li{
+    .logout li+li {
         margin-top: 10px;
     }
 

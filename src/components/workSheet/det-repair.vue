@@ -39,7 +39,7 @@
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
                                     <label>路口点位</label>
-                                    <mInput v-if="devTypeCode!='REPDEVTYPE17'" :list="devList" :code.sync="devCode" :name.sync="devName" showAttr="devName" getAttr="devId" @netSearch="getDevInfo" :isSearch="true" :isShowCode="true" :disabled="isOnlyRead"></mInput>
+                                    <aInput v-if="devTypeCode!='REPDEVTYPE17'" :list="devList" :code.sync="devCode" :name.sync="devName" showAttr="devName" getAttr="devId" @netSearch="getDevInfo" :isShowCode="true" :disabled="isOnlyRead"></aInput>
                                     <el-input v-else v-model="devName" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead"></el-input>
 
                                     <div class="Warning" v-show="isWarning" title="该点位已有工单，点击查看" @click="gotoDetail"><span></span></div>
@@ -50,7 +50,7 @@
                                 </el-col> -->
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
-                                    <label>所属部门</label>
+                                    <label style="white-space: nowrap;">现管理单位</label>
                                     <mInput :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" :disabled="devTypeCode!='REPDEVTYPE17'"></mInput>
                                 </el-col>
 
@@ -117,7 +117,7 @@
                                     <span>{{devInfo.oppmTypeName}}</span>
                                 </el-col>
                                 <el-col :span="9">
-                                    <label>所属项目</label>
+                                    <label>管理标项</label>
                                     <span>{{devInfo.projectName}}</span>
                                 </el-col>
                                 <el-col :span="9">
@@ -138,6 +138,7 @@
                         <div class="content" style="padding-bottom:20px;">
                             <el-row class="content-row-explain content-row-first">
                                 <el-col :span="24" class="content-row-img">
+                                    <i class="redStar" style="margin-top: 5px;">*</i>
                                     <label>上传照片</label>
                                     <template v-for="(item,index) in imgSceneUrl">
                                         <div class="img-preview" :key="index">
@@ -253,6 +254,7 @@
     // import BaseInfo from "components/rpProcess/eqpm/baseInfo";
     // import Depiction from "components/rpProcess/eqpm/depiction";
     import mInput from "components/common/selectDrop";
+    import aInput from "components/common/inputDrop";
     import DialogGDMap from "./business/dialog-gaodeMap";
 
     import Bus from "@/assets/js/bus.js";
@@ -261,6 +263,7 @@
     export default {
         components: {
             mInput,
+            aInput,
             DialogGDMap
         },
         data() {
@@ -319,6 +322,7 @@
             devTypeCode(val) {
                 this.devCode = '';
                 this.devName = '';
+                this.resetRepair('1');
                 if (val == '') {
                     this.devList = [];
                     this.gzList = [];
@@ -404,7 +408,7 @@
                 this.isCanChangeDevtype = false;
                 if (this.$route.query.transferId) {
                     // 转单只能选网络链路
-                    this.isCanChangeDevtype = true;
+                    // this.isCanChangeDevtype = true;
                     this.devTypeCode = 'REPDEVTYPE15';
                     this.devList.map(res => {
                         if (res.dicCode == this.devTypeCode) {
@@ -430,7 +434,7 @@
             // this.getDicInfo(`${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}).then(res => {
             //     this.areaList = res.resultList || [];
             // });
-            //所属部门
+            //现管理单位
             this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}).then(res => {
                 this.departList = res.resultList || [];
             });
@@ -448,7 +452,7 @@
                     return;
                 }
                 if (this.devTypeCode != 'REPDEVTYPE17') {
-                    if (this.devTypeCode == "" || this.tainCode == "" || this.devCode == "" || this.sourceCode == "") {
+                    if (this.devTypeCode == "" || this.tainCode == "" || this.devName == "" || this.sourceCode == "") {
                         Common.ejMessage("warning", "请选择设备基本信息");
                         return;
                     }
@@ -462,7 +466,11 @@
                     Common.ejMessage("warning", "该设备已经报修过了，请勿重复提交");
                     return;
                 }
-                if(this.gzList.length>0 && this.gzCode == ""){
+                if (this.imgSceneList.length < 1) {
+                    Common.ejMessage("warning", "请上传图片");
+                    return;
+                }
+                if (this.gzList.length > 0 && this.gzCode == "") {
                     Common.ejMessage("warning", "填写故障类型");
                     return;
                 }
@@ -496,7 +504,7 @@
                     failureTypeName: this.gzName,
                     fileInfoList: this.imgSceneList,
 
-                    optimeScheme: this.yhdesc,
+                    optimeScheme: this.$route.query.type === 'optimize' ? this.yhdesc : undefined,
                     transferId: this.$route.query.transferId // 转单：原先的工单编号
                 };
 
@@ -532,11 +540,11 @@
                         Common.printErrorLog(err);
                     });
             },
-            resetRepair() {
-                this.devTypeCode = '';
-                this.devTypeName = '';
-                this.tainCode = this.tainList[0].dicCode;
-                this.tainName = this.tainList[0].dicName;
+            resetRepair(type) {
+                // this.devTypeCode = '';
+                // this.devTypeName = '';
+                // this.tainCode = this.tainList[0].dicCode;
+                // this.tainName = this.tainList[0].dicName;
                 this.devCode = '';
                 this.devName = '';
                 this.areaCode = '';
@@ -554,6 +562,14 @@
                 this.imgSceneHide = [];
                 this.gzCode = '';
                 this.gzName = '';
+                if (type == '1') {
+                    // 维修类型不变
+                } else {
+                    this.devTypeCode = '';
+                    this.devTypeName = '';
+                    this.tainCode = this.tainList[0].dicCode;
+                    this.tainName = this.tainList[0].dicName;
+                }
             },
             auditMRepairs(isPass) {
                 this.$api.putByQs(`${this.$config.efoms_HOST}/repairs/auditRepairsInfo`, {
@@ -625,16 +641,21 @@
                     });
             },
             upload(fileId, type, arrNamePre) {
-                var flag = false;
+                var fileList = document.getElementById(fileId).files;
+                for (let i = 0; i < fileList.length; i++) {
+                    setTimeout(() => {
+                        this.uploadLoop(fileList[i], type, arrNamePre);
+                        if (i == fileList.length - 1) document.getElementById(fileId).value = '';
+                    }, i * 300);
+                }
+            },
+            uploadLoop(file, type, arrNamePre) {
                 var header = {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Accept": "application/json;charset=UTF-8",
                     token: this.token
                 };
-                var formData = new FormData();
-                var file = document.getElementById(fileId).files[0];
-                formData.append("file", file);
-
+                var flag = false;
                 switch (type) {
                     case "img":
                         if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(file.name)) {
@@ -651,6 +672,8 @@
                 }
                 if (!flag) return;
 
+                var formData = new FormData();
+                formData.append("file", file);
                 this.$api.post(`${this.$config.efoms_HOST}/file/uploadFile`, formData, header).then(res => {
                         if (res.appCode == 0) {
                             switch (type) {
@@ -708,7 +731,11 @@
                     this.title = '维修申报';
                 }
             },
-            getDevInfo(val) {
+            getDevInfo(val, func) {
+                if (!this.devTypeCode) {
+                    func([]);
+                    return;
+                }
                 //路口点位,在设备类别已有的情况下
                 this.getDataInfo(`${this.$config.efoms_HOST}/deviceDetail/selectDeviceDetailInfoPage`, {
                     pageSize: 50,
@@ -718,6 +745,7 @@
                     isUse: '1'
                 }).then(res => {
                     this.devList = res.resultList.result || [];
+                    func(this.devList);
                 });
             },
             getRepairInfo() {

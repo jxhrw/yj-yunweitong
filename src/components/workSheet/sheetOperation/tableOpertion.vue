@@ -8,8 +8,10 @@
         <div v-if="title=='工单下发'&&(scope.row.workordersStatusCode == 'ORDERSSTATUS01'||scope.row.workordersStatusCode == 'ORDERSSTATUS10')" class="tab-operation" @click="dataDetail(scope.row,'edit')">下发</div>
         <!-- 工单指派页面，并且状态为待指派ORDERSSTATUS11时出现,指派已拒绝ORDERSSTATUS13 -->
         <div v-if="title=='工单指派'&&(scope.row.workordersStatusCode == 'ORDERSSTATUS11'||scope.row.workordersStatusCode == 'ORDERSSTATUS13')" class="tab-operation" @click="dataDetail(scope.row,'edit')">指派</div>
-        <!-- 维修处置页面，并且状态为-时出现 -->
-        <div v-if="title=='维修处置'&&(scope.row.workordersStatusCode == 'ORDERSSTATUS02'||scope.row.workordersStatusCode == 'ORDERSSTATUS05')" class="tab-operation" @click="dataDetail(scope.row,'edit')">反馈</div>
+        <!-- 工单指派页面，并且状态为待反馈ORDERSSTATUS02，待处理ORDERSSTATUS05，已到达ORDERSSTATUS14-时出现 -->
+        <div v-if="title=='工单指派'&&(scope.row.workordersStatusCode == 'ORDERSSTATUS02'||scope.row.workordersStatusCode == 'ORDERSSTATUS05'||scope.row.workordersStatusCode == 'ORDERSSTATUS14')" class="tab-operation" @click="dataDetail(scope.row,'edit')">退回</div>
+        <!-- 维修处置页面，并且状态为待反馈ORDERSSTATUS02，待处理ORDERSSTATUS05，已到达ORDERSSTATUS14-时出现 -->
+        <div v-if="title=='维修处置'&&(scope.row.workordersStatusCode == 'ORDERSSTATUS02'||scope.row.workordersStatusCode == 'ORDERSSTATUS05'||scope.row.workordersStatusCode == 'ORDERSSTATUS14')" class="tab-operation" @click="dataDetail(scope.row,'edit')">反馈</div>
         <!-- 工单确认页面，并且状态为待确认时出现 -->
         <div v-if="title=='工单确认'&&(scope.row.workordersStatusCode == 'ORDERSSTATUS03'||scope.row.workordersStatusCode == 'ORDERSSTATUS04')" class="tab-operation" @click="dataDetail(scope.row,'edit')">确认</div>
         <!-- 工单评价页面，并且状态为待评价时出现 -->

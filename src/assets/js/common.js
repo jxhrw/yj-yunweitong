@@ -195,18 +195,21 @@ var Common = {
         console.log(JSON.stringify(err))
         let errorTp = '处理异常';
         if (err) {
-            if (err.dataBuffer) {
-                errorTp = err.dataBuffer;
-            } else if (err.message) {
+            // if (err.dataBuffer) {
+            //     errorTp = err.dataBuffer;
+            // } else 
+            if (err.message) {
                 errorTp = err.message;
+            } else if (err.resultList) {
+                errorTp = err.resultList;
             }
         }
         errorTp = errorTp || '';
 
-        if(err && err.response && err.response.status == 403 && process.env.NODE_ENV != 'development'){
+        if (err && err.response && err.response.status == 403 && process.env.NODE_ENV != 'development') {
             alert('登录失效，请重新登录！');
             location.reload();
-        } else{
+        } else {
             Vue.prototype.$message({
                 message: errorTp.length > 50 ? errorTp.substr(0, 50) : errorTp,
                 type: 'warning'

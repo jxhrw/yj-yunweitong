@@ -6,6 +6,9 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import Factory from '@/assets/js/factory.js';
 import store from '../../store';
+import highcharts from 'highcharts';
+import VueHighCharts from 'vue-highcharts';
+import highcharts3d from 'highcharts/highcharts-3d';
 var factory = new Factory();
 api.get('./config.json').then((res) => {
     factory.loadJS(`${res.serverPushUrl}`, () => {
@@ -27,3 +30,5 @@ Vue.prototype.$api = api;
 Vue.prototype.$factory = factory;
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
+Vue.use(VueHighCharts);
+highcharts3d(highcharts);

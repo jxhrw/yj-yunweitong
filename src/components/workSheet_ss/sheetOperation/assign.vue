@@ -82,6 +82,17 @@
                 } else {
                     this.getDicInfo(`${this.$config.ubms_HOST}/OpsPerson/getOpsPersonInfo.htm`, { opsDeptId: val }).then(res => {
                         this.personList = res.resultList || [];
+                        // 默认全选
+                        let arr1 = [],
+                            arr2 = [];
+                        this.personList.map(data => {
+                            arr1.push(data.opsPersonId);
+                            arr2.push(data.opsPersonName);
+                        });
+                        this.$nextTick(() => {
+                            this.personCode = arr1;
+                            this.personName = arr2;
+                        });
                     });
                 }
             }
@@ -156,8 +167,8 @@
             close() {
                 this.isShow = false;
             },
-            showAssign() {
-                if (!this.$parent.stopOpertion()) return;
+            async showAssign() {
+                if (!(await this.$parent.stopOpertion())) return;
                 this.isShow = true;
             }
         }

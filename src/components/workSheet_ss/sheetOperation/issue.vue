@@ -11,7 +11,7 @@
                     <el-row class="content-row-select">
                         <el-col :span="20">
                             <label style="width: 72px;"><span>*</span>期限完成时间</label>
-                            <el-date-picker style="margin-left: 0px;width: 400px;" v-model="deadlineDate" type="datetime" size='mini' value-format="yyyy-MM-dd hh:mm:ss" placeholder="选择日期">
+                            <el-date-picker style="margin-left: 0px;width: 400px;" v-model="deadlineDate" type="datetime" size='mini' value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期">
                             </el-date-picker>
                         </el-col>
                     </el-row>
@@ -75,7 +75,7 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                if (this.deadlineDate == '') {
+                if (this.deadlineDate == null || this.deadlineDate == '') {
                     Common.ejMessage("warning", "期限完成时间必填");
                     return;
                 }
@@ -109,7 +109,8 @@
             },
             // 获取默认完成时间
             getDeadlineTime() {
-                let time = new Date(this.workordersInfo.repDate).getTime() + 24 * 60 * 60 * 1000;
+                // let time = new Date(this.workordersInfo.repDate).getTime() + 24 * 60 * 60 * 1000;
+                let time = new Date().getTime() + 24 * 60 * 60 * 1000;
                 this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfList`, {
                         devTypeCode: this.workordersInfo.devTypeCode,
                         typeCode: this.workordersInfo.typeCode,
@@ -121,7 +122,8 @@
                             if (res.resultList && res.resultList.length > 0) {
                                 num = res.resultList[0].deadlineTime || 24;
                             }
-                            time = new Date(this.workordersInfo.repDate).getTime() + num * 60 * 60 * 1000;
+                            // time = new Date(this.workordersInfo.repDate).getTime() + num * 60 * 60 * 1000;
+                            time = new Date().getTime() + num * 60 * 60 * 1000;
                         } else {
                             Common.printErrorLog(res);
                         }

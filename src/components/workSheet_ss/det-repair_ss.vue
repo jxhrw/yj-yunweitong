@@ -34,39 +34,19 @@
                                     <label>所属中队</label>
                                     <mInput :list="squadronList" :code.sync="squadronCode" :name.sync="squadronName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead"></mInput>
                                 </el-col>
-                                <el-col :span="9">
-                                    <label>所属辖区</label>
-                                    <mInput :list="regionList" :code.sync="regionCode" :name.sync="regionName" showAttr="regionName" getAttr="regionId" :disabled="isOnlyRead"></mInput>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>数据来源</label>
-                                    <mInput :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName" :disabled="isOnlyRead"></mInput>
-                                </el-col>
 
                                 <!-- <el-col :span="9">
                                     <i class="redStar">*</i>
-                                    <label>路口点位</label>
-                                    <mInput v-if="battalionCode!='REPDEVTYPE17'" :list="facList" :code.sync="facCode" :name.sync="facName" showAttr="facName" getAttr="facId" @netSearch="getDevInfo" :isSearch="true" :isShowCode="true" :disabled="isOnlyRead"></mInput>
-                                    <el-input v-else v-model="facName" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead"></el-input>
-
-                                    <div class="Warning" v-show="isWarning" title="该点位已有工单，点击查看" @click="gotoDetail"><span></span></div>
+                                    <label>维修类型</label>
+                                    <mInput :list="tainList" :code.sync="tainCode" :name.sync="tainName" :disabled="isOnlyRead" :clearable="false"></mInput>
                                 </el-col> -->
                                 <el-col :span="9">
-                                    <!-- <i class="redStar">*</i> -->
-                                    <label>维护单位</label>
-                                    <mInput :list="opDeptList" :code.sync="opDeptCode" :name.sync="opDeptName" showAttr="opsDeptName" getAttr="opsDeptId"></mInput>
-                                </el-col>
-                                <el-col :span="9">
+                                    <i class="redStar">*</i>
                                     <label>详细地址</label>
                                     <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
                                         <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="handleIconClick" style="font-size:16px;">
                                         </i>
                                     </el-input>
-                                </el-col>
-                                <el-col :span="9">
-                                    <i class="redStar">*</i>
-                                    <label>维修类型</label>
-                                    <mInput :list="tainList" :code.sync="tainCode" :name.sync="tainName" :disabled="isOnlyRead" :clearable="false"></mInput>
                                 </el-col>
                                 <el-col :span="18" class="col-alone">
                                     <i class="redStar">*</i>
@@ -81,7 +61,7 @@
                                     <i class="redStar">*</i>
                                     <label>道路信息</label>
                                     <div class="button" @click="addRoadInfo('block')">添加路段</div>
-                                    <div class="button" @click="addRoadInfo('cross')">添加路口</div>
+                                    <!-- <div class="button" @click="addRoadInfo('cross')">添加路口</div> -->
                                     <!-- <div class="button" @click="addRoadInfo('fac')">添加设施</div> -->
                                     <ul>
                                         <template v-for="(item,index) in roadInfoList">
@@ -110,67 +90,6 @@
                             </el-row>
                         </div>
                     </div>
-                    <div class="base-info" v-show="false">
-                        <div class="title">
-                            <h3>点位信息</h3>
-                        </div>
-                        <div class="content">
-                            <el-row class="content-row-select lager-label">
-                                <el-col :span="9">
-                                    <label>点位名称</label>
-                                    <span>{{facInfo.facName}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>唯一识别码</label>
-                                    <span>{{facInfo.manageId}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>IP地址</label>
-                                    <span>{{facInfo.facIp}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>所属辖区</label>
-                                    <!-- <span>{{areaName}}</span> -->
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>维护单位</label>
-                                    <span>{{facInfo.oppmDeptName}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>现管理单位</label>
-                                    <span>{{facInfo.facDeptName}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>支队责任民警</label>
-                                    <span>{{facInfo.detaPoliceName}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>大队责任民警</label>
-                                    <span>{{facInfo.briPoliceName}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>所属监理</label>
-                                    <span>{{facInfo.supervisonName}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>项目属性</label>
-                                    <span>{{facInfo.oppmTypeName}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>所属项目</label>
-                                    <span>{{facInfo.projectName}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>维护次数</label>
-                                    <span :class="{'mclass':mtimes>0}" @click="gotoList">{{mtimes}}次</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>点位状态</label>
-                                    <span>{{facInfo.faciceStatusName}}</span>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </div>
                     <div class="depiction-info">
                         <div class="title">
                             <h3>故障描述</h3>
@@ -178,6 +97,7 @@
                         <div class="content" style="padding-bottom:20px;">
                             <el-row class="content-row-explain content-row-first">
                                 <el-col :span="24" class="content-row-img">
+                                    <i class="redStar" style="margin-top: 5px;">*</i>
                                     <label>上传照片</label>
                                     <template v-for="(item,index) in imgSceneUrl">
                                         <div class="img-preview" :key="index">
@@ -229,7 +149,7 @@
 </template>
 <script>
     import mInput from "components/common/selectDrop";
-    import DialogGDMap from "./business/dialog-gaodeMap";
+    import DialogGDMap from "../workSheet/business/dialog-gaodeMap";
 
     import Bus from "@/assets/js/bus.js";
     import Common from "@/assets/js/common.js";
@@ -323,42 +243,14 @@
                 this.facTypeList.map(item => {
                     arr.push(item.dicCode);
                 });
-                if (val.length == 0) {
-                    this.canChoosefacType = arr;
-                } else if (val.indexOf('REPDEVTYPE24') == -1) {
-                    this.canChoosefacType = arr.filter(res => res != 'REPDEVTYPE24');
-                } else {
-                    this.canChoosefacType = ['REPDEVTYPE24'];
-                }
-
+                // if (val.length == 0) {
+                //     this.canChoosefacType = arr;
+                // } else if (val.indexOf('REPDEVTYPE24') == -1) {
+                //     this.canChoosefacType = arr.filter(res => res != 'REPDEVTYPE24');
+                // } else {
+                //     this.canChoosefacType = ['REPDEVTYPE24'];
                 // }
             }
-            // facCode(val) {
-            //     this.facRepeatCheck();
-            // },
-            // roadInfoList: {
-            //     handler(newVal, oldVal) {
-            //         let oldArr = window.roadIds || []; //单纯的全局遍量
-            //         let newArr = [];
-            //         newVal.map((item) => {
-            //             newArr.push(item.roadId);
-            //         });
-            //         if (newArr.length == oldArr.length) {
-            //             newArr.map((item, index) => {
-            //                 if (newArr[index] != oldArr[index]) {
-            //                     console.log(index)
-            //                     if (!newArr[index]) {
-
-            //                     } else {
-
-            //                     }
-            //                 }
-            //             });
-            //         }
-            //         window.roadIds = newArr;
-            //     },
-            //     deep: true
-            // }
         },
         activated() {
             // this.pageMounted();
@@ -389,19 +281,19 @@
             this.canChoosefacType = arr;
 
             //所属辖区
-            this.getDicInfo(`${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}).then(res => {
-                this.regionList = res.resultList || [];
-            });
+            // this.getDicInfo(`${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}).then(res => {
+            //     this.regionList = res.resultList || [];
+            // });
             //申报来源
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
-                parentCode: "REPAIRSSOURCE"
-            }).then(res => {
-                this.sourceList = res.resultList || [];
-            });
+            // this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
+            //     parentCode: "REPAIRSSOURCE"
+            // }).then(res => {
+            //     this.sourceList = res.resultList || [];
+            // });
             //维护单位
-            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {}).then(res => {
-                this.opDeptList = res.resultList || [];
-            });
+            // this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {}).then(res => {
+            //     this.opDeptList = res.resultList || [];
+            // });
         },
         methods: {
             submitForm() {
@@ -411,6 +303,10 @@
                 }
                 if (this.battalionCode == "") {
                     Common.ejMessage("warning", "请选择所属大队");
+                    return;
+                }
+                if (this.address == "") {
+                    Common.ejMessage("warning", "详细地址必填");
                     return;
                 }
                 if (this.facTypeList.length <= 0) {
@@ -445,7 +341,7 @@
                     });
                 });
                 if (arrs.length == 0 || !isChooseRoal) {
-                    Common.ejMessage("warning", "道路信息不能空着");
+                    Common.ejMessage("warning", "道路信息必填");
                     return;
                 }
                 // if (this.isWarning) {
@@ -456,6 +352,10 @@
                 //     Common.ejMessage("warning", "填写故障类型");
                 //     return;
                 // }
+                if (this.imgSceneList.length < 1) {
+                    Common.ejMessage("warning", "请上传图片");
+                    return;
+                }
                 if (this.gzdesc == "") {
                     Common.ejMessage("warning", "填写故障描述");
                     return;
@@ -550,33 +450,6 @@
                 this.imgSceneList = [];
                 this.imgSceneHide = [];
             },
-            // facRepeatCheck() {
-            //     if (!this.facCode || !this.battalionCode || this.isOnlyRead) {
-            //         this.isWarning = false;
-            //         return;
-            //     }
-
-            //     let murl = '/workorders/facCheckWorkorders'; // 维修校验重复
-            //     if (this.$route.query.type === 'optimize') {
-            //         murl = '/repairs/facCheckRepairs'; // 优化校验重复
-            //     }
-            //     this.$api.get(`${this.$config.efoms_HOST}${murl}`, {
-            //             facId: this.facCode,
-            //             battalionCode: this.battalionCode
-            //         }, { token: this.token })
-            //         .then(res => {
-            //             this.relationId = res.resultList || '';
-            //             if (res.appCode == 2103) {
-            //                 this.isWarning = true;
-            //             } else {
-            //                 this.isWarning = false;
-            //             }
-            //         })
-            //         .catch(err => {
-            //             this.isWarning = false;
-            //             Common.printErrorLog(err);
-            //         });
-            // },
             selectTypeCode(code) {
                 let index = this.facTypeCode.indexOf(code);
                 if (index == -1) {
@@ -610,16 +483,21 @@
                     });
             },
             upload(fileId, type, arrNamePre) {
-                var flag = false;
+                var fileList = document.getElementById(fileId).files;
+                for (let i = 0; i < fileList.length; i++) {
+                    setTimeout(() => {
+                        this.uploadLoop(fileList[i], type, arrNamePre);
+                        if (i == fileList.length - 1) document.getElementById(fileId).value = '';
+                    }, i * 300);
+                }
+            },
+            uploadLoop(file, type, arrNamePre) {
                 var header = {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Accept": "application/json;charset=UTF-8",
                     token: this.token
                 };
-                var formData = new FormData();
-                var file = document.getElementById(fileId).files[0];
-                formData.append("file", file);
-
+                var flag = false;
                 switch (type) {
                     case "img":
                         if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(file.name)) {
@@ -636,6 +514,8 @@
                 }
                 if (!flag) return;
 
+                var formData = new FormData();
+                formData.append("file", file);
                 this.$api.post(`${this.$config.efoms_HOST}/file/uploadFile`, formData, header).then(res => {
                         if (res.appCode == 0) {
                             switch (type) {

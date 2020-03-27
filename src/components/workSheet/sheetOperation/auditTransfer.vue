@@ -51,6 +51,10 @@
             // 审核接口
             // 转单审核
             handleTransfer(isPass) {
+                if (isPass == 0 && this.operExplain == '') {
+                    Common.ejMessage("warning", "拒绝请填写审核意见");
+                    return;
+                }
                 if (this.isAjaxing) {
                     alert('数据请求中，请稍等！');
                     return;

@@ -1,7 +1,7 @@
 <template>
     <el-scrollbar class="scrollview">
         <el-menu class="el-menu-vertical-demo" :class="{'wdTp':!isCollapse}" background-color="#1F212E" text-color="#646F7D" :default-active="keyPath" active-text-color="#00C187" unique-opened :collapse="isCollapse" router :default-openeds="defaultOpeneds" @select="menuSelect">
-            <i class="menu-collapse" @click="isCollapse=!isCollapse"></i>
+            <i class="menu-collapse el-icon-menu" @click="isCollapse=!isCollapse"></i>
             <template v-for="(item, idx) in menus">
                 <template v-if="item.checked">
                     <el-submenu v-if="item.children.length>0" :key="idx" :disabled="isabled(item.checked)" :index="item.rightName||''">
@@ -141,13 +141,21 @@
     }
 
     .menu-collapse {
-        background: url('../../assets/images/icon-menu-collapsel.png') no-repeat center;
+        /* background: url('../../assets/images/icon-menu-collapsel.png') no-repeat center; */
         width: 100%;
         height: 40px;
         /* overflow: hidden; */
         display: block;
         cursor: pointer;
-        background-position-y: 11px;
+        text-align: center;
+        line-height: 40px;
+        height: 40px;
+        font-size: 20px;
+        color: #909399;
+    }
+
+    .menu-collapse:hover {
+        color: #5093e1;
     }
 
     .menu-arrow {

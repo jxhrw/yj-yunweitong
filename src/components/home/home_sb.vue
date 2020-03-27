@@ -8,35 +8,37 @@
                     <div class="h-left">
                         <div class="bg-style h-top-left">
                             <div class="bg-title">
-                                <h5>资产项目类型分布</h5>
-                                <!-- <ul class="btns">
-                                    <li class="active">按年</li>
-                                    <li>按月</li>
-                                    <li>按日</li>
-                                </ul> -->
+                                <h5>设备总览</h5>
+                                <div class="tl-box">
+                                    时间选择：
+                                    <el-select v-model="period" class="tl-select" popper-class="perdClass">
+                                        <el-option v-for="item in periodList" :key="item.value" :label="item.label" :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </div>
                             </div>
-                            <div class="c-echart">
-                                <ECharts class="c-ring" :options="ring" ref="echarts1"></ECharts>
-                            </div>
-                        </div>
-                        <div class="bg-style h-top-left">
-                            <div class="bg-title">
-                                <h5>故障设备分布</h5>
-                                <!-- <ul class="btns">
-                                    <li class="active">按年</li>
-                                    <li>按月</li>
-                                    <li>按日</li>
-                                </ul> -->
-                            </div>
-                            <div class="c-echart">
-                                <ECharts class="c-bar" :options="bar" ref="echarts2"></ECharts>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="h-middle">
-                        <div class="h-top-middle-1">
-                            <div class="bg-style h-top-middle-content">
-                                <ul class="m-ul">
+                            <div class="htl-cent">
+                                <div class="chart">
+                                    <div class="speed">
+                                        <i :style="'transform:rotate('+(goodRateAll.GOOD_RATE*180/100-135)+'deg)'"></i>
+                                        <span><b>完好率</b><br />{{goodRateAll.GOOD_RATE|twoDecimal}}%</span>
+                                    </div>
+                                    <ul class="ct-ul">
+                                        <li>
+                                            <span class="name">区域</span>
+                                            <el-progress class="porss" :percentage="Math.round((goodRateAll.GOOD_RATE_AREA||0)*100)/100" color="#0ED8A0" :stroke-width="3"></el-progress>
+                                        </li>
+                                        <li>
+                                            <span class="name">项目类型</span>
+                                            <el-progress class="porss" :percentage="Math.round((goodRateAll.GOOD_RATE_OPPM||0)*100)/100" color="#0ED8A0" :stroke-width="3"></el-progress>
+                                        </li>
+                                        <li>
+                                            <span class="name">设备类型</span>
+                                            <el-progress class="porss" :percentage="Math.round((goodRateAll.GOOD_RATE_TYPE||0)*100)/100" color="#0ED8A0" :stroke-width="3"></el-progress>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <ul class="htl-cent-ul1">
                                     <li class="sbs">
                                         <p>{{devFaultTotal.TOTAL_SUM}}</p><span>设备数</span>
                                     </li>
@@ -44,11 +46,186 @@
                                         <p>{{devFaultTotal.FAULT_SUM}}</p><span>故障数</span>
                                     </li>
                                     <li class="whl">
-                                        <p>{{Math.round(devFaultTotal.GOOD_RATE*100)/100}}%</p><span>完好率</span>
+                                        <p>{{devFaultTotal.GOOD_RATE|twoDecimal}}%</p><span>完好率</span>
                                     </li>
                                 </ul>
                             </div>
-                            <div class="bg-style h-top-middle-content">
+                            <!-- <div class="c-echart">
+                                <ECharts class="c-bar" :options="bar" ref="echarts2"></ECharts>
+                            </div> -->
+                        </div>
+                        <div class="bg-style h-top-left">
+                            <div class="bg-title">
+                                <h5>资产项目类型分布</h5>
+                            </div>
+
+                            <div class="htl-cent" style="position:relative;">
+                                <div class="chart">
+                                    <div class="c-echart">
+                                        <ECharts class="c-ring" :options="ring" ref="echarts1" @click="ringSolidClick" @mouseout="ringSolidMouseout" @mouseover="ringSolidMouseover"></ECharts>
+                                    </div>
+                                    <div id='oppmTu' v-popover:bbq style="width:0;height:0;position:absolute;top:0;right:0;"></div>
+                                    <el-popover ref="bbq" popper-class="pop-table" placement="right-start" width="710" trigger="click" @show="getDevDteail('oppm',{})">
+                                        <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                    </el-popover>
+                                </div>
+                                <ul class="htl-cent-ul2">
+                                    <li>
+                                        <div>
+                                            <p class="p1">{{goodRateOppmTypeSingle.TOTAL_SUM}}</p>
+                                            <p class="p2">
+                                                {{goodRateOppmTypeSingle.OPPM_TYPE_NAME?goodRateOppmTypeSingle.OPPM_TYPE_NAME.slice(0,2):''}}项目设备数</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div>
+                                            <p class="p1">{{goodRateOppmTypeSingle.FAULT_SUM}}
+                                                <!-- <b>&#8593;</b> -->
+                                            </p>
+                                            <p class="p2">
+                                                {{goodRateOppmTypeSingle.OPPM_TYPE_NAME?goodRateOppmTypeSingle.OPPM_TYPE_NAME.slice(0,2):''}}项目故障数</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div>
+                                            <p class="p1">{{goodRateOppmTypeSingle.GOOD_RATE|twoDecimal}}%
+                                                <!-- <b>&#8595;</b> -->
+                                            </p>
+                                            <p class="p2">
+                                                {{goodRateOppmTypeSingle.OPPM_TYPE_NAME?goodRateOppmTypeSingle.OPPM_TYPE_NAME.slice(0,2):''}}项目完好率</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-middle">
+                        <div class="bg-style h-top-middle-2">
+                            <div class="m-map m-hz" v-if="$config.cityName=='hangzhou'">
+                                <div class="box-map"></div>
+                                <ul class="m-area">
+                                    <li v-popover:aba>
+                                        <el-popover ref="aba" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['西湖区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 100*getAreaPer('西湖区')+'px'}"></div>
+                                        <p>西湖区</p>
+                                    </li>
+                                    <li v-popover:abb>
+                                        <el-popover ref="abb" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['拱墅区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 100*getAreaPer('拱墅区')+'px'}"></div>
+                                        <p>拱墅区</p>
+                                    </li>
+                                    <li v-popover:abc>
+                                        <el-popover ref="abc" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['下城区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 100*getAreaPer('下城区')+'px'}"></div>
+                                        <p>下城区</p>
+                                    </li>
+                                    <li v-popover:abd>
+                                        <el-popover ref="abd" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['上城区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 100*getAreaPer('上城区')+'px'}"></div>
+                                        <p>上城区</p>
+                                    </li>
+                                    <li v-popover:abe>
+                                        <el-popover ref="abe" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['江干区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 100*getAreaPer('江干区')+'px'}"></div>
+                                        <p>江干区</p>
+                                    </li>
+                                    <li v-popover:abf>
+                                        <el-popover ref="abf" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['滨江区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 100*getAreaPer('滨江区')+'px'}"></div>
+                                        <p>滨江区</p>
+                                    </li>
+                                    <li v-popover:abg>
+                                        <el-popover ref="abg" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['景区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 100*getAreaPer('景区')+'px'}"></div>
+                                        <p>景区</p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="m-map m-nc" v-if="$config.cityName=='nanchang'">
+                                <div class="box-map"></div>
+                                <ul class="m-area">
+                                    <li v-popover:abca>
+                                        <el-popover ref="abca" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['西湖区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 80*getAreaPer('西湖区')+'px'}"></div>
+                                        <p>西湖区</p>
+                                    </li>
+                                    <li v-popover:abcb>
+                                        <el-popover ref="abcb" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['红谷滩区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 80*getAreaPer('红谷滩区')+'px'}"></div>
+                                        <p>红谷滩区</p>
+                                    </li>
+                                    <li v-popover:abcc>
+                                        <el-popover ref="abcc" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['青山湖区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 80*getAreaPer('青山湖区')+'px'}"></div>
+                                        <p>青山湖区</p>
+                                    </li>
+                                    <li v-popover:abcd>
+                                        <el-popover ref="abcd" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['东湖区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 80*getAreaPer('东湖区')+'px'}"></div>
+                                        <p>东湖区</p>
+                                    </li>
+                                    <li v-popover:abce>
+                                        <el-popover ref="abce" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['青云谱区'])">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        </el-popover>
+                                        <div :style="{'height': 80*getAreaPer('青云谱区')+'px'}"></div>
+                                        <p>青云谱区</p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <table class="m-table">
+                                <tr v-for="item in devFaultAreaList" :key="item.DEV_AREA_NAME">
+                                    <td>{{item.DEV_AREA_NAME}}</td>
+                                    <td>{{item.GOOD_RATE|twoDecimal}}%</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="bg-style h-top-middle-3">
+                            <!-- <div class="ct-title">
+                                <h5>运维效能分布</h5>
+                            </div> -->
+                            <div class="bg-title">
+                                <h5>设备类型完好率</h5>
+                            </div>
+                            <ul class="h-top-middle-ul">
+                                <li v-for="item in devRepDevType" :key="item.DEV_TYPE_NAME">
+                                    <el-popover popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('devtype',item)">
+                                        <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                        <div slot="reference" style="cursor: pointer;">
+                                            <div class="speed" :alt="Math.round(item.GOOD_RATE*100)/100+'%'"><i :style="'transform:rotate('+(item.GOOD_RATE*180/100-135)+'deg)'"></i><span>{{item.TOTAL_SUM}}</span></div>
+                                            <p>{{item.DEV_TYPE_NAME}}</p>
+                                        </div>
+                                    </el-popover>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="h-right">
+                        <div class="h-top-right">
+                            <div class="bg-style h-top-right-1">
                                 <ul class="m-ul">
                                     <li class="gds">
                                         <p>{{devRepTotal.TOTAL_SUM}}</p><span>工单数</span>
@@ -57,78 +234,9 @@
                                         <p>{{devRepTotal.FAULT_SUM}}</p><span>维护中</span>
                                     </li>
                                     <li class="whl">
-                                        <p>{{Math.round(devRepTotal.GOOD_RATE*100)/100}}%</p><span>修复率</span>
+                                        <p>{{devRepTotal.GOOD_RATE|twoDecimal}}%</p><span>修复率</span>
                                     </li>
                                 </ul>
-                            </div>
-                        </div>
-                        <div class="bg-style h-top-middle-2">
-                            <div class="m-map" v-if="$config.cityName=='hangzhou'">
-                                <div class="box-map"></div>
-                                <ul class="m-area">
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['西湖区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['西湖区']"></div>
-                                        <p>西湖区</p>
-                                    </li>
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['拱墅区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['拱墅区']"></div>
-                                        <p>拱墅区</p>
-                                    </li>
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['下城区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['下城区']"></div>
-                                        <p>下城区</p>
-                                    </li>
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['上城区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['上城区']"></div>
-                                        <p>上城区</p>
-                                    </li>
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['江干区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['江干区']"></div>
-                                        <p>江干区</p>
-                                    </li>
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['滨江区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['滨江区']"></div>
-                                        <p>滨江区</p>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="m-map m-nc" v-if="$config.cityName=='nanchang'">
-                                <div class="box-map"></div>
-                                <ul class="m-area">
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['西湖区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['西湖区']"></div>
-                                        <p>西湖区</p>
-                                    </li>
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['红谷滩区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['红谷滩区']"></div>
-                                        <p>红谷滩区</p>
-                                    </li>
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['青山湖区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['青山湖区']"></div>
-                                        <p>青山湖区</p>
-                                    </li>
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['东湖区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['东湖区']"></div>
-                                        <p>东湖区</p>
-                                    </li>
-                                    <li>
-                                        <div :style="{'height': 80*(devFaultAreaObj['青云谱区']/devFaultAreaObj.maxNum)+'px'}" :alt="devFaultAreaObj['青云谱区']"></div>
-                                        <p>青云谱区</p>
-                                    </li>
-                                </ul>
-                            </div>
-                            <table class="m-table">
-                                <tr v-for="item in devFaultAreaList" :key="item.DEV_AREA_NAME">
-                                    <td>{{item.DEV_AREA_NAME}}</td>
-                                    <td>{{item.TOTAL_SUM}}</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="h-right">
-                        <div class="h-top-right">
-                            <div class="bg-style h-top-right-1">
-                                <p>当前在线人数： <i>{{(parseInt(onlineCount.APP)||0)+(parseInt(onlineCount.WEB)||0)}}</i> <span>|</span> 今日上线人数：<i>{{(parseInt(onlineCount.APP_TOTAL)||0)+(parseInt(onlineCount.WEB_TOTAL)||0)}}</i> <i></i></p>
                             </div>
                             <div class="bg-style h-top-right-2">
                                 <div class="bg-title">
@@ -145,10 +253,10 @@
                                 <el-scrollbar class="h-top-right-scroll">
                                     <template v-for="(item,index) in todoList">
                                         <div class="h-top-right-table h-top-right-table-content" :key="index">
-                                            <p class="row-1"><i>{{index}}</i></p>
+                                            <p class="row-1"><i>{{index+1}}</i></p>
                                             <p class="row-2" :title="item.type">{{item.type}}</p>
                                             <p class="row-3" :title="item.content">{{item.content}}</p>
-                                            <!-- <p class="row-5">{{item.time}}</!--> -->
+                                            <!-- <p class="row-5">{{item.time}}</!-->
                                             <!-- <p class="row-4">西湖</p>
                                             <p class="row-6">弓斌功</p> -->
                                         </div>
@@ -161,7 +269,8 @@
                                 <h5>工单状态分布</h5>
                             </div>
                             <div class="c-echart">
-                                <ECharts class="c-ring" :options="circular" ref="echarts3"></ECharts>
+                                <!-- <ECharts class="c-ring" :options="circular" ref="echarts3"></ECharts> -->
+                                <Pie ref="pie3d" id="test" :option="option"></Pie>
                             </div>
                         </div>
                     </div>
@@ -191,19 +300,11 @@
                     </div>
                     <div class="h-middle">
                         <div class="h-bottom-middle">
-                            <div class="bg-style h-bottom-middle-1">
-                                <div class="ct-title">
-                                    <h5>运维效能分布</h5>
-                                </div>
-                                <ul class="h-bottom-middle-ul">
-                                    <li v-for="item in devRepDevType" :key="item.DEV_TYPE_NAME">
-                                        <div class="speed" :alt="Math.round(item.GOOD_RATE*100)/100+'%'"><i :style="'transform:rotate('+(item.GOOD_RATE*180/100-135)+'deg)'"></i><span>{{item.TOTAL_SUM}}</span></div>
-                                        <p>{{item.DEV_TYPE_NAME}}</p>
-                                    </li>
-                                </ul>
-                            </div>
                             <div class="bg-style h-bottom-middle-2">
-                                <div class="ct-title">
+                                <!-- <div class="ct-title">
+                                    <h5>维护单位运营能力</h5>
+                                </div> -->
+                                <div class="bg-title">
                                     <h5>维护单位运营能力</h5>
                                 </div>
                                 <div class="h-bottom-middle-table h-bottom-middle-table-title">
@@ -224,9 +325,9 @@
                                             <p class="row-4 t-right">{{item.TIMEOUT_SUM}}</p>
                                             <p class="row-5 t-right">{{item.UNFINISHED_SUM}}</p>
                                             <p class="row-6 t-right">{{item.POSTPONE_SUM}}</p>
-                                            <p class="row-5 t-right">{{Math.round(item.ONTIME_RATE*100)/100}}{{item.ONTIME_RATE>0?'%':''}}</p>
-                                            <p class="row-5 t-right">{{Math.round(item.FINISH_RATE*100)/100}}{{item.FINISH_RATE>0?'%':''}}</p>
-                                            <p class="row-7 t-right">{{Math.round(item.POSTPONE_RATE*100)/100}}{{item.POSTPONE_RATE>0?'%':''}}</p>
+                                            <p class="row-5 t-right">{{item.ONTIME_RATE|twoDecimal}}{{item.ONTIME_RATE>0?'%':''}}</p>
+                                            <p class="row-5 t-right">{{item.FINISH_RATE|twoDecimal}}{{item.FINISH_RATE>0?'%':''}}</p>
+                                            <p class="row-7 t-right">{{item.POSTPONE_RATE|twoDecimal}}{{item.POSTPONE_RATE>0?'%':''}}</p>
                                         </div>
                                     </template>
                                 </el-scrollbar>
@@ -237,19 +338,35 @@
                         <div class="bg-style h-bottom-right">
                             <div class="bg-title">
                                 <h5>工单申报单位排名</h5>
-                                <!-- <ul class="btns">
-                                    <li class="active">按年</li>
-                                    <li>按月</li>
-                                    <li>按日</li>
-                                </ul> -->
                             </div>
-                            <div class="c-echart">
-                                <ECharts class="c-ring" :options="threequarters" ref="echarts4"></ECharts>
+                            <div class="h-bottom-right-table h-bottom-right-table-title">
+                                <p class="row-1"></p>
+                                <p class="row-2">单位名称</p>
+                                <!-- <p class="row-3">当前周期申报数量</p>
+                                <p class="row-4">对比上一周期数量</p>
+                                <p class="row-5">环比(百分比)</p> -->
+                                <p class="row-3">申报数量</p>
+                                <p class="row-4">申报占比</p>
+                                <p class="row-5">修复率</p>
                             </div>
+                            <el-scrollbar class="h-bottom-right-scroll">
+                                <template v-for="(item,index) in devRepDept">
+                                    <div class="h-bottom-right-table h-bottom-right-table-content" :key="index">
+                                        <p class="row-1"><i>{{index+1}}</i></p>
+                                        <p class="row-2" :title="item.REP_DEPT_NAME">{{item.REP_DEPT_NAME}}</p>
+                                        <p class="row-3">{{item.TOTAL_SUM}}</p>
+                                        <p class="row-4">{{item.TOTAL_RATE|twoDecimal}}%</p>
+                                        <p class="row-5">{{item.GOOD_RATE|twoDecimal}}%
+                                            <!-- <b class="red">&#8593;</b><b class="green">&#8595;</b> -->
+                                        </p>
+                                    </div>
+                                </template>
+                            </el-scrollbar>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </template>
@@ -266,19 +383,39 @@
     import 'echarts/lib/component/title';
     // register component to use
     import 'echarts/lib/component/legendScroll';
+
+    import Pie from './pie.vue';
+    import Popover from './popover.vue';
     export default {
         components: {
             Header,
-            ECharts
+            ECharts,
+            Pie,
+            Popover
+        },
+        filters: {
+            twoDecimal(val) {
+                return Math.round((val || 0) * 100) / 100;
+            }
         },
         data() {
             return {
                 title: '',
                 token: "",
+                period: 'month',
+                periodList: [{
+                    value: 'month',
+                    label: '按月'
+                }, {
+                    value: 'week',
+                    label: '按周'
+                }, {
+                    value: 'day',
+                    label: '按日'
+                }],
                 ring: {},
                 bar: {},
                 circular: {},
-                threequarters: {},
                 devFaultRank: [],
                 devFaultTotal: {},
                 devRepTotal: {},
@@ -286,59 +423,75 @@
                 devFaultAreaList: [],
                 devRepOppmDept: [],
                 devRepDevType: [],
+                devRepDept: [],
                 todoList: [],
                 onlineCount: {},
                 userInfo: {},
                 isHeadVisible: false,
-                isHeadMenuVisible: true
+                isHeadMenuVisible: true,
+                dataIndex: 0, //项目类型高亮扇区的索引
+                goodRateAll: {},
+                goodRateOppmTypeList: [],
+                goodRateOppmTypeSingle: {},
+                option: EchartsJs.get3dPie,
+                popoverDatas: {},
+                popoverLists: {},
+                popQuery: {}, //浮窗的请求参数
             };
         },
+        watch: {
+            period(val) {
+                this.initGet();
+            }
+        },
         methods: {
-            getFaultOppmType() {
-                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceFaultCollectByOppmType`, {}, { token: this.token })
+            getAreaPer(name) {
+                return (this.devFaultAreaObj[name] ? this.devFaultAreaObj[name].GOOD_RATE : 0) / (this.devFaultAreaObj.maxNum || 1);
+            },
+            getDevDteail(type, data) {
+                this.popoverLists = {}; //重置浮窗数据，其实是初始化浮窗位置
+                let obj = { startTime: this.getWhatTime(this.period).start, endTime: this.getWhatTime(this.period).end, devTypeCode: undefined, devAreaCode: undefined, oppmType: undefined, pageSize: 10, currentPage: 1 };
+
+                if (type == 'area') {
+                    obj.devAreaCode = data.DEV_AREA_CODE;
+                    this.popoverDatas = {
+                        type: type,
+                        name: data.DEV_AREA_NAME,
+                        totalSum: data.TOTAL_SUM,
+                        faultSum: data.FAULT_SUM,
+                        goodRate: data.GOOD_RATE
+                    };
+                }
+                if (type == 'oppm') {
+                    data = this.goodRateOppmTypeSingle;
+                    obj.oppmType = data.OPPM_TYPE;
+                    this.popoverDatas = {
+                        type: type,
+                        name: data.OPPM_TYPE_NAME,
+                        totalSum: data.TOTAL_SUM,
+                        faultSum: data.FAULT_SUM,
+                        goodRate: data.GOOD_RATE
+                    };
+                }
+                if (type == 'devtype') {
+                    obj.devTypeCode = data.DEV_TYPE_CODE;
+                    this.popoverDatas = {
+                        type: type,
+                        name: data.DEV_TYPE_NAME,
+                        totalSum: data.TOTAL_SUM,
+                        faultSum: data.FAULT_SUM,
+                        goodRate: data.GOOD_RATE
+                    };
+                }
+                this.popQuery = obj;
+                this.getDevDetailPage();
+            },
+            getDevDetailPage(page) {
+                this.popQuery.currentPage = page || 1;
+                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/selectDeviceFaultDetailPage`, this.popQuery, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
-                            let lgData = [];
-                            let ssData = [];
-                            let aaData = [];
-                            let total = 0;
-                            let interval = 0; // 间隔
-                            res.resultList.map(item => { total += Math.round(item.TOTAL_SUM) });
-                            interval = parseInt(total / 100 * 2);
-                            let intervalData = {
-                                value: interval,
-                                name: '',
-                                label: { show: false },
-                                itemStyle: {
-                                    normal: {
-                                        color: 'rgba(0, 0, 0, 0)',
-                                    }
-                                }
-                            };
-                            res.resultList.map(item => {
-                                lgData.push(item.OPPM_TYPE_NAME);
-                                ssData.push({ name: item.OPPM_TYPE_NAME, value: Math.round(item.TOTAL_SUM) });
-                                aaData.push({ name: item.OPPM_TYPE_NAME + '(好)', value: Math.round(item.GOOD_SUM) });
-                                aaData.push({ name: item.OPPM_TYPE_NAME + '(坏)', value: Math.round(item.FAULT_SUM) });
-                            });
-
-                            let ring = EchartsJs.getRing;
-                            ring.legend.data = lgData;
-                            ring.series[0].data = ssData;
-                            ring.series[1].data = aaData;
-                            ring.series[1].tooltip = {
-                                formatter: function(params) {
-                                    var length = res.resultList.length || 0;
-                                    var percent = 0;
-                                    percent = Math.round((params.value / total) * 10000) / 100;
-                                    if (params.name !== '') {
-                                        return params.name + ': ' + params.value + ' (' + percent + '%)';
-                                    } else {
-                                        return '';
-                                    }
-                                },
-                            }
-                            this.ring = ring;
+                            this.popoverLists = res.resultList || {};
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -346,6 +499,96 @@
                     .catch(err => {
                         Common.printErrorLog(err);
                     });
+            },
+            getGoodRateAll() {
+                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/devGoodRateByAll`, { timeType: this.period, startTime: this.getWhatTime(this.period).start, endTime: this.getWhatTime(this.period).end }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            this.goodRateAll = res.resultList ? res.resultList[0] : {};
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+            },
+            getFaultOppmType() {
+                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/devGoodRateByOppmType`, { timeType: this.period, startTime: this.getWhatTime(this.period).start, endTime: this.getWhatTime(this.period).end }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            let lgData = [];
+                            let ssData = [];
+                            this.goodRateOppmTypeList = res.resultList || [];
+                            res.resultList.map((item, index) => {
+                                lgData.push(item.OPPM_TYPE_NAME);
+                                ssData.push({ name: item.OPPM_TYPE_NAME, value: Math.round(item.TOTAL_SUM), selected: index == this.dataIndex });
+                            });
+
+                            let ring = EchartsJs.getRingSolid;
+                            ring.legend.data = lgData;
+                            ring.series[1].data = ssData;
+                            this.ring = ring;
+                            // 默认选中第一个
+                            setTimeout(() => {
+                                this.$nextTick(() => {
+                                    this.$refs.echarts1.dispatchAction({
+                                        type: 'highlight',
+                                        seriesIndex: 1,
+                                        dataIndex: this.dataIndex
+                                    });
+                                    this.goodRateOppmTypeSingle = this.goodRateOppmTypeList[this.dataIndex];
+                                });
+                            });
+
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+            },
+            ringSolidClick(event, instance, echarts) {
+                // console.log(event);
+                if (event.dataIndex != this.dataIndex) {
+                    this.$refs.echarts1.dispatchAction({
+                        type: 'downplay',
+                        seriesIndex: 1,
+                        dataIndex: this.dataIndex
+                    });
+                }
+                // this.ring.series[1].data[this.dataIndex] = false;
+                this.dataIndex = event.dataIndex;
+                this.goodRateOppmTypeSingle = this.goodRateOppmTypeList[this.dataIndex];
+                // this.ring.series[1].data[this.dataIndex] = true;
+                // this.$refs.echarts1.dispatchAction({
+                //     type: 'highlight',
+                //     seriesIndex: 1,
+                //     dataIndex: this.dataIndex
+                // });
+                setTimeout(() => {
+                    document.getElementById('oppmTu').click();
+                }, 300);
+
+            },
+            ringSolidMouseover(event) {
+                // console.log(event);
+                // if (event.dataIndex != this.dataIndex) {
+                //     this.$refs.echarts1.dispatchAction({
+                //         type: 'downplay',
+                //         seriesIndex: 1,
+                //         dataIndex: event.dataIndex
+                //     });
+                // }
+            },
+            ringSolidMouseout(event) {
+                // console.log(event);
+                this.$refs.echarts1.dispatchAction({
+                    type: 'highlight',
+                    seriesIndex: 1,
+                    dataIndex: this.dataIndex
+                });
             },
             getFaultDevType() {
                 this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceFaultCollectByDevType`, {}, { token: this.token })
@@ -371,7 +614,7 @@
                     });
             },
             getFaultRanking() {
-                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceFaultRanking`, {}, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceFaultRanking`, { startTime: this.getWhatTime(this.period).start, endTime: this.getWhatTime(this.period).end }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
                             this.devFaultRank = res.resultList;
@@ -397,7 +640,7 @@
                     });
             },
             getRepTotal() {
-                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairCollectTotal`, {}, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairCollectTotal`, { startTime: this.getWhatTime(this.period).start, endTime: this.getWhatTime(this.period).end }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
                             this.devRepTotal = res.resultList && res.resultList.length > 0 ? res.resultList[0] : {};
@@ -410,15 +653,15 @@
                     });
             },
             getFaultDevArea() {
-                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceFaultCollectByDevArea`, {}, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/devGoodRateByDevArea`, { timeType: this.period, startTime: this.getWhatTime(this.period).start, endTime: this.getWhatTime(this.period).end }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
                             let arr = res.resultList || [];
                             this.devFaultAreaList = [];
                             this.devFaultAreaObj = { maxNum: 0 };
                             arr.map(item => {
-                                if (item.TOTAL_SUM > this.devFaultAreaObj.maxNum) {
-                                    this.devFaultAreaObj.maxNum = item.TOTAL_SUM;
+                                if (item.GOOD_RATE > this.devFaultAreaObj.maxNum) {
+                                    this.devFaultAreaObj.maxNum = item.GOOD_RATE || 0;
                                 }
                                 if (this.$config.cityName == 'hangzhou') {
                                     switch (item.DEV_AREA_NAME) {
@@ -428,10 +671,15 @@
                                         case '江干区':
                                         case '西湖区':
                                         case '下城区':
-                                            this.devFaultAreaObj[item.DEV_AREA_NAME] = item.TOTAL_SUM;
+                                        case '景区':
+                                        case '高架辖区':
+                                            this.devFaultAreaObj[item.DEV_AREA_NAME] = item;
+                                            // this.devFaultAreaObj[item.DEV_AREA_NAME] = item.GOOD_RATE || 0;
+                                            // this.devFaultAreaObj[item.DEV_AREA_NAME + 'Code'] = item.DEV_AREA_CODE;
+                                            this.devFaultAreaList.push(item);
                                             break;
                                         default:
-                                            this.devFaultAreaList.push(item);
+                                            // this.devFaultAreaList.push(item);
                                             break;
                                     }
                                 }
@@ -442,14 +690,16 @@
                                         case '青山湖区':
                                         case '东湖区':
                                         case '青云谱区':
-                                            this.devFaultAreaObj[item.DEV_AREA_NAME] = item.TOTAL_SUM;
+                                            this.devFaultAreaObj[item.DEV_AREA_NAME] = item;
+                                            // this.devFaultAreaObj[item.DEV_AREA_NAME] = item.GOOD_RATE || 0;
+                                            // this.devFaultAreaObj[item.DEV_AREA_NAME + 'Code'] = item.DEV_AREA_CODE;
+                                            this.devFaultAreaList.push(item);
                                             break;
                                         default:
-                                            this.devFaultAreaList.push(item);
+                                            // this.devFaultAreaList.push(item);
                                             break;
                                     }
                                 }
-
                             });
                         } else {
                             Common.printErrorLog(res);
@@ -460,7 +710,7 @@
                     });
             },
             getRepDevType() {
-                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairCollectByDevType`, {}, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/devGoodRateByDevType`, { timeType: this.period, startTime: this.getWhatTime(this.period).start, endTime: this.getWhatTime(this.period).end }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
                             this.devRepDevType = res.resultList || [];
@@ -473,7 +723,7 @@
                     });
             },
             getRepOppmDept() {
-                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairCollectByOppmDept`, {}, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairCollectByOppmDept`, { startTime: this.getWhatTime(this.period).start, endTime: this.getWhatTime(this.period).end }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
                             this.devRepOppmDept = res.resultList || [];
@@ -522,37 +772,46 @@
                     });
             },
             getRepStatus() {
-                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairStatusCollect`, {}, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairStatusCollect`, { startTime: this.getWhatTime(this.period).start, endTime: this.getWhatTime(this.period).end }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
                             let arr = [];
+                            let arr3d = [];
                             let obj = res.resultList || {};
                             if (obj.APPLY_SUM > 0) {
-                                arr.push({ name: '已申报', value: parseInt(obj.APPLY_SUM) });
+                                // arr.push({ name: '已申报', value: parseInt(obj.APPLY_SUM) });
+                                arr3d.push({ name: '已申报', y: parseInt(obj.APPLY_SUM) });
                             }
                             if (obj.SEND_SUM > 0) {
-                                arr.push({ name: '已下发', value: parseInt(obj.SEND_SUM) });
+                                // arr.push({ name: '已下发', value: parseInt(obj.SEND_SUM) });
+                                arr3d.push({ name: '已下发', y: parseInt(obj.SEND_SUM) });
                             }
                             if (obj.ACCEPT_SUM > 0) {
-                                arr.push({ name: '已接受', value: parseInt(obj.ACCEPT_SUM) });
+                                // arr.push({ name: '已接受', value: parseInt(obj.ACCEPT_SUM) });
+                                arr3d.push({ name: '已接受', y: parseInt(obj.ACCEPT_SUM) });
                             }
                             if (obj.TIMEOUT_SUM > 0) {
-                                arr.push({ name: '已超时', value: parseInt(obj.TIMEOUT_SUM) });
+                                // arr.push({ name: '已超时', value: parseInt(obj.TIMEOUT_SUM) });
+                                arr3d.push({ name: '已超时', y: parseInt(obj.TIMEOUT_SUM) });
                             }
                             if (obj.REPAIR_SUM > 0) {
-                                arr.push({ name: '已维修', value: parseInt(obj.REPAIR_SUM) });
+                                // arr.push({ name: '已维修', value: parseInt(obj.REPAIR_SUM) });
+                                arr3d.push({ name: '已维修', y: parseInt(obj.REPAIR_SUM) });
                             }
                             if (obj.SURE_SUM > 0) {
-                                arr.push({ name: '已确定', value: parseInt(obj.SURE_SUM) });
+                                // arr.push({ name: '已确定', value: parseInt(obj.SURE_SUM) });
+                                arr3d.push({ name: '已确定', y: parseInt(obj.SURE_SUM) });
                             }
                             if (obj.EVALUATE_SUM > 0) {
-                                arr.push({ name: '已评价', value: parseInt(obj.EVALUATE_SUM) });
+                                // arr.push({ name: '已评价', value: parseInt(obj.EVALUATE_SUM) });
+                                arr3d.push({ name: '已评价', y: parseInt(obj.EVALUATE_SUM) });
                             }
 
-                            let circular = EchartsJs.getCircular;
-                            circular.series[0].data = arr;
-                            // circular.series[0].minAngle = 30; //最小的扇区角度
-                            this.circular = circular;
+                            // let circular = EchartsJs.getCircular;
+                            // circular.series[0].data = arr;
+                            // this.circular = circular;
+                            this.option.series[0].data = arr3d;
+                            this.$refs.pie3d.update();
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -562,15 +821,11 @@
                     });
             },
             getRepDept() {
-                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairCollectByDept`, {}, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairCollectByDept`, { startTime: this.getWhatTime(this.period).start, endTime: this.getWhatTime(this.period).end }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {
                             let arr = res.resultList || [];
-                            let optionData = this.getTqData(arr);
-                            let threequarters = EchartsJs.getThreequarters;
-                            threequarters.legend.data = optionData.legendDate;
-                            threequarters.series = optionData.series;
-                            this.threequarters = threequarters;
+                            this.devRepDept = arr;
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -578,88 +833,6 @@
                     .catch(err => {
                         Common.printErrorLog(err);
                     });
-            },
-            // 处理3/4圆环数据
-            getTqData(data) {
-                let res = {
-                    legendDate: [],
-                    series: []
-                };
-                let total = 0; // total是3/4圈的总量，可能会超出
-                // data.map(item => {
-                //     total += parseInt(item.value);
-                // });
-                // total *= 1.25; // 将total放大到一圈
-                for (let i = 0; i < data.length; i++) {
-                    total = parseInt(data[i].TOTAL_SUM);
-                    total *= 1.333; // 将total放大到一圈
-                    res.legendDate.push(`${data[i].REP_DEPT_NAME} ${data[i].TOTAL_SUM}`);
-                    // console.log([70 - i * 12 + '%', 67 - i * 12 + '%']);
-                    res.series.push({
-                        name: '',
-                        type: 'pie',
-                        clockWise: false, //顺时加载
-                        hoverAnimation: false, //鼠标移入变大
-                        radius: [73 - i * 12 + '%', 68 - i * 12 + '%'],
-                        center: ["36%", "50%"],
-                        label: {
-                            show: false
-                        },
-                        data: [{
-                            value: data[i].FAULT_SUM,
-                            name: `${data[i].REP_DEPT_NAME} ${data[i].TOTAL_SUM}`,
-                        }, {
-                            value: total - data[i].FAULT_SUM,
-                            name: '',
-                            itemStyle: {
-                                color: "rgba(0,0,0,0)",
-                                borderWidth: 0
-                            },
-                            tooltip: {
-                                show: false
-                            },
-                            color: 'rgba(0, 0, 0, 0)',
-                            borderColor: 'rgba(0, 0, 0, 0)',
-                            borderWidth: 0,
-                            hoverAnimation: false
-                        }]
-                    });
-                    res.series.push({
-                        name: '',
-                        type: 'pie',
-                        silent: true,
-                        z: 1,
-                        clockWise: false, //顺时加载
-                        hoverAnimation: false, //鼠标移入变大
-                        radius: [73 - i * 12 + '%', 68 - i * 12 + '%'],
-                        center: ["36%", "50%"],
-                        label: {
-                            show: false
-                        },
-                        data: [{
-                            value: 7.5,
-                            itemStyle: {
-                                color: "#0b3371",
-                            },
-                            tooltip: {
-                                show: false
-                            },
-                            hoverAnimation: false,
-                        }, {
-                            value: 2.5,
-                            name: '',
-                            itemStyle: {
-                                color: "rgba(0,0,0,0)",
-                                borderWidth: 0
-                            },
-                            tooltip: {
-                                show: false
-                            },
-                            hoverAnimation: false
-                        }]
-                    });
-                }
-                return res;
             },
             // serverpush
             tipsPush(code) {
@@ -766,16 +939,32 @@
                 }
                 return entrance;
             },
+            getWhatTime(type) {
+                let obj = { start: '', end: '' };
+                obj.end = Common.dateFormat('yyyy-MM-dd', new Date()) + ' 23:59:59';
+                if (type == 'month') {
+                    obj.start = Common.dateFormat('yyyy-MM-01', new Date()) + ' 00:00:00';
+                } else if (type == 'week') {
+                    let date = new Date();
+                    let weekday = date.getDay() || 7; //获取星期几,getDay()返回值是 0（周日） 到 6（周六） 之间的一个整数。0||7为7，即weekday的值为1-7
+                    date.setDate(date.getDate() - weekday + 1);
+                    obj.start = Common.dateFormat('yyyy-MM-dd', date) + ' 00:00:00';
+                } else {
+                    obj.start = Common.dateFormat('yyyy-MM-dd', new Date()) + ' 00:00:00';
+                }
+                return obj;
+            },
             initGet() {
+                this.getGoodRateAll();
                 this.getFaultOppmType();
-                this.getFaultDevType();
+                // this.getFaultDevType();
                 this.getFaultRanking();
                 this.getFaultTotal();
                 this.getRepTotal();
                 this.getFaultDevArea();
                 this.getRepDevType();
                 this.getRepOppmDept();
-                this.getOnline();
+                // this.getOnline();
                 this.getNotice();
                 this.getRepStatus();
                 this.getRepDept();
@@ -806,9 +995,14 @@
             // 监听窗口的变化，实时调用 echarts的 resize事件
             window.onresize = () => {
                 this.$refs.echarts1.resize();
-                this.$refs.echarts2.resize();
-                this.$refs.echarts3.resize();
-                this.$refs.echarts4.resize();
+                // this.$refs.echarts2.resize();
+                // this.$refs.echarts3.resize();
+                // this.$refs.echarts4.resize();
+                this.$refs.echarts1.dispatchAction({
+                    type: 'highlight',
+                    seriesIndex: 1,
+                    dataIndex: this.dataIndex
+                });
             }
         }
     };
@@ -816,4 +1010,61 @@
 <style lang="less" scoped>
     @import "../../assets/css/main.css";
     @import "./home.less";
+</style>
+<style>
+    /* 下拉框弹出样式 */
+    .perdClass.el-popper[x-placement^=bottom] {
+        margin-top: 4px;
+    }
+
+    .perdClass.el-popper[x-placement^=bottom] .popper__arrow {
+        display: none;
+    }
+
+    .perdClass.el-select-dropdown {
+        background: #174283;
+        border: 1px solid #325EA1;
+        border-radius: 0;
+    }
+
+    .perdClass .el-select-dropdown__list {
+        padding: 0;
+    }
+
+    .perdClass .el-select-dropdown__item {
+        font-size: 12px;
+        padding: 0;
+        width: 58px;
+        text-align: center;
+        height: 18px;
+        line-height: 18px;
+        color: #d6d4d4;
+        font-weight: 100;
+    }
+
+    .perdClass .el-select-dropdown__item.selected {
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .perdClass .el-select-dropdown__item.hover {
+        background: #3E88E6;
+    }
+
+    /* 下拉框弹出样式 */
+
+
+    /* 浮窗样式 */
+    .el-popover.pop-table {
+        background: rgba(0, 46, 117, 0.96);
+        border: 1px solid #2B68C8;
+        box-shadow: 0 11px 20px -6px rgba(9, 23, 73, 0.91);
+        border-radius: 2px;
+    }
+
+    .el-popover.pop-table .popper__arrow {
+        display: none;
+    }
+
+    /* 浮窗样式 */
 </style>
