@@ -1,7 +1,7 @@
 <template>
     <div class="ej-main">
         <WkLayout ref="layout" :title="title" :queryConditions="queryConditions" :totalPage="totalPage" :totalCount="totalCount" :searchMore="1" :typeTableData="typeTableData" :multipleSelection.sync="multipleSelection" @searchTable="searchTableInfo" @searchPage="searchPageInfo">
-            <template slot="pageBtn" v-if="$route.query.type=='0'">
+            <template slot="pageBtn" v-if="$route.query.type=='0'||$route.query.type=='r1'||$route.query.type=='r2'||$route.query.type=='r3'">
                 <div class="ej-content-goto" @click="gotoEqpm">
                     <p>创建工单</p>
                 </div>
@@ -43,7 +43,7 @@
                     <label>申报编号</label>
                     <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
-                <el-col :span="7">
+                <el-col :span="7" v-show="title!='维修申报'&&title!='抢修申报'&&title!='优化申报'&&title!='数字城管'">
                     <label>维修类型</label>
                     <mInput :list="reptypeList" :code.sync="reptypeCode" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
@@ -51,15 +51,15 @@
                     <label>设施类别</label>
                     <mInput :list="facTypeList" :code.sync="facTypeCode" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
-                <el-col :span="7" v-show="title=='工单查询'||title=='维修申报'">
-                    <label>所属部门</label>
+                <el-col :span="7" v-show="title=='工单查询'">
+                    <label>所属中队</label>
                     <!-- <mInput :list="battalionList" :code.sync="battalionCode" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mInput> -->
                     <mTree :tree="battalionList" :code.sync="battalionCode" showAttr="text" getAttr="id" :clearable="true"></mTree>
                 </el-col>
-                <el-col :span="7" v-show="title=='工单查询'||title=='维修申报'">
+                <!-- <el-col :span="7" v-show="title=='工单查询'||title=='维修申报'">
                     <label>申报来源</label>
                     <mInput :list="sourceList" :code.sync="sourceCode" @keyup.enter.native="searchTableInfo"></mInput>
-                </el-col>
+                </el-col> -->
             </template>
 
             <template slot="tableBtn">
@@ -363,7 +363,7 @@
             roadShow(list) {
                 let arr = [];
                 list.map(item => {
-                    arr.push(item.blockName || item.corssName || '');
+                    arr.push(`${item.roadName}(${item.beginCrossName}-${item.endCrossName})`);
                 });
                 return arr.join(',');
             }
@@ -457,7 +457,7 @@
                         signsWorkordersId: this.declareId,
                         repairType: this.reptypeCode, // 维修类型
                         devTypeCode: this.facTypeCode, //设施类别
-                        devDeptId: this.battalionCode.slice(-1).join(','), // 所属大队,取数组最后一位
+                        squadron: this.battalionCode.slice(-1).join(','), // 所属大队,取数组最后一位
                         repSourceCode: this.sourceCode,
                         // workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode,
                     };
@@ -472,7 +472,7 @@
                         signsWorkordersId: this.declareId,
                         repairType: this.reptypeCode, // 维修类型
                         devTypeCode: this.facTypeCode, //设施类别
-                        devDeptId: this.battalionCode.slice(-1).join(','), // 所属大队
+                        squadron: this.battalionCode.slice(-1).join(','), // 所属大队
                         repSourceCode: this.sourceCode,
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
@@ -556,7 +556,7 @@
                 sessionStorage.setItem('detrepssSave', '0'); // 详情页数据清空
                 this.$router.push({
                     path: "/detrepss",
-                    query: {}
+                    query: { pre: this.title }
                 });
             },
             exportExcel() {
@@ -610,6 +610,8 @@
                             Common.ejMessage("success", "操作成功")
                             this.dialogUrgeVisible = false;
                             this.searchPageInfo();
+                            // 提交完置空
+                            this.operExplain = '';
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -751,7 +753,7 @@
                 }
                 if (item.workordersId) {
                     if (this.title == '转单审核') {
-                        sessionStorage.setItem('transferInfo', JSON.stringify(item));
+                        sessionStorage.setItem('transferssInfo', JSON.stringify(item));
                     }
                     this.$router.push({
                         path: "/detsheetss",
@@ -902,6 +904,31 @@
                     case '0':
                         this.tableShowType = 1;
                         this.title = '维修申报';
+                        this.reptypeCode = 'REPAIRTYPE01';
+                        // this.listUrl.download = `${this.$config.efoms_HOST}/export/exportWXSB`;
+                        this.typeList = [{ dicCode: 'WDSB000', dicName: '待审核' }, { dicCode: 'WDSB001', dicName: '被退回' }, { dicCode: 'WDSB002', dicName: '通过' }, { dicCode: 'WDSB003', dicName: '不通过' }, { dicCode: 'WDSB004', dicName: '已撤回' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        break;
+                    case 'r1':
+                        this.tableShowType = 1;
+                        this.title = '抢修申报';
+                        this.reptypeCode = 'REPAIRTYPE02';
+                        // this.listUrl.download = `${this.$config.efoms_HOST}/export/exportWXSB`;
+                        this.typeList = [{ dicCode: 'WDSB000', dicName: '待审核' }, { dicCode: 'WDSB001', dicName: '被退回' }, { dicCode: 'WDSB002', dicName: '通过' }, { dicCode: 'WDSB003', dicName: '不通过' }, { dicCode: 'WDSB004', dicName: '已撤回' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        break;
+                    case 'r2':
+                        this.tableShowType = 1;
+                        this.title = '优化申报';
+                        this.reptypeCode = 'REPAIRTYPE03';
+                        // this.listUrl.download = `${this.$config.efoms_HOST}/export/exportWXSB`;
+                        this.typeList = [{ dicCode: 'WDSB000', dicName: '待审核' }, { dicCode: 'WDSB001', dicName: '被退回' }, { dicCode: 'WDSB002', dicName: '通过' }, { dicCode: 'WDSB003', dicName: '不通过' }, { dicCode: 'WDSB004', dicName: '已撤回' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        break;
+                    case 'r3':
+                        this.tableShowType = 1;
+                        this.title = '数字城管';
+                        this.reptypeCode = 'REPAIRTYPE04';
                         // this.listUrl.download = `${this.$config.efoms_HOST}/export/exportWXSB`;
                         this.typeList = [{ dicCode: 'WDSB000', dicName: '待审核' }, { dicCode: 'WDSB001', dicName: '被退回' }, { dicCode: 'WDSB002', dicName: '通过' }, { dicCode: 'WDSB003', dicName: '不通过' }, { dicCode: 'WDSB004', dicName: '已撤回' }];
                         this.typeCode = this.typeList[0].dicCode;
@@ -1113,11 +1140,11 @@
                 this.battalionList = res.resultList || [];
             });
             //申报来源
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
-                parentCode: "REPAIRSSOURCE"
-            }).then(res => {
-                this.sourceList = res.resultList || [];
-            });
+            // this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
+            //     parentCode: "REPAIRSSOURCE"
+            // }).then(res => {
+            //     this.sourceList = res.resultList || [];
+            // });
         },
         activated() {
             if (!this.$route.meta.isUseCache) {

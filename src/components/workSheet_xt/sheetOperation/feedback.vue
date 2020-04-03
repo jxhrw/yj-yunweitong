@@ -8,16 +8,16 @@
             </div>
             <div class="operation-content">
                 <div class="complete-content">
-                    <!-- <el-row class="content-row-select">
-                        <el-col :span="9">
+                    <el-row class="content-row-select">
+                        <!-- <el-col :span="9">
                             <label><span>*</span>故障类型</label>
                             <mInput :list="failureTypeList" :code.sync="failureTypeCode" :name.sync="failureTypeName"></mInput>
-                        </el-col>
+                        </el-col> -->
                         <el-col :span="9">
                             <label><span>*</span>维修结果</label>
                             <mInput :list="devStatusList" :code.sync="devStatusCode" :name.sync="devStatusName"></mInput>
                         </el-col>
-                    </el-row> -->
+                    </el-row>
                     <el-row class="content-row-select">
                         <el-col :span="9">
                             <label class="content-label"><span>*</span>故障描述</label>
@@ -100,8 +100,8 @@
             // this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: this.workordersInfo.devTypeCode }).then(res => {
             //     this.failureTypeList = res.resultList || [];
             // });
-            // //设备状态
-            // this.devStatusList = [{ dicCode: '1', dicName: '已修复' }, { dicCode: '0', dicName: '未修复' }];
+            //设备状态
+            this.devStatusList = [{ dicCode: '1', dicName: '已修复' }, { dicCode: '0', dicName: '未修复' }];
         },
         watch: {},
         methods: {
@@ -111,10 +111,10 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                // if (this.devStatusCode == '') {
-                //     Common.ejMessage("warning", "维修结果必填");
-                //     return;
-                // }
+                if (this.devStatusCode == '') {
+                    Common.ejMessage("warning", "维修结果必填");
+                    return;
+                }
                 if (this.failureReason == '') {
                     Common.ejMessage("warning", "故障描述必填");
                     return;
@@ -131,7 +131,8 @@
                 var url = `${this.$config.efoms_HOST}/workorderssystem/info/feeback`;
                 url = url + '?workSystemId=' + this.workordersInfo.workSystemId +
                     '&failureReason=' + this.failureReason +
-                    '&operExplain=' + this.operExplain;
+                    '&operExplain=' + this.operExplain +
+                    '&isOver=' + (this.devStatusCode == '1' ? '1' : '0');
                 // url = url + '?workordersId=' + this.workordersInfo.workordersId +
                 //     '&failureTypeCode=' + this.failureTypeCode +
                 //     '&failureTypeName=' + this.failureTypeName +
@@ -147,6 +148,16 @@
                             Common.ejMessage("success", "操作成功");
                             this.close();
                             this.$emit('callback');
+                            // 反馈完置空
+                            this.failureTypeCode = '';
+                            this.failureTypeName = '';
+                            this.devStatusName = '';
+                            this.devStatusCode = '';
+                            this.failureReason = '';
+                            this.operExplain = '';
+                            this.imgSceneUrl = [];
+                            this.imgSceneList = [];
+                            this.imgSceneHide = [];
                         } else {
                             Common.printErrorLog(res);
                         }

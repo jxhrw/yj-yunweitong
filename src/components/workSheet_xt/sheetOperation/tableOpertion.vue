@@ -1,9 +1,11 @@
 <template>
     <div class="unit-tab-operation">
+        <div v-if="title=='维修申报'&&(scope.row.workStatusCode == 'ORDERSSTATUS02')" class="tab-operation" @click="dataDetail(scope.row,'edit')">关闭</div>
         <!-- 维修处置页面，并且状态为待维修ORDERSSTATUS02，待确认ORDERSSTATUS03，-时出现 -->
-        <div v-if="title=='维修处置'&&(scope.row.workStatusCode == 'ORDERSSTATUS02'||scope.row.workStatusCode == 'ORDERSSTATUS03'||scope.row.workStatusCode == 'ORDERSSTATUS14')" class="tab-operation" @click="dataDetail(scope.row,'edit')">反馈</div>
+        <div v-if="title=='维修处置'&&(scope.row.workStatusCode == 'ORDERSSTATUS02'||scope.row.workStatusCode == 'ORDERSSTATUS03')" class="tab-operation" @click="dataDetail(scope.row,'edit')">反馈</div>
         <!-- 工单确认页面，并且状态为待确认时出现 -->
         <div v-if="title=='工单确认'&&(scope.row.workStatusCode == 'ORDERSSTATUS03')" class="tab-operation" @click="dataDetail(scope.row,'edit')">确认</div>
+        <div v-if="title=='工单确认'&&(scope.row.workStatusCode == 'ORDERSSTATUS02')" class="tab-operation" @click="dataDetail(scope.row,'edit')">关闭</div>
 
         <div class="tab-operation" @click="dataDetail(scope.row)">详情</div>
     </div>
@@ -18,7 +20,7 @@
                 }
                 if (item.workSystemId) {
                     if (this.title == '转单审核' || this.title == '转单查询') {
-                        sessionStorage.setItem('transferInfo', JSON.stringify(item));
+                        sessionStorage.setItem('transferxtInfo', JSON.stringify(item));
                     }
                     this.$router.push({
                         path: "/detsheetxt",

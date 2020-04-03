@@ -66,33 +66,21 @@
                                     <label>所属平台</label>
                                     <span>{{workordersInfo.platformName}}</span>
                                 </el-col>
-                                <el-col :span="9">
-                                    <label>维护单位</label>
-                                    <span>{{workordersInfo.aaaa}}</span>
-                                </el-col>
-                                <el-col :span="9">
-                                    <label>申报时间</label>
-                                    <span>{{workordersInfo.repDate}}</span>
-                                </el-col>
                             </el-row>
                             <transition name="fade">
                                 <div v-show="isShow">
                                     <el-row class="content-row-detail">
                                         <el-col :span="9">
-                                            <label>维修组</label>
-                                            <span>{{appointInfoLast.opDeptName}}</span>
+                                            <label>申报时间</label>
+                                            <span>{{workordersInfo.repDate}}</span>
                                         </el-col>
-                                        <el-col :span="9">
-                                            <label>维修人员</label>
-                                            <span>{{appointInfoLast.workordersPersonRltList|opPersonNameShow}}</span>
-                                        </el-col>
+                                        <!-- <el-col :span="9">
+                                            <label>期限完成时间</label>
+                                            <span>{{workordersInfo.deadlineTime}}</span>
+                                        </el-col> -->
                                         <el-col :span="9">
                                             <label>情况描述</label>
                                             <span>{{workordersInfo.failureDescrible}}</span>
-                                        </el-col>
-                                        <el-col :span="9">
-                                            <label>期限完成时间</label>
-                                            <span>{{workordersInfo.deadlineTime}}</span>
                                         </el-col>
                                         <el-col :span="24" class="content-row-img">
                                             <label>上传照片</label>
@@ -251,12 +239,12 @@
                                             <!-- 反馈ORDEROPERTYPE07 -->
                                             <template v-else>
                                                 <div class="content">
-                                                    <!-- <label for="">操作类型</label>
-                                                    <span>{{item.operResult}}</span> -->
+                                                    <label for="">操作类型</label>
+                                                    <span>{{item.operResult}}</span>
                                                     <!-- <label for="">故障类型</label>
                                                     <span>{{item.failureTypeName}}</span> -->
                                                     <label for="">故障原因</label>
-                                                    <span style="width: 349px;">{{item.failureReason}}</span>
+                                                    <span>{{item.failureReason}}</span>
                                                     <label for="">结果反馈</label>
                                                     <span style="width: 567px;">{{item.operExplain}}</span>
                                                 </div>
@@ -309,11 +297,13 @@
 
                 </el-scrollbar>
             </div>
-            <template>
+            <template v-if="$route.query.isread == 'edit'">
+                <!-- 待维修ORDERSSTATUS02，待确认ORDERSSTATUS03 -->
                 <!-- 反馈操作 "ORDEROPERTYPE07", "反馈"；"ORDEROPERTYPE19", "进度反馈"；"ORDEROPERTYPE20", "完成反馈" -->
-                <feedback v-if="(prePage=='维修处置')&&((operatCode.indexOf('ORDEROPERTYPE07')>-1||operatCode.indexOf('ORDEROPERTYPE19')>-1||operatCode.indexOf('ORDEROPERTYPE20')>-1))" :data="workordersInfo" @callback="dataDetail"></feedback>
+                <feedback v-if="(prePage=='维修处置')&&(workordersInfo.workStatusCode == 'ORDERSSTATUS02'||workordersInfo.workStatusCode == 'ORDERSSTATUS03')" :data="workordersInfo" @callback="dataDetail"></feedback>
                 <!-- 确认操作 "ORDEROPERTYPE08", "确认通过"；"", "确认不通过"-->
-                <confirm v-if="(prePage=='工单确认')&&((operatCode.indexOf('ORDEROPERTYPE08')>-1))" :data="workordersInfo" @callback="dataDetail"></confirm>
+                <confirm v-if="(prePage=='工单确认')&&(workordersInfo.workStatusCode == 'ORDERSSTATUS03')" :data="workordersInfo" @callback="dataDetail"></confirm>
+                <close v-if="(prePage=='维修申报'||prePage=='工单确认')&&(workordersInfo.workStatusCode == 'ORDERSSTATUS02')" :data="workordersInfo" @callback="dataDetail"></close>
             </template>
 
             <el-dialog title="工单催办" :visible.sync="dialogUrgeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
@@ -333,6 +323,7 @@
 <script>
     import feedback from "components/workSheet_xt/sheetOperation/feedback";
     import confirm from "components/workSheet_xt/sheetOperation/confirm";
+    import close from "components/workSheet_xt/sheetOperation/close";
     import mInput from "components/common/selectDrop";
 
     import Common from "@/assets/js/common.js";
@@ -340,6 +331,7 @@
         components: {
             feedback,
             confirm,
+            close,
             mInput
         },
         filters: {
@@ -455,6 +447,8 @@
                             this.dialogUrgeVisible = false;
                             sessionStorage.setItem('relaodPage', '1'); //操作了催办回到列表刷新
                             this.dataDetail();
+                            // 提交完置空
+                            this.operExplain = '';
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -529,19 +523,19 @@
                 if (this.$route.query.isread != 'edit') {
                     return;
                 }
-                this.$api.putByQs(`${this.$config.efoms_HOST}/workorderssystem/getNextProcessSystem`, {
-                        workSystemId: this.workordersInfo.workSystemId || this.workordersInfo.repairsId
-                    }, { token: this.token })
-                    .then(res => {
-                        if (res.appCode == 0) {
-                            this.operatCode = res.resultList || '';
-                        } else {
-                            Common.printErrorLog(res);
-                        }
-                    })
-                    .catch(err => {
-                        Common.printErrorLog(err);
-                    });
+                // this.$api.putByQs(`${this.$config.efoms_HOST}/workorderssystem/getNextProcessSystem`, {
+                //         workSystemId: this.workordersInfo.workSystemId || this.workordersInfo.repairsId
+                //     }, { token: this.token })
+                //     .then(res => {
+                //         if (res.appCode == 0) {
+                //             this.operatCode = res.resultList || '';
+                //         } else {
+                //             Common.printErrorLog(res);
+                //         }
+                //     })
+                //     .catch(err => {
+                //         Common.printErrorLog(err);
+                //     });
             },
             initPage() {
                 this.prePage = this.$route.query.pre;
@@ -1019,6 +1013,9 @@
                         color: #737e84;
                         margin: 0;
                         box-sizing: border-box;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
                     }
 
                     span {
@@ -1039,6 +1036,8 @@
                         line-height: 16px;
                         padding: 5px 0 5px 7px;
                         box-sizing: border-box;
+                        display: flex;
+                        align-items: center;
 
                         &:last-child {
                             border-right: 1px solid #e4ebe9;

@@ -59,34 +59,36 @@
                 let host = this.$config.efoms_HOST;
                 let method = '/userCheck/selectUser';
                 let token = Common.getQueryString("token");
-                this.$api.getMethod(host, method, { token: token, systemKey: this.$config.systemKeyDev }, token).then(res => {
+                this.$api.getMethod(host, method, { token: token, systemKey: this.$config.systemKeySystem }, token).then(res => {
                     if (res.appCode == 0) {
                         this.userInfo = res.resultList || {};
                         this.rightListsEx = this.userInfo.rightListsEx || [];
-                        this.rightListsEx = [{
-                            children: [{
-                                checked: true,
-                                rightName: "系统工单",
-                                rightElCss: "menu-1",
+                        if (Common.getQueryString("test") == "1") {
+                            this.rightListsEx = [{
                                 children: [{
                                     checked: true,
-                                    rightName: "维修申报",
-                                    rightUrl: 'sheetxt?type=0'
-                                }, {
-                                    checked: true,
-                                    rightName: "维修处置",
-                                    rightUrl: 'sheetxt?type=11'
-                                }, {
-                                    checked: true,
-                                    rightName: "工单确认",
-                                    rightUrl: 'sheetxt?type=12'
-                                }, {
-                                    checked: true,
-                                    rightName: "工单查询",
-                                    rightUrl: 'sheetxt?type=7'
+                                    rightName: "系统工单",
+                                    rightElCss: "menu-1",
+                                    children: [{
+                                        checked: true,
+                                        rightName: "维修申报",
+                                        rightUrl: 'sheetxt?type=0'
+                                    }, {
+                                        checked: true,
+                                        rightName: "维修处置",
+                                        rightUrl: 'sheetxt?type=11'
+                                    }, {
+                                        checked: true,
+                                        rightName: "工单确认",
+                                        rightUrl: 'sheetxt?type=12'
+                                    }, {
+                                        checked: true,
+                                        rightName: "工单查询",
+                                        rightUrl: 'sheetxt?type=7'
+                                    }]
                                 }]
                             }]
-                        }]
+                        }
                         sessionStorage.setItem("userInfo", JSON.stringify(this.userInfo));
                         window.userInfo = this.userInfo;
                     }
@@ -102,7 +104,7 @@
                     let isPower = arr.some(item => { return item == this.userInfo.personId });
                     //NOTICETYPE01待办，NOTICETYPE02通知
                     res.type = res.type == 'NOTICETYPE01' ? '待办' : '通知';
-                    if (isPower) {
+                    if (isPower && res.workorderType == 'system') {
                         this.domIndex += 1;
                         res.key = this.domIndex;
                         document.getElementById('audio').play();
@@ -128,9 +130,9 @@
                             if (res.appCode == 0) {
                                 let tableData = res.resultList.result || [];
                                 if (tableData.length > 0) {
-                                    sessionStorage.setItem('transferInfo', JSON.stringify(tableData[0]));
+                                    sessionStorage.setItem('transferxtInfo', JSON.stringify(tableData[0]));
                                     this.$router.push({
-                                        path: '/detsheet',
+                                        path: '/detsheetxt',
                                         query: { pre: entrance, id: obj.wokrorderIds, isread: obj.type == '待办' ? 'edit' : undefined }
                                     });
                                 }
@@ -139,7 +141,7 @@
                         });
                 } else {
                     this.$router.push({
-                        path: '/detsheet',
+                        path: '/detsheetxt',
                         query: { pre: entrance, id: obj.wokrorderIds, isread: obj.type == '待办' ? 'edit' : undefined }
                     });
                 }

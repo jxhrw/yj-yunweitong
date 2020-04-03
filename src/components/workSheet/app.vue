@@ -327,6 +327,7 @@
             position: relative;
             border: 1px solid #e1e7ed;
             font-size: 50px;
+            position: relative;
 
             &:hover {
                 .img-del {
@@ -345,6 +346,7 @@
                 line-height: 15px;
                 font-size: 12px;
                 text-align: center;
+                left: 0;
 
                 p {
                     // transform: scale(0.86);

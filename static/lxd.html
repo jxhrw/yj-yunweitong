@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style type="text/css">
+        html {
+            overflow-y: scroll;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        table tr td {
+            text-align: center;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            font-size: 14px;
+        }
+
+        table tr ._title {
+            text-align: center;
+            padding-left: 10px;
+            padding-right: 10px;
+            width: 40px;
+        }
+
+        table tr ._content {
+            text-align: left;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        table tr .project {
+            width: 90px;
+        }
+
+        img {
+            vertical-align: middle;
+            margin-bottom: 10px;
+            margin-left: 12px;
+        }
+
+        .td-special-time {
+            height: 80px;
+        }
+
+        .td-special-height {
+            vertical-align: top;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="word_demo" v-cloak>
+        <div style="text-align: center;font-size: 24px;letter-spacing: 2px">杭州市公安局交通警察支队</div>
+        <div style="text-align: center;font-size: 30px;letter-spacing: 3px">交通安全设施施工联系单</div>
+        <table border="0" cellspacing="" cellpadding="" style="table-layout: fixed;">
+            <tr>
+                <td style="text-align: left;">
+                    维护类型：<span>{{content.typeName}}</span>
+                </td>
+                <td style="text-align: center;">
+                    辖区单位：<span>{{content.devDeptName}}</span>
+                </td>
+                <td style="text-align: right;">
+                    <span v-show="content.printNo">验收编号：{{content.printNo}}</span>
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellspacing="0" cellpadding="0">
+            <tr>
+                <td :rowspan="isShowPhoto" class="_title">
+                    <div>基</div>
+                    <div>本</div>
+                    <div>信</div>
+                    <div>息</div>
+                </td>
+                <td class="project">业务来源</td>
+                <td class="">{{content.repSourceName||'自己提出'}}</td>
+                <td class="">申报联系人</td>
+                <td class="">{{content.repPersonName}}</td>
+                <td class="">联系电话</td>
+                <td class="">{{content.repPersonTel}}</td>
+            </tr>
+            <tr>
+                <td class="project">施工单位</td>
+                <td class="">{{content.oppmDeptName}}</td>
+                <td class="">联系人</td>
+                <td class="">{{content.dealDeptLeader}}</td>
+                <td class="">联系电话</td>
+                <td class="">{{content.dealDeptLeaderPhone}}</td>
+            </tr>
+            <tr>
+                <td class="project">施工地点</td>
+                <td class="_content" colspan="5">
+                    {{content.listSignsWorkordersRoad|roadShow}}
+                </td>
+            </tr>
+            <tr v-if="content.materialInfos == null">
+                <td class="project">现场照片</td>
+                <td class="_content" colspan="5">
+                    <div v-for="item in prePhoto">
+                        <img width="320" height="240" :src="item" alt="">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="project">情况描述</td>
+                <td class="_content" colspan="5">
+                    {{content.failureDescrible}}
+                </td>
+            </tr>
+            <tr>
+                <td class="project">申报编号</td>
+                <td class="_content" colspan="5">
+                    {{content.signsWorkordersId}}
+                </td>
+            </tr>
+            <tr>
+                <td class="_title" :rowspan="checkOptLength">
+                    <div>申</div>
+                    <div>报</div>
+                    <div>审</div>
+                    <div>核</div>
+                </td>
+                <td class="project">审核环节</td>
+                <td class="">审核人</td>
+                <td class="">时间</td>
+                <td class="" colspan="3">审核意见</td>
+            </tr>
+            <tr v-for="item in checkOpt">
+                <td class="project">{{item.operTypeName}}</td>
+                <td class="">{{item.operPerson}}</td>
+                <td class="">{{item.operDate|dateFormat}}</td>
+                <td class="" colspan="3">{{item.operResult}}<span v-if="item.operExplain">（{{item.operExplain}}）</span></td>
+            </tr>
+            <!-- <%--<tr>--%>
+            <%--<td class="project">大队领导</td>--%>
+            <%--<td class="">小明</td>--%>
+            <%--<td class="">2018-12-11</td>--%>
+            <%--<td class="" colspan="3">同意</td>--%>
+        <%--</tr>--%>
+        <%--<tr>--%>
+            <%--<td class="project">设施科</td>--%>
+            <%--<td class="">小明</td>--%>
+            <%--<td class="">2018-12-11</td>--%>
+            <%--<td class="" colspan="3">宽度不小于3米</td>--%>
+        <%--</tr>--%>
+        <%--<tr>--%>
+            <%--<td class="project">秩序处</td>--%>
+            <%--<td class="">小明</td>--%>
+            <%--<td class="">2018-12-11</td>--%>
+            <%--<td class="" colspan="3">同意</td>--%>
+        <%--</tr>--%> -->
+            <tr v-if="content.materialInfos">
+                <td class="_title" rowspan="2">
+                    <div>施</div>
+                    <div>工</div>
+                    <div>反</div>
+                    <div>馈</div>
+                </td>
+                <td>
+                    <div>施</div>
+                    <div>工</div>
+                    <div>前</div>
+                    <div>后</div>
+                    <div>照</div>
+                    <div>片</div>
+                </td>
+                <td class="_content" colspan="5">
+                    <div v-for="(item, idx) in photo" style="display: inline-block">
+                        <img width="160" height="120" :src="item" alt="">
+                    </div>
+                </td>
+            </tr>
+            <tr v-if="content.materialInfos">
+                <td>
+                    <div>工</div>
+                    <div>程</div>
+                    <div>质</div>
+                    <div>量</div>
+                    <div>清</div>
+                    <div>单</div>
+                </td>
+                <td class="_content" colspan="5">
+                    <table border="0" cellspacing="0" cellpadding="0" style="font-size: 12px">
+                        <tr>
+                            <td class="">序号</td>
+                            <td class="">设施名称</td>
+                            <td class="">规格</td>
+                            <td class="">单价</td>
+                            <td class="">数量</td>
+                            <td class="">金额</td>
+                        </tr>
+                        <tr v-for="(item, idx) in content.materialInfos">
+                            <td class="">{{idx + 1}}</td>
+                            <td class="">{{item.materialInfo[0].materialName}}</td>
+                            <td class="">{{item.materialInfo[0].materialSpecification}}</td>
+                            <td class="">{{item.materialInfo[0].materialUnitPrice}}</td>
+                            <td class="">{{item.materialNum||0}}（{{item.materialInfo[0].materialUnit}}）</td>
+                            <td class="">{{item.materialInfo[0].materialUnitPrice*item.materialNum | numberFormat }}</td>
+                        </tr>
+                        <tr>
+                            <td class="" colspan="6" style="text-align: right;font-size: 18px">总金额：{{priceTotal | numberFormat}}元</td>
+                        </tr>
+                        <tr>
+                            <td class="" colspan="6" style="text-align: left;font-size: 12px">工程量备注：{{content.workordersRecordMap | materialFormat}}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr v-if="jlAuditOpt">
+                <td class="_title" rowspan="2" style="text-align: center;">
+                    <div>竣</div>
+                    <div>工</div>
+                    <div>验</div>
+                    <div>收</div>
+                </td>
+                <td class="">监理单位</td>
+                <td class="">{{jlAuditOpt?jlAuditOpt.optUserDeptName:''}}</td>
+                <td class="">{{middleAudit?'属地中队':'支队验收'}}</td>
+                <td class="">{{middleAudit?middleAudit.optUserDeptName:divisionAudit[0].optUserDeptName}}</td>
+                <td class="">{{higherAudit?'大队道管':'支队验收'}}</td>
+                <td class="">{{higherAudit?higherAudit.optUserDeptName:divisionAudit[1].optUserDeptName}}</td>
+            </tr>
+            <tr v-if="jlAuditOpt">
+                <td class="td-special-time">{{(jlAuditOpt?jlAuditOpt.optTime:'')|dateFormat}}</td>
+                <td class="td-special-height">{{jlAuditOpt?jlAuditOpt.optUserName:''}}</td>
+                <td class="td-special-time">{{(middleAudit?middleAudit.optTime:divisionAudit[0].optTime)|dateFormat}}</td>
+                <td class="td-special-height">{{middleAudit?middleAudit.optUserName:divisionAudit[0].optUserName}}</td>
+                <td class="td-special-time">{{(higherAudit?higherAudit.optTime:divisionAudit[1].optTime)|dateFormat}}</td>
+                <td class="td-special-height">{{higherAudit?higherAudit.optUserName:divisionAudit[1].optUserName}}</td>
+            </tr>
+        </table>
+        <div style="font-size: 14px;">
+            <p>施工要求：</p>
+            <ol style="margin-left: 25px;">
+                <li>按《城市道路交通标志和标线设置规范》要求施工；</li>
+                <li>出现影响交通情况，听从民警指挥并及时撤离现场；</li>
+                <li>此联系单维护内容应按时完成（遇天气等因素无法施工的除外）。</li>
+            </ol>
+        </div>
+    </div>
+    <script type="text/javascript" src="./static/js/vue.min.js"></script>
+    <script type="text/javascript" src="./static/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript">
+        var docStyle = "html{overflow-y:scroll;}*{margin:0;padding:0;}table{width:100%;border-collapse:collapse;border-spacing:0;}table tr td{text-align:center;padding-top:7px;padding-bottom:7px;font-size:14px;}table tr ._title{text-align:center;padding-left:10px;padding-right:10px;width:40px;}table tr ._content{text-align:left;padding-left:5px;padding-right:5px;}table tr .project{width:90px;}img{vertical-align: middle;margin-bottom: 10px;margin-left: 12px;}.td-special-time{height: 80px;}.td-special-height{vertical-align: top;}";
+        $('.exportBtn').click(function() {
+            $("#word_demo").wordExport('占道施工审批表', docStyle);
+        });
+        // 7大队道管 8大队领导 9设施科 10秩序处 12监理单位 13大队中队验收确认 14维护单位驳回处理中心 15支队领导民警验收验收确认
+        var engineArray = [
+            { engineID: 7, engineName: '大队道管' },
+            { engineID: 8, engineName: '大队领导' },
+            { engineID: 9, engineName: '设施科' },
+            { engineID: 10, engineName: '秩序处' },
+            { engineID: 12, engineName: '监理单位' },
+            { engineID: 13, engineName: '大队中队验收' },
+            { engineID: 15, engineName: '支队领导验收' }
+        ];
+        var app = new Vue({
+            el: '#word_demo',
+            data: {
+                content: {},
+                checkOpt: [],
+                jlAuditOpt: null,
+                middleAudit: null,
+                higherAudit: null,
+                divisionAudit: [],
+                sureInfo: {},
+                prePhoto: [],
+                photo: [],
+            },
+            created: function() {
+                var _that = this;
+                var id = this.getQueryString('id');
+                var token = this.getQueryString('token');
+                $.ajax({
+                    dataType: "json",
+                    url: "./config.json",
+                    type: "GET",
+                    async: false,
+                    success: function(res, status) {
+                        $.ajax({
+                            dataType: "json",
+                            url: res.efoms_HOST + "/SignsWorkordersInfo/getSignsWorkordersInfo",
+                            type: "GET",
+                            async: false,
+                            data: {
+                                'signsWorkordersId': id,
+                                'token': token
+                            },
+                            success: function(data, status) {
+                                if (data != null) {
+                                    _that.content = data.resultList || {};
+                                    var opt = _that.content.workordersRecordMap || {};
+                                    _that.content.materialInfos = _that.content.listMaterialRlt.length > 0 ? _that.content.listMaterialRlt : null;
+                                    _that.checkOpt = opt.checkList;
+                                    //存在电子类
+                                    if (_that.content.devTypeCode.indexOf('REPDEVTYPE24') > -1) {
+
+                                    }
+                                    _that.sureInfo = {};
+
+                                    // var subSystem = "";
+                                    // var middle = null;
+                                    // var zsHigher = null;
+                                    // var temHigher = null;
+                                    // for (var i = 0; i < opt.length; i++) {
+                                    //     if (opt[i].optType == 0) {
+                                    //         subSystem = opt[i].refDict2;
+                                    //     } else if (opt[i].optType == 1) {
+                                    //         opt[i].engineName = _that.engineIDToName(opt[i].engineID)
+                                    //         _that.checkOpt.push(opt[i])
+                                    //     } else if (opt[i].optType == 12) {
+                                    //         _that.jlAuditOpt = opt[i]
+                                    //     } else if (opt[i].optType == 20) {
+                                    //         if (subSystem.indexOf("1") > -1) {
+                                    //             _that.divisionAudit.push(opt[i])
+                                    //         } else {
+                                    //             if (opt[i].refDict2 == 5) {
+                                    //                 middle = opt[i];
+                                    //             } else if (opt[i].refDict2 == 2) {
+                                    //                 temHigher = opt[i];
+                                    //             } else if (opt[i].refDict2 == 6) {
+                                    //                 zsHigher = opt[i];
+                                    //             }
+                                    //         }
+                                    //     }
+                                    // }
+                                    // _that.middleAudit = middle ? middle : zsHigher;
+                                    // // 判断直属中队还是大队 默认显示大队
+                                    // _that.higherAudit = temHigher ? temHigher : zsHigher;
+                                    // // 防止出错
+                                    // if (_that.middleAudit == null && _that.divisionAudit.length < 1) {
+                                    //     _that.middleAudit = { optUserDeptName: '', optTime: '', optUserName: '' }
+                                    // }
+                                    // if (_that.higherAudit == null && _that.divisionAudit.length < 1) {
+                                    //     _that.higherAudit = { optUserDeptName: '', optTime: '', optUserName: '' }
+                                    // }
+
+                                    var pre = _that.content.fileInfoList || [];
+                                    var arr = [];
+                                    var prePo = [];
+                                    var po = [];
+                                    opt.fackbackList.map(item => {
+                                        let aw = item.fileInfoList || [];
+                                        arr = [...arr, ...aw];
+                                    });
+                                    pre.map(item => {
+                                        if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName) && item.fileUrl) {
+                                            prePo.push(item.fileUrl);
+                                        }
+                                    });
+                                    arr.map(item => {
+                                        if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName) && item.fileUrl) {
+                                            po.push(item.fileUrl);
+                                        }
+                                    });
+                                    _that.prePhoto = prePo;
+                                    _that.photo = [...prePo, ...po];
+
+
+                                    // var materialMedias = data.materialMedias;
+                                    // for (var j = 0; j < materialMedias.length; j++) {
+                                    //     if (materialMedias[j].mediaType == 0 && materialMedias[j].path) {
+                                    //         _that.photo.push(materialMedias[j])
+                                    //     }
+                                    // }
+                                }
+                            }
+                        });
+                    }
+                });
+            },
+            computed: {
+                checkOptLength: function() {
+                    return this.checkOpt.length + 1
+                },
+                isShowPhoto: function() {
+                    return this.content.materialInfos ? 5 : 6
+                },
+                priceTotal: function() {
+                    var total = 0
+                    var material = this.content.materialInfos
+                    for (var i = 0; i < material.length; i++) {
+                        total += material[i].materialNum * material[i].materialInfo[0].materialUnitPrice
+                    }
+                    return total
+                }
+            },
+            filters: {
+                dateFormat: function(value) {
+                    if (!value) return ''
+                    return value.split(' ')[0]
+                },
+                specialFormat: function(value) {
+                    if (!value) return ''
+                    var content = value.split('{#}')[1]
+                    return content === '' ? '同意' : content
+                },
+                materialFormat: function(obj) {
+                    var wd = '';
+                    var ooo = obj.fackbackList || [];
+                    ooo.map(item => {
+                        // 取最后一个工程量提报
+                        if (item.operTypeCode == 'FACILITYOPERTYPE15') {
+                            wd = item.operExplain;
+                        }
+                    });
+                    return wd
+                },
+                numberFormat: function(value) {
+                    return value == parseFloat(value) ? parseFloat(value).toFixed(2) : ''
+                },
+                roadShow(list) {
+                    let arr = [];
+                    list = list || [];
+                    list.map(item => {
+                        arr.push(`${item.roadName}(${item.beginCrossName}-${item.endCrossName})`);
+                    });
+                    return arr.join(',');
+                }
+            },
+            methods: {
+                engineIDToName: function(value) {
+                    var name = ''
+                    engineArray.forEach(function(item) {
+                        if (item.engineID === value) {
+                            name = item.engineName
+                        }
+                    })
+                    return name
+                },
+                getQueryString(name) {
+                    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                    var r = window.location.search.substr(1).match(reg);
+                    if (r != null) return unescape(r[2]);
+                    return null;
+                },
+            }
+
+        });
+    </script>
+</body>
+
+</html>

@@ -59,79 +59,81 @@
                 let host = this.$config.efoms_HOST;
                 let method = '/userCheck/selectUser';
                 let token = Common.getQueryString("token");
-                this.$api.getMethod(host, method, { token: token, systemKey: this.$config.systemKeyDev }, token).then(res => {
+                this.$api.getMethod(host, method, { token: token, systemKey: this.$config.systemKeyOther }, token).then(res => {
                     if (res.appCode == 0) {
                         this.userInfo = res.resultList || {};
                         this.rightListsEx = this.userInfo.rightListsEx || [];
-                        this.rightListsEx = [{
-                            children: [{
-                                    checked: true,
-                                    rightName: "其他申报",
-                                    rightElCss: "menu-1",
-                                    children: [{
+                        if (Common.getQueryString("test") == "1") {
+                            this.rightListsEx = [{
+                                children: [{
                                         checked: true,
-                                        rightName: "维修申报",
-                                        rightUrl: 'sheetrj?type=0'
+                                        rightName: "其他申报",
+                                        rightElCss: "menu-1",
+                                        children: [{
+                                            checked: true,
+                                            rightName: "维修申报",
+                                            rightUrl: 'sheetrj?type=0'
+                                        }, {
+                                            checked: true,
+                                            rightName: "优化申报",
+                                            rightUrl: 'sheetrj?type=r0'
+                                        }]
+                                    },
+                                    {
+                                        checked: true,
+                                        rightName: "审核管理",
+                                        rightElCss: "menu-1",
+                                        children: [{
+                                            checked: true,
+                                            rightName: "科室审核",
+                                            rightUrl: 'sheetrj?type=1'
+                                        }, {
+                                            checked: true,
+                                            rightName: "处所审核",
+                                            rightUrl: 'sheetrj?type=2'
+                                        }, {
+                                            checked: true,
+                                            rightName: "延期审核",
+                                            rightUrl: 'sheetrj?type=4'
+                                        }]
                                     }, {
                                         checked: true,
-                                        rightName: "优化申报",
-                                        rightUrl: 'sheetrj?type=r0'
-                                    }]
-                                },
-                                {
-                                    checked: true,
-                                    rightName: "审核管理",
-                                    rightElCss: "menu-1",
-                                    children: [{
-                                        checked: true,
-                                        rightName: "科室审核",
-                                        rightUrl: 'sheetrj?type=1'
+                                        rightName: "维修调度",
+                                        rightElCss: "menu-1",
+                                        children: [{
+                                            checked: true,
+                                            rightName: "工单下发",
+                                            rightUrl: 'sheetrj?type=5'
+                                        }, {
+                                            checked: true,
+                                            rightName: "工单指派",
+                                            rightUrl: 'sheetrj?type=6'
+                                        }, {
+                                            checked: true,
+                                            rightName: "维修处置",
+                                            rightUrl: 'sheetrj?type=11'
+                                        }, {
+                                            checked: true,
+                                            rightName: "工单确认",
+                                            rightUrl: 'sheetrj?type=12'
+                                        }, {
+                                            checked: true,
+                                            rightName: "工单评价",
+                                            rightUrl: 'sheetrj?type=13'
+                                        }]
                                     }, {
-                                        checked: true,
-                                        rightName: "处所审核",
-                                        rightUrl: 'sheetrj?type=2'
-                                    }, {
-                                        checked: true,
-                                        rightName: "延期审核",
-                                        rightUrl: 'sheetrj?type=4'
-                                    }]
-                                }, {
-                                    checked: true,
-                                    rightName: "维修调度",
-                                    rightElCss: "menu-1",
-                                    children: [{
-                                        checked: true,
-                                        rightName: "工单下发",
-                                        rightUrl: 'sheetrj?type=5'
-                                    }, {
-                                        checked: true,
-                                        rightName: "工单指派",
-                                        rightUrl: 'sheetrj?type=6'
-                                    }, {
-                                        checked: true,
-                                        rightName: "维修处置",
-                                        rightUrl: 'sheetrj?type=11'
-                                    }, {
-                                        checked: true,
-                                        rightName: "工单确认",
-                                        rightUrl: 'sheetrj?type=12'
-                                    }, {
-                                        checked: true,
-                                        rightName: "工单评价",
-                                        rightUrl: 'sheetrj?type=13'
-                                    }]
-                                }, {
-                                    checked: true,
-                                    rightName: "工单查询",
-                                    rightElCss: "menu-1",
-                                    children: [{
                                         checked: true,
                                         rightName: "工单查询",
-                                        rightUrl: 'sheetrj?type=7'
-                                    }]
-                                }
-                            ]
-                        }]
+                                        rightElCss: "menu-1",
+                                        children: [{
+                                            checked: true,
+                                            rightName: "工单查询",
+                                            rightUrl: 'sheetrj?type=7'
+                                        }]
+                                    }
+                                ]
+                            }]
+                        }
                         sessionStorage.setItem("userInfo", JSON.stringify(this.userInfo));
                         window.userInfo = this.userInfo;
                     }
@@ -147,7 +149,7 @@
                     let isPower = arr.some(item => { return item == this.userInfo.personId });
                     //NOTICETYPE01待办，NOTICETYPE02通知
                     res.type = res.type == 'NOTICETYPE01' ? '待办' : '通知';
-                    if (isPower) {
+                    if (isPower && res.workorderType == 'other') {
                         this.domIndex += 1;
                         res.key = this.domIndex;
                         document.getElementById('audio').play();
@@ -173,9 +175,9 @@
                             if (res.appCode == 0) {
                                 let tableData = res.resultList.result || [];
                                 if (tableData.length > 0) {
-                                    sessionStorage.setItem('transferInfo', JSON.stringify(tableData[0]));
+                                    sessionStorage.setItem('transferrjInfo', JSON.stringify(tableData[0]));
                                     this.$router.push({
-                                        path: '/detsheet',
+                                        path: '/detsheetrj',
                                         query: { pre: entrance, id: obj.wokrorderIds, isread: obj.type == '待办' ? 'edit' : undefined }
                                     });
                                 }
@@ -184,7 +186,7 @@
                         });
                 } else {
                     this.$router.push({
-                        path: '/detsheet',
+                        path: '/detsheetrj',
                         query: { pre: entrance, id: obj.wokrorderIds, isread: obj.type == '待办' ? 'edit' : undefined }
                     });
                 }

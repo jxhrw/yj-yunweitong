@@ -46,11 +46,11 @@
                                     <label>所属部门</label>
                                     <mInput :list="squadronList" :code.sync="squadronCode" :name.sync="squadronName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead"></mInput>
                                 </el-col>
-                                <el-col :span="9">
+                                <!-- <el-col :span="9">
                                     <i class="redStar">*</i>
                                     <label>紧急程度</label>
                                     <mInput :list="urgentList" :code.sync="urgentCode" :name.sync="urgentName" :disabled="isOnlyRead" :clearable="false"></mInput>
-                                </el-col>
+                                </el-col> -->
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
                                     <label>详细地址</label>
@@ -221,7 +221,7 @@
             this.tainCode = this.tainList[0].dicCode;
             this.tainName = this.tainList[0].dicName;
 
-            if (sessionStorage.getItem('detrepSave') == '0') {
+            if (sessionStorage.getItem('detreprjSave') == '0') {
                 this.resetRepair();
             }
         },
@@ -242,13 +242,13 @@
                 this.battalionList = res.resultList || [];
             });
             // 紧急程度
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
-                parentCode: "WORKORDERLEVEL"
-            }).then(res => {
-                this.urgentList = res.resultList || [];
-            }).catch(err => {
-                Common.printErrorLog(err);
-            });
+            // this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
+            //     parentCode: "WORKORDERLEVEL"
+            // }).then(res => {
+            //     this.urgentList = res.resultList || [];
+            // }).catch(err => {
+            //     Common.printErrorLog(err);
+            // });
         },
         methods: {
             submitForm() {
@@ -256,7 +256,7 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                if (this.devTypeCode == "" || this.tainCode == "" || this.battalionCode == "" || this.squadronCode == "" || this.urgentCode == "" || this.address == "") {
+                if (this.devTypeCode == "" || this.tainCode == "" || this.battalionCode == "" || this.squadronCode == "" || this.address == "") {
                     Common.ejMessage("warning", "请选择设备基本信息");
                     return;
                 }
@@ -282,8 +282,8 @@
                     devSpaceName: this.battalionName,
                     devDeptId: this.squadronCode,
                     devDeptName: this.squadronName,
-                    levelCode: this.urgentCode,
-                    levelName: this.urgentName,
+                    // levelCode: this.urgentCode,
+                    // levelName: this.urgentName,
                     detailAddr: this.address,
                     failureDescrible: this.gzdesc,
                     fileInfoList: this.imgSceneList,

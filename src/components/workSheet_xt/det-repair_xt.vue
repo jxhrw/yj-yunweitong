@@ -31,7 +31,7 @@
                                     </mInput>
                                 </el-col>
                                 <el-col :span="18" class="col-alone">
-                                    <!-- <i class="redStar">*</i> -->
+                                    <i class="redStar">*</i>
                                     <label>紧急程度</label>
                                     <div>
                                         <el-tag v-for="item in urgentList" :key="item.dicCode" type="info" effect="light" :class="['a-tag',urgentCode==(item.dicCode)?'active':'']" @click="selectCode('urgent',item)">
@@ -40,7 +40,7 @@
                                     </div>
                                 </el-col>
                                 <el-col :span="18" class="col-alone">
-                                    <!-- <i class="redStar">*</i> -->
+                                    <i class="redStar">*</i>
                                     <label>所属平台</label>
                                     <div>
                                         <el-tag v-for="item in platformList" :key="item.dicCode" type="info" effect="light" :class="['a-tag',platformCode==(item.dicCode)?'active':'']" @click="selectCode('platform',item)">
@@ -187,6 +187,14 @@
                 }
                 if (this.devTypeCode == "") {
                     Common.ejMessage("warning", "请选择所属系统");
+                    return;
+                }
+                if (this.urgentCode == "") {
+                    Common.ejMessage("warning", "请选择紧急程度");
+                    return;
+                }
+                if (this.platformCode == "") {
+                    Common.ejMessage("warning", "请选择所属平台");
                     return;
                 }
                 if (this.gzdesc == "") {

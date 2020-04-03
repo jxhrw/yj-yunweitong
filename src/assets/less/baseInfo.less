@@ -299,6 +299,24 @@
             margin-right: 10px;
             background: #FFFFFF;
             border: 1px solid #E1E7ED;
+            position: relative;
+
+            .icon-file {
+                width: 100%;
+                height: 100%;
+
+                &.file-doc {
+                    background: url("../../assets/images/file-word.png") no-repeat center/100%;
+                }
+
+                &.file-xls {
+                    background: url("../../assets/images/file-execl.png") no-repeat center/100%;
+                }
+
+                &.file-other {
+                    background: url("../../assets/images/file-file.png") no-repeat center/100%;
+                }
+            }
         }
 
         .file-preview {

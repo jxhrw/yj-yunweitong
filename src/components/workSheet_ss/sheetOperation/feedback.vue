@@ -147,6 +147,16 @@
                             Common.ejMessage("success", "操作成功");
                             this.close();
                             this.$emit('callback');
+                            // 反馈完置空
+                            this.failureTypeCode = '';
+                            this.failureTypeName = '';
+                            this.devStatusName = '';
+                            this.devStatusCode = '';
+                            this.failureReason = '';
+                            this.operExplain = '';
+                            this.imgSceneUrl = [];
+                            this.imgSceneList = [];
+                            this.imgSceneHide = [];
                         } else {
                             Common.printErrorLog(res);
                         }

@@ -59,7 +59,7 @@
                 let host = this.$config.efoms_HOST;
                 let method = '/userCheck/selectUser';
                 let token = Common.getQueryString("token");
-                this.$api.getMethod(host, method, { token: token ,systemKey: this.$config.systemKeyFac}, token).then(res => {
+                this.$api.getMethod(host, method, { token: token, systemKey: this.$config.systemKeyFac }, token).then(res => {
                     if (res.appCode == 0) {
                         this.userInfo = res.resultList || {};
 
@@ -79,7 +79,7 @@
                     let isPower = arr.some(item => { return item == this.userInfo.personId });
                     //NOTICETYPE01待办，NOTICETYPE02通知
                     res.type = res.type == 'NOTICETYPE01' ? '待办' : '通知';
-                    if (isPower) {
+                    if (isPower && res.workorderType == 'sign') {
                         this.domIndex += 1;
                         res.key = this.domIndex;
                         document.getElementById('audio').play();
@@ -105,7 +105,7 @@
                             if (res.appCode == 0) {
                                 let tableData = res.resultList.result || [];
                                 if (tableData.length > 0) {
-                                    sessionStorage.setItem('transferInfo', JSON.stringify(tableData[0]));
+                                    sessionStorage.setItem('transferssInfo', JSON.stringify(tableData[0]));
                                     this.$router.push({
                                         path: '/detsheetss',
                                         query: { pre: entrance, id: obj.wokrorderIds, isread: obj.type == '待办' ? 'edit' : undefined }

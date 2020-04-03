@@ -154,6 +154,7 @@
         margin-right: 10px;
         background: #ffffff;
         border: 1px solid #e1e7ed;
+        position: relative;
     }
 
     .content-img-upload .img-preview .img-del {
@@ -163,6 +164,7 @@
         height: 15px;
         position: absolute;
         bottom: 1px;
+        left: 0;
     }
 
     .content-img-upload .img-preview .img-del p {

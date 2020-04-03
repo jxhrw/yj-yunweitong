@@ -78,7 +78,7 @@
                     let isPower = arr.some(item => { return item == this.userInfo.personId });
                     //NOTICETYPE01待办，NOTICETYPE02通知
                     res.type = res.type == 'NOTICETYPE01' ? '待办' : '通知';
-                    if (isPower) {
+                    if (isPower && res.workorderType == 'device') {
                         this.domIndex += 1;
                         res.key = this.domIndex;
                         document.getElementById('audio').play();

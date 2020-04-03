@@ -1,7 +1,7 @@
 <template>
     <div class="unit-tab-operation">
         <!-- 维修申报页面，并且状态为待下发ORDERSSTATUS01时出现，下发已拒绝ORDERSSTATUS10 -->
-        <div v-if="(title=='维修申报')&&(scope.row.workStatusCode == 'ORDERSSTATUS01'||scope.row.workStatusCode == 'ORDERSSTATUS10')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
+        <!-- <div v-if="(title=='维修申报')&&(scope.row.workStatusCode == 'ORDERSSTATUS01'||scope.row.workStatusCode == 'ORDERSSTATUS10')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div> -->
         <!-- 科室审核页面+处室审核页面，并且状态为待审核时出现 -->
         <div v-if="(title=='科室审核'&&scope.row.workStatusCode == 'REPAIRSTATUS05')||(title=='处室审核'&&scope.row.workStatusCode == 'REPAIRSTATUS06')" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
         <!-- 工单下发页面，并且状态为待下发ORDERSSTATUS01时出现，下发已拒绝ORDERSSTATUS10 -->
@@ -19,11 +19,11 @@
         <!-- 延期审核页面，并且状态为待审核时出现 -->
         <div v-if="title=='延期审核'&&scope.row.isDefer===true" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
         <!-- 转单审核页面，并且状态为待审核时出现 -->
-        <div v-if="title=='转单审核'&&queryConditions.type=='0'" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
+        <!-- <div v-if="title=='转单审核'&&queryConditions.type=='0'" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div> -->
         <!-- 材料审核页面，并且状态为待审核时出现 -->
-        <div v-if="title=='材料审核'&&queryConditions.type=='0'" class="tab-operation" @click="handleOther(scope.row)">审核</div>
+        <!-- <div v-if="title=='材料审核'&&queryConditions.type=='0'" class="tab-operation" @click="handleOther(scope.row)">审核</div> -->
         <!-- 材料超期工单，并且状态为已超期时出现 -->
-        <div v-if="title=='超期工单'&&queryConditions.type=='0'" class="tab-operation" @click="dataDetail(scope.row,'edit')">操作</div>
+        <!-- <div v-if="title=='超期工单'&&queryConditions.type=='0'" class="tab-operation" @click="dataDetail(scope.row,'edit')">操作</div> -->
 
         <div class="tab-operation" @click="dataDetail(scope.row)">详情</div>
     </div>

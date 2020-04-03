@@ -486,6 +486,7 @@
         margin-right: 10px;
         background: #FFFFFF;
         border: 1px solid #E1E7ED;
+        position: relative;
     }
 
     .operation-info .operation-main .operation-content .complete-content .content-row-explain .img-preview .img-del {
@@ -495,6 +496,7 @@
         height: 15px;
         position: absolute;
         bottom: 1px;
+        left: 0;
     }
 
     .operation-info .operation-main .operation-content .complete-content .content-row-explain .img-preview .img-del p {

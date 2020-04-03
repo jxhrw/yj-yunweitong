@@ -112,22 +112,22 @@
                                             <span>{{workordersInfo.detailAddr}}</span>
                                         </el-col>
 
-                                        <el-col :span="9">
+                                        <!-- <el-col :span="9">
                                             <label>紧急程度</label>
                                             <span>{{workordersInfo.levelName}}</span>
-                                        </el-col>
+                                        </el-col> -->
                                         <el-col :span="9">
                                             <label>申报时间</label>
                                             <span>{{workordersInfo.repDate}}</span>
                                         </el-col>
 
                                         <el-col :span="9">
-                                            <label>维护单位</label>
-                                            <span>{{workordersInfo.oppmDeptName}}</span>
-                                        </el-col>
-                                        <el-col :span="9">
                                             <label>期限完成时间</label>
                                             <span>{{workordersInfo.deadlineTime}}</span>
+                                        </el-col>
+                                        <el-col :span="9">
+                                            <label>维护单位</label>
+                                            <span>{{workordersInfo.oppmDeptName}}</span>
                                         </el-col>
                                         <el-col :span="9">
                                             <label>维修组</label>
@@ -896,6 +896,8 @@
                             this.dialogUrgeVisible = false;
                             sessionStorage.setItem('relaodPage', '1'); //操作了催办回到列表刷新
                             this.dataDetail();
+                            // 提交完置空
+                            this.operExplain = '';
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -1136,7 +1138,7 @@
                                 resolve(false);
                             });
                     } else {
-                        resolve(false);
+                        resolve(true);
                     }
                 });
             },
@@ -1737,6 +1739,9 @@
                         color: #737e84;
                         margin: 0;
                         box-sizing: border-box;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
                     }
 
                     span {
@@ -1757,6 +1762,8 @@
                         line-height: 16px;
                         padding: 5px 0 5px 7px;
                         box-sizing: border-box;
+                        display: flex;
+                        align-items: center;
 
                         &:last-child {
                             border-right: 1px solid #e4ebe9;

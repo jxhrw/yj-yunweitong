@@ -9,7 +9,7 @@
                 </el-col>
                 <el-col :span="7">
                     <label style="white-space: nowrap;">现管理单位</label>
-                    <mSelectMult :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
+                    <mSelectMult class="spc-height" :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
                     <label>所属系统</label>

@@ -111,17 +111,13 @@
                                             <label>设施类别</label>
                                             <span>{{workordersInfo.devTypeName}}</span>
                                         </el-col>
-                                        <el-col :span="9">
+                                        <!-- <el-col :span="9">
                                             <label>申报来源</label>
                                             <span>{{workordersInfo.repSourceName}}</span>
-                                        </el-col>
+                                        </el-col> -->
                                         <el-col :span="9">
                                             <label>申报时间</label>
                                             <span>{{workordersInfo.repDate}}</span>
-                                        </el-col>
-                                        <el-col :span="9">
-                                            <label>道路信息</label>
-                                            <span>{{workordersInfo.listSignsWorkordersRoad|roadShow}}</span>
                                         </el-col>
                                         <el-col :span="9">
                                             <label>期限完成时间</label>
@@ -132,18 +128,22 @@
                                             <span>{{workordersInfo.devDeptName}}</span>
                                         </el-col>
                                         <el-col :span="9">
+                                            <label>道路信息</label>
+                                            <span>{{workordersInfo.listSignsWorkordersRoad|roadShow}}</span>
+                                        </el-col>
+                                        <el-col :span="9">
                                             <label>所属中队</label>
                                             <span>{{workordersInfo.squadronName}}</span>
                                         </el-col>
-                                        <el-col :span="9">
+                                        <!-- <el-col :span="9">
                                             <label>维护单位</label>
                                             <span>{{dispatchInfoLast.opDeptName}}</span>
-                                        </el-col>
+                                        </el-col> -->
                                         <!-- <el-col :span="9">
                                             <label>期限完成时间</label>
                                             <span>{{workordersInfo.deadlineTime}}</span>
                                         </el-col> -->
-                                        <el-col :span="9">
+                                        <!-- <el-col :span="9">
                                             <label>管理辖区</label>
                                             <span>{{workordersInfo.devAreaName}}</span>
                                         </el-col>
@@ -154,7 +154,7 @@
                                         <el-col :span="9">
                                             <label>维修人员</label>
                                             <span>{{appointInfoLast.workordersPersonRltList|opPersonNameShow}}</span>
-                                        </el-col>
+                                        </el-col> -->
                                         <el-col :span="9" v-show="workordersInfo. countdownTime">
                                             <label>维修倒计时</label>
                                             <span>{{workordersInfo. countdownTime}}</span>
@@ -177,10 +177,17 @@
                                         </el-col>
 
                                         <el-col :span="24" class="content-row-img">
-                                            <label>上传照片</label>
+                                            <label>照片/文件</label>
                                             <template v-for="(item,index) in imgFileList">
                                                 <el-image class="img-preview" :key="index" :src="item" :preview-src-list="imgFileList.slice(index).concat(imgFileList.slice(0,index))" fit="fill">
                                                 </el-image>
+                                            </template>
+                                            <template v-for="(item,index2) in otherFileList">
+                                                <div :key="index2+'a'" class="img-preview">
+                                                    <a v-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
+                                                    <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
+                                                    <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
+                                                </div>
                                             </template>
                                         </el-col>
                                     </el-row>
@@ -409,7 +416,7 @@
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
                                                     <span class="file-name">
-                                                        <div v-for="(item1,index) in materialFileList(item.materialRltList)" :key="index" class="file-single">
+                                                        <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
                                                             <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
                                                             <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
                                                             <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
@@ -687,7 +694,7 @@
                         <div style="width:590px;display:inline-block;overflow:hidden;">
                             <ul class="mt-list mt-list-th">
                                 <li>
-                                    <span class="mtl1">备件名称</span>
+                                    <span class="mtl1">材料名称</span>
                                     <span class="mtl2">申请数量</span>
                                     <span class="mtl3">数量单位</span>
                                     <span class="mtl5">附件</span>
@@ -831,7 +838,7 @@
                 let arr = [];
                 list = list || [];
                 list.map(item => {
-                    arr.push(item.blockName || item.corssName || '');
+                    arr.push(`${item.roadName}(${item.beginCrossName}-${item.endCrossName})`);
                 });
                 return arr.join(',');
             }
@@ -853,6 +860,7 @@
                 appointInfoLast: {},
 
                 imgFileList: [],
+                otherFileList: [],
                 cancelReasonCode: "",
 
                 dialogDelayVisible: false,
@@ -957,6 +965,8 @@
                             this.dialogUrgeVisible = false;
                             sessionStorage.setItem('relaodPage', '1'); //操作了催办回到列表刷新
                             this.dataDetail();
+                            // 提交完置空
+                            this.operExplain = '';
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -1063,6 +1073,17 @@
                     return;
                 }
 
+                let isChooseRoal = true;
+                this.materialList.map(item => {
+                    if (!item.materialCode || !item.materialNum || !item.materialUnit) {
+                        isChooseRoal = false;
+                    }
+                });
+                if (this.materialList.length == 0 || !isChooseRoal) {
+                    Common.ejMessage("warning", "材料名称，申请数量，数量单位必填");
+                    return;
+                }
+
                 this.isAjaxing = true;
                 this.$api.post(`${this.$config.efoms_HOST}/signsWorkordersRecord/signsWorkordersMaterial`, {
                         signsWorkordersId: this.workordersInfo.signsWorkordersId,
@@ -1076,6 +1097,11 @@
                             Common.ejMessage("success");
                             this.dialogMaterialVisible = false;
                             this.dataDetail();
+                            // 提交之后置空
+                            this.materialList = [];
+                            this.materialListIndex = -1;
+                            this.materialFiles = [];
+                            this.operMaterialExplain = '';
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -1147,7 +1173,7 @@
 
                 return new Promise((resolve, reject) => {
                     if (this.prePage == '维修处置' || this.prePage == '工单指派') {
-                        this.$api.get(`${this.$config.efoms_HOST}/SignsWorkordersInfo/getSignsWorkordersInfo`, { workOtherId: this.$route.query.id }, { token: this.token })
+                        this.$api.get(`${this.$config.efoms_HOST}/SignsWorkordersInfo/getSignsWorkordersInfo`, { signsWorkordersId: this.$route.query.id }, { token: this.token })
                             .then(res => {
                                 if (res.appCode == 0) {
                                     let obj = res.resultList || {};
@@ -1165,7 +1191,7 @@
                                 resolve(false);
                             });
                     } else {
-                        resolve(false);
+                        resolve(true);
                     }
                 });
             },
@@ -1267,6 +1293,7 @@
 
                             let fileInfoList = this.workordersInfo.fileInfoList || [];
                             this.imgFileList = [];
+                            this.otherFileList = [];
                             fileInfoList.forEach(item => {
                                 if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName)) {
                                     let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
@@ -1278,6 +1305,8 @@
                                     } else {
                                         this.imgFileList.push(item.mappingAddress);
                                     }
+                                } else {
+                                    this.otherFileList.push(item);
                                 }
                             });
 
@@ -1291,11 +1320,12 @@
                     });
             },
             getTranferInfo() {
-                this.workordersInfo = JSON.parse(sessionStorage.getItem('transferInfo') || '{}');
+                this.workordersInfo = JSON.parse(sessionStorage.getItem('transferssInfo') || '{}');
                 this.workordersStatusCode = this.workordersInfo.workordersStatusCode || '';
 
                 let fileInfoList = this.workordersInfo.fileInfoList;
                 this.imgFileList = [];
+                this.otherFileList = [];
                 fileInfoList.forEach(item => {
                     if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName)) {
                         let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
@@ -1307,13 +1337,15 @@
                         } else {
                             this.imgFileList.push(item.mappingAddress);
                         }
+                    } else {
+                        this.otherFileList.push(item);
                     }
                 });
             },
             setTransferInfo(callbackData) {
                 // 更新当前详情的信息，防止刷新时处理逻辑还是老的
                 this.workordersInfo.handleResult = callbackData;
-                sessionStorage.setItem('transferInfo', JSON.stringify(this.workordersInfo));
+                sessionStorage.setItem('transferssInfo', JSON.stringify(this.workordersInfo));
             },
             getNextStep() {
                 if (this.$route.query.isread != 'edit') {
@@ -1803,13 +1835,16 @@
                         border-right: none;
                         font-size: 12px;
                         width: 80px;
-                        height: 27px;
+                        // height: 27px;
                         display: block;
                         line-height: 25px;
                         text-align: center;
                         color: #737e84;
                         margin: 0;
                         box-sizing: border-box;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
                     }
 
                     span {
@@ -1818,16 +1853,20 @@
                         border-right: none;
                         font-size: 12px;
                         width: 135px;
-                        height: 27px;
+                        // height: 27px;
                         display: block;
                         line-height: 25px;
                         text-align: left;
                         color: #4f5a64;
                         padding-left: 7px;
-                        overflow: hidden;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
+                        // overflow: hidden;
+                        // white-space: nowrap;
+                        // text-overflow: ellipsis;
+                        line-height: 16px;
+                        padding: 5px 0 5px 7px;
                         box-sizing: border-box;
+                        display: flex;
+                        align-items: center;
 
                         &:last-child {
                             border-right: 1px solid #e4ebe9;

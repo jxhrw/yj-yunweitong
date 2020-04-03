@@ -23,7 +23,7 @@
                     <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd" @keyup.enter.native="searchTableInfo">
                     </el-date-picker>
                 </el-col>
-                <el-col :span="7" v-show="title!='工单查询'&&title!='维修申报'">
+                <el-col :span="7" v-show="title!='工单查询'&&title!='维修申报'&&title!='停用查询'">
                     <label>查询类型</label>
                     <mInput :list="typeList" :code.sync="typeCode" :name.sync="typeName" :clearable="false" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
@@ -31,10 +31,14 @@
                     <label>当前状态</label>
                     <mSelectMult :list="stateList" :code.sync="stateCode" :name.sync="stateName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
+                <el-col :span="7" v-show="title=='停用查询'">
+                    <label>工单编号</label>
+                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
+                </el-col>
             </template>
 
             <template slot="condSecond">
-                <el-col :span="7">
+                <el-col :span="7" v-show="title!='停用查询'">
                     <label>工单编号</label>
                     <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
                 </el-col>
@@ -608,6 +612,8 @@
                             Common.ejMessage("success", "操作成功")
                             this.dialogUrgeVisible = false;
                             this.searchPageInfo();
+                            // 提交完置空
+                            this.operExplain = '';
                         } else {
                             Common.printErrorLog(res);
                         }

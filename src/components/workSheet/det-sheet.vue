@@ -647,7 +647,7 @@
                         <div style="width:590px;display:inline-block;overflow:hidden;">
                             <ul class="mt-list mt-list-th">
                                 <li>
-                                    <span class="mtl1">备件名称</span>
+                                    <span class="mtl1">材料名称</span>
                                     <span class="mtl2">申请数量</span>
                                     <span class="mtl3">数量单位</span>
                                     <span class="mtl5">附件</span>
@@ -909,6 +909,8 @@
                             this.dialogUrgeVisible = false;
                             sessionStorage.setItem('relaodPage', '1'); //操作了催办回到列表刷新
                             this.dataDetail();
+                            // 提交完置空
+                            this.operExplain = '';
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -1042,6 +1044,16 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
+                let isChooseRoal = true;
+                this.materialList.map(item => {
+                    if (!item.materialCode || !item.materialNum || !item.materialUnit) {
+                        isChooseRoal = false;
+                    }
+                });
+                if (this.materialList.length == 0 || !isChooseRoal) {
+                    Common.ejMessage("warning", "材料名称，申请数量，数量单位必填");
+                    return;
+                }
 
                 this.isAjaxing = true;
                 this.$api.post(`${this.$config.efoms_HOST}/workorders/opr/materialApply`, {
@@ -1056,6 +1068,11 @@
                             Common.ejMessage("success");
                             this.dialogMaterialVisible = false;
                             this.dataDetail();
+                            // 提交之后置空
+                            this.materialList = [];
+                            this.materialListIndex = -1;
+                            this.materialFiles = [];
+                            this.operMaterialExplain = '';
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -1131,7 +1148,7 @@
 
                 return new Promise((resolve, reject) => {
                     if (this.prePage == '维修处置' || this.prePage == '工单指派') {
-                        this.$api.get(`${this.$config.efoms_HOST}/workorders/getWorkordersInfoById`, { workOtherId: this.$route.query.id }, { token: this.token })
+                        this.$api.get(`${this.$config.efoms_HOST}/workorders/getWorkordersInfoById`, { workordersId: this.$route.query.id }, { token: this.token })
                             .then(res => {
                                 if (res.appCode == 0) {
                                     let obj = res.resultList || {};
@@ -1149,7 +1166,7 @@
                                 resolve(false);
                             });
                     } else {
-                        resolve(false);
+                        resolve(true);
                     }
                 });
             },
@@ -1817,6 +1834,9 @@
                         color: #737e84;
                         margin: 0;
                         box-sizing: border-box;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
                     }
 
                     span {
@@ -1837,6 +1857,8 @@
                         line-height: 16px;
                         padding: 5px 0 5px 7px;
                         box-sizing: border-box;
+                        display: flex;
+                        align-items: center;
 
                         &:last-child {
                             border-right: 1px solid #e4ebe9;

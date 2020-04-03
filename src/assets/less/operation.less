@@ -226,6 +226,7 @@
                         margin-right: 10px;
                         background: #FFFFFF;
                         border: 1px solid #E1E7ED;
+                        position: relative;
 
                         .img-del {
                             opacity: 0.62;
@@ -234,6 +235,7 @@
                             height: 15px;
                             position: absolute;
                             bottom: 1px;
+                            left: 0;
 
                             p {
                                 font-size: 10px;
@@ -241,6 +243,23 @@
                                 text-align: center;
                                 cursor: pointer;
                                 ;
+                            }
+                        }
+
+                        .icon-file {
+                            width: 100%;
+                            height: 100%;
+
+                            &.file-doc {
+                                background: url("../../assets/images/file-word.png") no-repeat center/100%;
+                            }
+
+                            &.file-xls {
+                                background: url("../../assets/images/file-execl.png") no-repeat center/100%;
+                            }
+
+                            &.file-other {
+                                background: url("../../assets/images/file-file.png") no-repeat center/100%;
                             }
                         }
                     }

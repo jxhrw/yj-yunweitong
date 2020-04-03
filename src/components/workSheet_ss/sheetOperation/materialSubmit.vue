@@ -6,7 +6,7 @@
                 <label for>材料提交</label>
                 <i class="close" @click="close">X</i>
             </div>
-            <div class="operation-content">
+            <div class="operation-content" style="height: 420px;">
                 <div class="complete-content">
                     <el-row class="content-row-select">
                         <el-col :span="18" class="col-flex">
@@ -19,7 +19,7 @@
                                     <span class="cl4">单价</span>
                                     <span class="cl5">数量</span>
                                     <span class="cl6">备注</span>
-                                    <span class="cl8">附件</span>
+                                    <!-- <span class="cl8">附件</span> -->
                                     <span class="cl7"><i class="el-icon-circle-plus-outline" @click="openDialog"></i></span>
                                 </div>
                                 <el-scrollbar class="col-scroll">
@@ -31,7 +31,7 @@
                                         <el-input placeholder="请输入" v-model="item.materialNum" class="in cl5"></el-input>
                                         <el-input placeholder="请输入" v-model="item.memo" class="dialog-textarea cl6">
                                         </el-input>
-                                        <div class="cl8" v-if="item.fileInfoList && item.fileInfoList.length>0">
+                                        <!-- <div class="cl8" v-if="item.fileInfoList && item.fileInfoList.length>0">
                                             <template v-for="(res,ix) in item.fileInfoList">
                                                 <div class="ms-files" :key="ix">
                                                     <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${token}`:res.fileURL" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${token}`:res.fileURL]" fit="fill"></el-image>
@@ -50,7 +50,7 @@
                                             <el-upload style="display:block;" :action="`${$config.efoms_HOST}/file/uploadFile`" list-type="picture-card" :headers="{token:token}" :on-success="handleSuccessList" :show-file-list="false" @click.native="materialListIndex=index">
                                                 <i slot="default" class="el-icon-plus"></i>
                                             </el-upload>
-                                        </div>
+                                        </div> -->
                                         <span class="cl7"><i class="el-icon-remove-outline" @click="removeMaterial(index)"></i></span>
                                     </div>
                                 </el-scrollbar>
@@ -58,14 +58,17 @@
                         </el-col>
                     </el-row>
                     <el-row class="content-row-select">
-                        <el-col :span="9">
-                            <label class="content-label">备注</label>
-                            <el-input type="textarea" :rows="3" placeholder="请输入内容" class="content-textarea" v-model="failureReason" resize="none"></el-input>
+                        <el-col :span="18">
+                            <label class="content-label" style="white-space: nowrap;width: 60px;margin-left: -12px;">工程量备注</label>
+                            <el-input type="textarea" :rows="1" placeholder="请输入内容" class="content-textarea" style="width: calc(100% - 60px);" v-model="failureReason" resize="none"></el-input>
+                        </el-col>
+                        <el-col :span="6">
+                            <p style="text-align:right;">总金额： {{money}}元</p>
                         </el-col>
                     </el-row>
-                    <!-- <el-row class="content-row-explain content-row-first">
+                    <el-row class="content-row-explain content-row-first">
                         <el-col :span="24" class="content-row-img">
-                            <label>图片上传</label>
+                            <label>维修照片</label>
                             <template v-for="(item,index) in imgSceneUrl">
                                 <div class="img-preview" :key="index">
                                     <el-image style="width: 100%; height: 100%" :src="item" :preview-src-list="imgSceneUrl">
@@ -80,8 +83,29 @@
                                 <input type="file" id="imgFile1" name="" style="display:none" ref="imgFile" @change="upload('imgFile1','img','imgScene')" multiple="multiple">
                             </div>
                         </el-col>
-                    </el-row> -->
-                    <div class="ej-content-operation" style="margin-top:30px;">
+                    </el-row>
+                    <el-row class="content-row-explain content-row-first">
+                        <el-col :span="24" class="content-row-img">
+                            <label>材料附件</label>
+                            <template v-for="(item,index) in imgOptList">
+                                <div class="img-preview" :key="index">
+                                    <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" style="width: 100%; height: 100%" :src="item.fileURL" :preview-src-list="[item.fileURL]"></el-image>
+                                    <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileURL"></a>
+                                    <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileURL"></a>
+                                    <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileURL"></a>
+
+                                    <div class="img-del" @click="delImg(index,'imgOpt')">
+                                        <p>删除</p>
+                                    </div>
+                                </div>
+                            </template>
+                            <div class="img-add" @click="$refs.imgFileY.click()">
+                                <img src="../../../assets/images/icon-upload.png" width="24" height="24" alt="">
+                                <input type="file" id="imgFile2" name="" style="display:none" ref="imgFileY" @change="upload('imgFile2','otherFile','imgOpt')" multiple="multiple">
+                            </div>
+                        </el-col>
+                    </el-row>
+                    <div class="ej-content-operation" style="margin-top:18px;">
                         <div class="submit" @click="submitMaterial">
                             <p>提交</p>
                         </div>
@@ -138,6 +162,7 @@
     import Common from "@/assets/js/common.js";
     import mInput from "@/components/common/selectDrop";
     import Paging from "@/components/common/paging_new";
+    var _THIS;
     export default {
         props: ['data'],
         components: {
@@ -159,19 +184,24 @@
                 imgSceneUrl: [], //图片地址集合,用于显示
                 imgSceneList: [], //图片文件属性集合,用于上传
                 imgSceneHide: [], //图片文件属性集合,存储上传成功返回值
+
+                imgOptUrl: [], //图片地址集合,用于显示
+                imgOptList: [], //图片文件属性集合,用于上传
+                imgOptHide: [], //图片文件属性集合,存储上传成功返回值
                 isShow: false,
                 isAjaxing: false,
                 dialogMrVisible: false,
 
                 isTableLoading: false,
                 tableData: [],
-                totalCount: 10,
+                totalCount: 0,
                 totalPage: 1,
                 queryConditions: {},
                 name: '',
                 materialDtoList: [],
                 materialListIndex: -1, // 当前处理材料列表的索引（关联附件）
                 multipleSelection: [], // 弹窗选中的数据
+                money: 0
             };
         },
         watch: {
@@ -185,8 +215,20 @@
                     });
                 });
             },
+            materialDtoList: {
+                handler: (val) => {
+                    let arr = val || [];
+                    let num = 0;
+                    arr.map(item => {
+                        num += item.materialUnitPrice * (item.materialNum || 0)
+                    });
+                    _THIS.money = num;
+                },
+                deep: true
+            }
         },
         mounted() {
+            _THIS = this;
             this.token = Common.getQueryString("token");
             this.workordersInfo = this.data || {};
         },
@@ -203,7 +245,12 @@
                 // }
 
                 this.isAjaxing = true;
-                this.$api.post(`${this.$config.efoms_HOST}/signsWorkordersRecord/signsWorkordersMaterial?signsWorkordersId=${this.workordersInfo.signsWorkordersId}&operExplain=${this.failureReason}`, this.materialDtoList, { token: this.token })
+                this.$api.post(`${this.$config.efoms_HOST}/signsWorkordersRecord/signsWorkordersMaterialNew?signsWorkordersId=${this.workordersInfo.signsWorkordersId}&operExplain=${this.failureReason}`,
+                        // this.materialDtoList,
+                        {
+                            listMaterialRlt: this.materialDtoList,
+                            fileInfoList: [...this.imgSceneList, ...this.imgOptList]
+                        }, { token: this.token })
                     .then(res => {
                         this.isAjaxing = false;
                         if (res.appCode == 0) {
@@ -412,16 +459,21 @@
                     });
             },
             upload(fileId, type, arrNamePre) {
-                var flag = false;
+                var fileList = document.getElementById(fileId).files;
+                for (let i = 0; i < fileList.length; i++) {
+                    setTimeout(() => {
+                        this.uploadLoop(fileList[i], type, arrNamePre);
+                        if (i == fileList.length - 1) document.getElementById(fileId).value = '';
+                    }, i * 300);
+                }
+            },
+            uploadLoop(file, type, arrNamePre) {
                 var header = {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Accept": "application/json;charset=UTF-8",
                     token: this.token
                 };
-                var formData = new FormData();
-                var file = document.getElementById(fileId).files[0];
-                formData.append("file", file);
-
+                var flag = false;
                 switch (type) {
                     case "img":
                         if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(file.name)) {
@@ -430,14 +482,16 @@
                             Common.ejMessage("warning", "图片限于png,gif,jpeg,jpg格式");
                         }
                         break;
-                        // case "otherFile":
-                        //     flag = true;
-                        //     break;
+                    case "otherFile":
+                        flag = true;
+                        break;
                     default:
                         break;
                 }
                 if (!flag) return;
 
+                var formData = new FormData();
+                formData.append("file", file);
                 this.$api.post(`${this.$config.efoms_HOST}/file/uploadFile`, formData, header).then(res => {
                         if (res.appCode == 0) {
                             switch (type) {
@@ -447,26 +501,32 @@
                                     } else {
                                         this[`${arrNamePre}Url`].push(res.resultList.downloadPath);
                                     }
+                                    console.log(`${this.$config.baseimgs}?path=${res.resultList.downloadPath}&token=${this.token}`)
 
                                     this[`${arrNamePre}Hide`].push(res.resultList);
                                     this[`${arrNamePre}List`].push({
                                         fileName: file.name,
                                         fileURL: res.resultList.downloadPath,
-                                        fileMode: file.name
-                                            .slice(file.name.lastIndexOf(".") + 1)
-                                            .toLowerCase()
+                                        fileMode: 0
                                     });
                                     break;
-                                    // case "otherFile":
-                                    //     this.otherFiles.push(res.resultList);
-                                    //     this.otherFileList.push({
-                                    //         fileName: file.name,
-                                    //         fileURL: res.resultList.downloadPath,
-                                    //         fileMode: file.name
-                                    //             .slice(file.name.lastIndexOf(".") + 1)
-                                    //             .toLowerCase()
-                                    //     });
-                                    //     break;
+                                case "otherFile":
+                                    let a = /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.resultList.fileName);
+                                    if (a) {
+                                        if (this.$config.baseimgs) {
+                                            this[`${arrNamePre}Url`].push(`${this.$config.baseimgs}?path=${res.resultList.downloadPath}&token=${this.token}`);
+                                        } else {
+                                            this[`${arrNamePre}Url`].push(res.resultList.downloadPath);
+                                        }
+                                    }
+
+                                    this[`${arrNamePre}Hide`].push(res.resultList);
+                                    this[`${arrNamePre}List`].push({
+                                        fileName: file.name,
+                                        fileURL: res.resultList.downloadPath,
+                                        fileMode: 3
+                                    });
+                                    break;
                                 default:
                                     break;
                             }

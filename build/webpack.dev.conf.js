@@ -122,6 +122,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
                 ignore: ['.*']
             },
             {
+                from: path.resolve(__dirname, '../static/lxd.html'),
+                to: config.dev.outConfigPath,
+                ignore: ['.*']
+            },
+            {
                 from: path.resolve(__dirname, '../static/config/config.js'),
                 to: config.dev.outConfigPath,
                 ignore: ['.*']

@@ -25,10 +25,19 @@ const contract = resolve => require(['components/workSheet_ss/contract'], resolv
 const detcontract = resolve => require(['components/workSheet_ss/det-contract'], resolve);
 const material = resolve => require(['components/workSheet_ss/material'], resolve);
 const detmaterial = resolve => require(['components/workSheet_ss/det-material'], resolve);
+const contact = resolve => require(['components/workSheet_ss/contact'], resolve);
 
 export default new Router({
     mode: 'hash',
     routes: [{
+        path: '/contact',
+        name: 'contact',
+        component: contact,
+        meta: {
+            isUseCache: false,
+            keepAlive: true
+        }
+    }, {
         path: '/detmaterial',
         name: 'detmaterial',
         component: detmaterial
