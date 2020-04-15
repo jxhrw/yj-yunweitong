@@ -10,7 +10,7 @@
                         <div class="content">
                             <el-row class="content-row-select">
                                 <el-col :span="7">
-                                    <label>所属系统</label>
+                                    <label>设施类别</label>
                                     <mInput :list="systemList" :code.sync="systemCode" :name.sync="systemName" @keyup.enter.native="searchTableInfo"></mInput>
                                 </el-col>
                                 <el-col :span="7">
@@ -38,7 +38,7 @@
                         <div class="content">
                             <el-table :highlight-current-row="false" :data="tableData" border class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                                 <el-table-column type="index" label="编号"></el-table-column>
-                                <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
+                                <el-table-column prop="devTypeName" label="设施类别" show-overflow-tooltip></el-table-column>
                                 <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column>
                                 <el-table-column label="默认期限完成时间" show-overflow-tooltip>
                                     <template slot-scope="scope">
@@ -63,7 +63,7 @@
                         <el-dialog title="添加/修改" :visible.sync="detailVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                             <div class="dialog-main">
                                 <div class="revoke-reason">
-                                    <label class="dialog-label"><span>*</span>所属系统</label>
+                                    <label class="dialog-label"><span>*</span>设施类别</label>
                                     <mInput :list="systemList" :code.sync="detailInfo.devTypeCode" :name.sync="devTypeName" class="dialog-select"></mInput>
                                 </div>
                                 <div class="revoke-reason">
@@ -126,10 +126,8 @@
             this.token = Common.getQueryString("token");
             this.searchTableInfo();
 
-            //所属系统
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "REPDEVCATEGORY01" }).then(res => {
-                this.systemList = res.resultList || [];
-            });
+            //设施类别
+            this.systemList = [{ dicCode: '1', dicName: '电子设施' }, { dicCode: '2', dicName: '非电子设施' }];
             //维修类型
             this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }];
         },
@@ -147,7 +145,7 @@
             },
             searchPageInfo() {
                 this.isTableLoading = true;
-                this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfPageDev`, this.queryConditions, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfPageSign`, this.queryConditions, { token: this.token })
                     .then(res => {
                         setTimeout(load => {
                             this.isTableLoading = false;
@@ -195,7 +193,7 @@
                     return;
                 }
                 if (!this.detailInfo.devTypeCode || this.detailInfo.devTypeCode == '') {
-                    Common.ejMessage("warning", "所属系统必填");
+                    Common.ejMessage("warning", "设施类别必填");
                     return;
                 }
                 if (!this.detailInfo.typeCode || this.detailInfo.typeCode == '') {
@@ -216,9 +214,9 @@
                 this.isAjaxing = true;
                 let ajxQA;
                 if (this.detailInfo.deadlineConfId) {
-                    ajxQA = this.$api.put(`${this.$config.efoms_HOST}/workorderDeadline/updateDeadlineConf`, { ...this.detailInfo, ...{ workType: '1' } }, { token: this.token, "Content-Type": "application/json;charset=UTF-8" });
+                    ajxQA = this.$api.put(`${this.$config.efoms_HOST}/workorderDeadline/updateDeadlineConf`, { ...this.detailInfo, ...{ workType: '2' } }, { token: this.token, "Content-Type": "application/json;charset=UTF-8" });
                 } else {
-                    ajxQA = this.$api.post(`${this.$config.efoms_HOST}/workorderDeadline/insertDeadlineConfDev`, this.detailInfo, { token: this.token });
+                    ajxQA = this.$api.post(`${this.$config.efoms_HOST}/workorderDeadline/insertDeadlineConfSign`, this.detailInfo, { token: this.token });
                 }
                 ajxQA.then(res => {
                         this.isAjaxing = false;

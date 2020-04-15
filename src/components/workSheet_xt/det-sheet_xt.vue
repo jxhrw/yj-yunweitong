@@ -234,6 +234,17 @@
                                                     <label for="">备注</label>
                                                     <span style="width: 996px;">{{item.operExplain}}</span>
                                                 </div>
+                                                <div class="content file-info">
+                                                    <label for="">附件</label>
+                                                    <span class="file-name">
+                                                        <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
+                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
+                                                            <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
+                                                        </div>
+                                                    </span>
+                                                </div>
                                             </template>
 
                                             <!-- 反馈ORDEROPERTYPE07 -->
@@ -497,7 +508,7 @@
                             let fileInfoList = this.workordersInfo.fileInfoList;
                             this.imgFileList = [];
                             fileInfoList.forEach(item => {
-                                if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName)) {
+                                if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)) {
                                     let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
                                     fileUrl = fileUrl.replace('&fileName=', '/');
                                     item.mappingAddress = fileUrl;
@@ -936,7 +947,7 @@
 
             &.revoke-info {
                 &::before {
-                    content: "\64A4\9500";
+                    content: "\5173\95ed";
                 }
 
                 // .content .revoke-record {

@@ -56,14 +56,18 @@
                     <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devTypeName" label="设施类别" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="aaaaa" label="打印状态" show-overflow-tooltip></el-table-column>
-                    <el-table-column label="操作" :min-width="$route.query.type=='2'?140:100">
+                    <el-table-column prop="aaaaa" label="打印状态" show-overflow-tooltip>
                         <template slot-scope="scope">
-                            <div class="tab-operation" @click="printing(scope.row,'edit')">打印</div>
-                            <div v-if="$route.query.type!='0'" class="tab-operation" @click="handleAnnex(scope.row)">附件</div>
+                            {{scope.row.isPrintDetail?'已打印':'未打印'}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" show-overflow-tooltip :min-width="$route.query.type=='3'?150:100">
+                        <template slot-scope="scope">
+                            <div class="tab-operation" @click="printing(scope.row,scope)">打印</div>
+                            <div v-if="$route.query.type!='1'" class="tab-operation" @click="handleAnnex(scope.row)">附件</div>
                             <div class="tab-operation" @click="dataDetail(scope.row)">详情</div>
-                            <div v-if="$route.query.type=='2'" class="tab-operation" @click="dataDetail(scope.row,'edit')">归档</div>
-                            <div v-if="$route.query.type=='3'" class="tab-operation" @click="dataDetail(scope.row,'edit')">取消归档</div>
+                            <div v-if="$route.query.type=='3'&&!scope.row.isArchive" class="tab-operation" @click="handlePlace(scope.row,'1')">归档</div>
+                            <div v-if="$route.query.type=='3'&&scope.row.isArchive" class="tab-operation" @click="handlePlace(scope.row,'0')">取消归档</div>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -74,7 +78,17 @@
                     <div class="dialog-main">
                         <el-scrollbar class="dia-height">
                             <ul class="fx-ul">
-                                <li></li>
+                                <li v-if="!detailInfo.fileInfoList || detailInfo.fileInfoList.length<=0" style="justify-content:center;">该工单无附件文件</li>
+                                <li v-for="(item,index) in detailInfo.fileInfoList" :key="index">
+                                    <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" class="img-preview" :src="item.fileUrl" :preview-src-list="[item.fileUrl]" fit="fill">
+                                    </el-image>
+                                    <div v-else class="img-preview">
+                                        <a v-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc" :href="item.fileUrl"></a>
+                                        <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls" :href="item.fileUrl"></a>
+                                        <a v-else :title="item.fileName" class="icon-file file-other" :href="item.fileUrl"></a>
+                                    </div>
+                                    <a class="load" :href="item.fileUrl" target="_black">{{item.fileName}}</a>
+                                </li>
                             </ul>
                         </el-scrollbar>
                     </div>
@@ -118,17 +132,17 @@
         },
         watch: {
             $route(newVal, oldVal) {
-                if (newVal.path === '/sheetss') {
+                if (newVal.path === '/contact') {
                     if (newVal.path === oldVal.path) {
                         this.initPage();
                     }
-                    if (newVal.path != oldVal.path && newVal.query.type != sessionStorage.getItem('sheetssPageType')) {
+                    if (newVal.path != oldVal.path && newVal.query.type != sessionStorage.getItem('contactPageType')) {
                         this.initPage();
                     }
                     // if (newVal.path != oldVal.path && newVal.query.devId) {
                     //     this.initPage();
                     // }
-                    sessionStorage.setItem('sheetssPageType', newVal.query.type);
+                    sessionStorage.setItem('contactPageType', newVal.query.type);
                 }
             },
             battalionCode(val) {
@@ -181,11 +195,13 @@
                     currentPage: 1,
                 };
                 let obj = {
+                    contactStatus: this.$route.query.type, //联系单状态(1待处理、2已修复、3已验收)
                     repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
                     repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
-                    repDeptId: this.departCode,
-                    type: this.typeCode,
                     signsWorkordersId: this.declareId,
+                    roadName: this.roadName,
+                    devDeptId: this.battalionCode,
+                    squadron: this.squadronCode,
                     repairType: this.reptypeCode, // 维修类型
                     devTypeCode: this.facTypeCode, //设施类别
                 };
@@ -228,11 +244,43 @@
                     query: { pre: this.title, id: item.signsWorkordersId, isread: type }
                 });
             },
-            printing(item) {
+            printing(item, data) {
+                this.$api.putByQs(`${this.$config.efoms_HOST}/SignsWorkordersInfo/updateSignsContactPrint`, { signsWorkordersId: item.signsWorkordersId, contactStatus: this.$route.query.type, isPrint: '1' }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            this.tableData[data.$index].isPrintDetail = true;
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
                 window.open(`./lxd.html?id=${item.signsWorkordersId}&token=${this.token}`);
             },
             handleAnnex(item) {
                 this.dialogAnnexVisible = true;
+            },
+            //归档和取消归档
+            handlePlace(item) {
+                let type = !item.isArchive ? '归档' : '取消归档';
+                this.$confirm(`确认${type}吗？`, '操作提示', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    this.$api.putByQs(`${this.$config.efoms_HOST}/SignsWorkordersInfo/updateSignsContactArchive`, { signsWorkordersId: item.signsWorkordersId, isArchive: !item.isArchive ? '1' : '0' }, { token: this.token })
+                        .then(res => {
+                            if (res.appCode == 0) {
+                                Common.ejMessage("success", `${type}成功！`);
+                                this.searchPageInfo();
+                            } else {
+                                Common.printErrorLog(res);
+                            }
+                        })
+                        .catch(err => {
+                            Common.printErrorLog(err);
+                        });
+                }).catch(() => {});
             },
             // 字典类型接口
             getDicInfo(url, obj) {
@@ -266,16 +314,16 @@
                 this.token = Common.getQueryString("token");
 
                 this.listUrl.download = '';
-                this.listUrl.table = `${this.$config.efoms_HOST}/SignsWorkordersInfo/getSignsWorkordersInfoPage`;
+                this.listUrl.table = `${this.$config.efoms_HOST}/SignsWorkordersInfo/getSignsContactManagePage`;
                 let pageType = this.$route.query.type;
                 switch (pageType) {
-                    case '0':
+                    case '1':
                         this.title = '待处理联系单';
                         break;
-                    case '1':
+                    case '2':
                         this.title = '已修复联系单';
                         break;
-                    case '2':
+                    case '3':
                         this.title = '已验收联系单';
                         break;
                     default:
@@ -352,6 +400,61 @@
 
     .relative {
         position: relative;
+    }
+
+    .fx-ul {
+        height: 200px;
+
+        li {
+            display: flex;
+            align-content: center;
+
+            &+li {
+                margin-top: 10px;
+            }
+
+            .load {
+                flex: 1;
+                line-height: 40px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+
+    .dia-height {
+        /deep/ .el-scrollbar__wrap {
+            margin-bottom: 0 !important;
+        }
+    }
+
+    .img-preview {
+        display: block;
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+        background: #FFFFFF;
+        border: 1px solid #E1E7ED;
+        position: relative;
+        text-align: center;
+
+        .icon-file {
+            width: 100%;
+            height: 100%;
+
+            &.file-doc {
+                background: url("../../assets/images/file-word.png") no-repeat center/100%;
+            }
+
+            &.file-xls {
+                background: url("../../assets/images/file-execl.png") no-repeat center/100%;
+            }
+
+            &.file-other {
+                background: url("../../assets/images/file-file.png") no-repeat center/100%;
+            }
+        }
     }
 </style>
 <style lang="less">

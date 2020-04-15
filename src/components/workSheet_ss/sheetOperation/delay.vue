@@ -89,10 +89,14 @@
                     Common.ejMessage("warning", "延期天数最多一位小数");
                     return;
                 }
-                if (!(parseFloat(this.dayNum) > 0 && parseFloat(this.dayNum) <= this.maxNum)) {
-                    Common.ejMessage("warning", "延期天数需小于等于申请天数且大于零");
+                if(!(parseFloat(this.dayNum) > 0)){
+                    Common.ejMessage("warning", "延期天数需大于零");
                     return;
                 }
+                // if (!(parseFloat(this.dayNum) > 0 && parseFloat(this.dayNum) <= this.maxNum)) {
+                //     Common.ejMessage("warning", "延期天数需小于等于申请天数且大于零");
+                //     return;
+                // }
                 this.isAjaxing = true;
                 this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/checkWorkorders`, {
                         signsWorkordersId: this.workordersInfo.signsWorkordersId,

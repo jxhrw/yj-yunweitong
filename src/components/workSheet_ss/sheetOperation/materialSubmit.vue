@@ -336,9 +336,10 @@
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
                         fileURL: res.downloadPath,
-                        fileMode: res.fileOldName
-                            .slice(res.fileOldName.lastIndexOf(".") + 1)
-                            .toLowerCase()
+                        fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileOldName) ? '0' : '3'
+                        // fileMode: res.fileOldName
+                        //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                        //     .toLowerCase()
                     });
                 }
             },

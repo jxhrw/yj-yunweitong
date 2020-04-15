@@ -1,53 +1,84 @@
 <template>
     <div class="ej-main">
         <wkLayout ref="layout" :title="'材料管理'" :queryConditions="queryConditions" :totalPage="totalPage" :totalCount="totalCount" :searchMore="0" @searchTable="searchTableInfo" @searchPage="searchPageInfo">
-            <template slot="pageBtn">
-                <div class="ej-content-goto" @click="gotoCreate">
-                    <p>新增材料</p>
-                </div>
-            </template>
 
             <template slot="condFirst">
                 <el-col :span="7">
-                    <label>编号</label>
-                    <el-input v-model="materialId" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
+                    <label>所属标段</label>
+                    <mInput :list="contractList" :code.sync="contractId" getAttr="contractId" showAttr="contractName" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
                 <el-col :span="7">
-                    <label>名称</label>
+                    <label>标段年份</label>
+                    <el-date-picker v-model="times" type="year" value-format="yyyy" placeholder="选择年" size='mini' class="content-date content-year" @keyup.enter.native="searchTableInfo">
+                    </el-date-picker>
+                </el-col>
+                <el-col :span="7">
+                    <label>材料名称</label>
                     <el-input v-model="materialName" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
-                <!-- <el-col :span="7">
-                    <label>类型</label>
-                    <mInput :list="materialTypeList" :code.sync="materialType" @keyup.enter.native="searchTableInfo"></mInput>
-                </el-col> -->
             </template>
 
-            <!-- <template slot="tableBtn">
-                <div class="operation export" @click="exportExcel">
+            <template slot="tableBtn">
+                <div class="operation export" @click="conchange({})">
+                    <p>添加</p>
+                </div>
+                <!-- <div class="operation export" @click="exportExcel">
                     <p>导出</p>
                 </div>
-            </template> -->
+                <div class="operation export" @click="exportExcel">
+                    <p>导入</p>
+                </div> -->
+            </template>
 
             <template slot="table">
                 <el-table :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
-                    <el-table-column prop="materialId" label="编号" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="materialName" label="名称" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="materialNum" label="数量" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="materialTypeName" label="类型" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="contractName" label="标段" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="contractYear" label="年份" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="materialName" label="材料名称" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column prop="materialSpecification" label="规格" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column prop="materialUnit" label="单位" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="materialUnitPrice" label="单位价格" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="contractId" label="所属合同" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="deptName" label="所属大队" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="procurementTime" label="采购时间" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="contractEndTime" label="操作" show-overflow-tooltip min-width="115">
+                    <el-table-column prop="materialUnitPrice" label="单价" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="contractBeginTime" label="启用时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="contractEndTime" label="停用时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column label="操作" show-overflow-tooltip min-width="115">
                         <template slot-scope="scope">
-                            <div class="tab-operation" @click="conchange(scope.row)">查看</div>
                             <div class="tab-operation" @click="conchange(scope.row,'edit')">修改</div>
-                            <div class="tab-operation" @click="condelete(scope.row,'edit')">删除</div>
                         </template>
                     </el-table-column>
                 </el-table>
+                <el-dialog title="添加/修改" :visible.sync="detailVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
+                    <div class="dialog-main">
+                        <div class="revoke-reason">
+                            <label class="dialog-label"><span>*</span>所属标段</label>
+                            <mInput :list="contractList" :code.sync="detailInfo.contractId" :name.sync="contractName" getAttr="contractId" showAttr="contractName" class="dialog-select"></mInput>
+                        </div>
+                        <div class="revoke-reason">
+                            <label class="dialog-label"><span>*</span>材料名称</label>
+                            <el-input v-model="detailInfo.materialName" size='mini' class="dialog-select"></el-input>
+                        </div>
+                        <div class="revoke-reason">
+                            <label class="dialog-label"><span>*</span>规格</label>
+                            <el-input v-model="detailInfo.materialSpecification" size='mini' class="dialog-select"></el-input>
+                        </div>
+                        <div class="revoke-reason">
+                            <label class="dialog-label"><span>*</span>单位</label>
+                            <el-input v-model="detailInfo.materialUnit" size='mini' class="dialog-select"></el-input>
+                        </div>
+                        <div class="revoke-reason">
+                            <label class="dialog-label"><span>*</span>单价</label>
+                            <el-input v-model="detailInfo.materialUnitPrice" size='mini' class="dialog-select" placeholder="单位（元）"></el-input>
+                        </div>
+                        <!-- <div class="revoke-reason">
+                            <label class="dialog-label">使用时间</label>
+                            <el-date-picker v-model="weeks" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" :default-time="['00:00:00', '23:59:59']" size='mini' class="dialog-select">
+                            </el-date-picker>
+                        </div> -->
+                    </div>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button type="primary" @click="saveItem" size='mini' class="submit">提 交</el-button>
+                        <el-button @click="detailVisible = false" size='mini' class="cancel">取 消</el-button>
+                    </div>
+                </el-dialog>
             </template>
         </wkLayout>
     </div>
@@ -69,15 +100,19 @@
                 token: "",
                 key: "",
                 times: "",
-                materialId: '',
                 materialName: '',
-                materialType: '',
-                materialTypeList: [],
+                contractId: '',
+                contractList: [],
                 isTableLoading: false,
                 tableData: [],
                 totalCount: 10,
                 totalPage: 1,
                 queryConditions: {},
+                detailVisible: false,
+                isAjaxing: false,
+                detailInfo: {},
+                contractName: '',
+                weeks: '',
             };
         },
         methods: {
@@ -87,9 +122,9 @@
                 this.queryConditions = {
                     pageSize: pageSize,
                     currentPage: 1,
-                    materialId: this.materialId,
+                    contractId: this.contractId,
+                    contractYear: this.times,
                     materialName: this.materialName,
-                    materialType: this.materialType
                 };
                 this.searchPageInfo();
             },
@@ -103,7 +138,7 @@
                             this.isTableLoading = false;
                         }, 500);
                         if (res.appCode == 0) {
-                            this.tableData = res.resultList.result;
+                            this.tableData = res.resultList.result || [];
                             this.totalPage = res.resultList.totalPage;
                             this.totalCount = res.resultList.totalCount;
                         } else {
@@ -129,21 +164,79 @@
                     });
             },
             currentSelect(e) {},
-            gotoCreate() {
-                sessionStorage.setItem('relaodPage', '1');
-                this.$router.push({
-                    path: "/detmaterial",
-                    query: { isread: 'add' }
+            conchange(item, type) {
+                this.detailVisible = true;
+                this.$nextTick(() => {
+                    this.detailInfo = JSON.parse(JSON.stringify(item));
+                    this.contractName = item.contractName || '';
+                    // if (item.contractBeginTime && item.contractEndTime) {
+                    //     this.weeks = [item.contractBeginTime, item.contractEndTime];
+                    // } else if (item.contractBeginTime) {
+                    //     this.weeks = [item.contractBeginTime, ''];
+                    // } else if (item.contractEndTime) {
+                    //     this.weeks = ['', item.contractEndTime];
+                    // } else {
+                    //     this.weeks = '';
+                    // }
                 });
             },
-            conchange(item, type) {
-                if (type == 'edit') {
-                    sessionStorage.setItem('relaodPage', '1');
+            saveItem() {
+                if (this.isAjaxing) {
+                    alert('数据请求中，请稍等！');
+                    return;
                 }
-                this.$router.push({
-                    path: "/detmaterial",
-                    query: { id: item.materialId, isread: type }
-                });
+                if (!this.detailInfo.contractId) {
+                    Common.ejMessage("warning", "所属标段必填");
+                    return;
+                }
+                if (!this.detailInfo.materialName) {
+                    Common.ejMessage("warning", "材料名称必填");
+                    return;
+                }
+                if (!this.detailInfo.materialSpecification) {
+                    Common.ejMessage("warning", "规格必填");
+                    return;
+                }
+                if (!this.detailInfo.materialUnit) {
+                    Common.ejMessage("warning", "单位必填");
+                    return;
+                }
+                if (!this.detailInfo.materialUnitPrice) {
+                    Common.ejMessage("warning", "单价必填");
+                    return;
+                }
+                if (!(/^\d+(\.\d{1,2})?$/.test(this.detailInfo.materialUnitPrice))) {
+                    Common.ejMessage("warning", "单价最多2位小数");
+                    return;
+                }
+                // if (!(this.weeks && this.weeks.length > 1)) {
+                //     Common.ejMessage("warning", "标段周期必填");
+                //     return;
+                // }
+                this.detailInfo.contractName = this.contractName;
+                // this.detailInfo.contractBeginTime = this.weeks ? this.weeks[0] : '';
+                // this.detailInfo.contractEndTime = this.weeks ? this.weeks[1] : '';
+                let murl = '';
+                if (this.detailInfo.materialId) {
+                    murl = '/MaterialInfo/updateMaterialInfo';
+                } else {
+                    murl = '/MaterialInfo/insertMaterialInfo';
+                }
+                this.isAjaxing = true;
+                this.$api.post(`${this.$config.efoms_HOST}${murl}`, this.detailInfo, { token: this.token }).then(res => {
+                        this.isAjaxing = false;
+                        if (res.appCode == 0) {
+                            Common.ejMessage("success");
+                            this.detailVisible = false;
+                            this.searchTableInfo();
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        this.isAjaxing = false;
+                        Common.printErrorLog(err);
+                    });
             },
             condelete(item) {
                 this.$confirm('确认删除该条合同吗？', '操作提示', {
@@ -173,42 +266,20 @@
             // 页面初始化
             initPage() {
                 this.searchTableInfo();
+
+                this.$api.get(`${this.$config.efoms_HOST}/ContractInfo/getContractInfoList`, {}, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            this.contractList = res.resultList || [];
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    });
             }
         },
         mounted() {
             this.token = Common.getQueryString("token");
             this.initPage();
-        },
-        activated() {
-            if (!this.$route.meta.isUseCache) {
-                console.log('新');
-                sessionStorage.setItem('relaodPage', '0');
-                this.initPage();
-            } else {
-                console.log('旧');
-
-                // 回到列表，如果回到的不是同一个列表则需要刷新
-                // 根据是否点击菜单判断
-                if (sessionStorage.getItem('menuSeclect') === '1') {
-                    sessionStorage.setItem('menuSeclect', '0');
-                    this.initPage();
-                }
-
-                // 点击编辑去的详情回来列表要刷新
-                else if (sessionStorage.getItem('relaodPage') == '1') {
-                    sessionStorage.setItem('relaodPage', '0');
-                    this.searchPageInfo();
-                }
-            }
-        },
-        beforeRouteLeave(to, from, next) {
-            if (to.name == 'detmaterial') {
-                from.meta.isUseCache = true;
-                sessionStorage.setItem('menuSeclect', '0');
-            } else {
-                from.meta.isUseCache = false;
-            }
-            next();
         },
     };
 </script>

@@ -300,9 +300,10 @@
                                                 </template>
                                             </div>
                                             <div class="mtl5" v-else>
-                                                <el-upload style="display:block;" :action="`${$config.efoms_HOST}/file/uploadFile`" list-type="picture-card" :headers="{token:token}" :on-success="handleSuccessList" :show-file-list="false" @click.native="materialListIndex=index">
-                                                    <i slot="default" class="el-icon-plus"></i>
-                                                </el-upload>
+                                                <div class="img-add" @click="openFile('mtlSID'+index,index)">
+                                                    <i class="el-icon-plus"></i>
+                                                    <input type="file" :id="'mtlSID'+index" name="" style="display:none" @change="uploadPh('mtlSID'+index)">
+                                                </div>
                                             </div>
 
                                             <span class="mtl4"><i class="el-icon-remove-outline" @click="removeMaterial(index)"></i></span>
@@ -814,11 +815,47 @@
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
                         fileUrl: res.downloadPath,
-                        fileMode: res.fileOldName
-                            .slice(res.fileOldName.lastIndexOf(".") + 1)
-                            .toLowerCase()
+                        fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileOldName) ? '0' : '3'
+                        // fileMode: res.fileOldName
+                        //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                        //     .toLowerCase()
                     });
                 }
+            },
+            openFile(id, index) {
+                this.materialListIndex = index;
+                document.getElementById(id).click()
+            },
+            uploadPh(fileId) {
+                var header = {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    token: this.token
+                };
+                var formData = new FormData();
+                var file = document.getElementById(fileId).files[0];
+                formData.append("file", file);
+                this.$api.post(`${this.$config.efoms_HOST}/file/uploadFile`, formData, header).then(res => {
+                        if (res.appCode == 0) {
+                            let data = res.resultList || {};
+                            this.materialList[this.materialListIndex].fileInfoList = this.materialList[this.materialListIndex].fileInfoList || [];
+                            this.materialList[this.materialListIndex].fileInfoList.push({
+                                secondDir: data.secondDir,
+                                fileName: data.fileName,
+                                fileOldName: data.fileOldName,
+                                fileUrl: data.downloadPath,
+                                fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(data.fileOldName) ? '0' : '3'
+                                // fileMode: res.fileOldName
+                                //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                                //     .toLowerCase()
+                            });
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+                document.getElementById(fileId).value = '';
             },
             handleSuccessList(response, file, fileList) {
                 console.log(response);
@@ -830,9 +867,10 @@
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
                         fileUrl: res.downloadPath,
-                        fileMode: res.fileOldName
-                            .slice(res.fileOldName.lastIndexOf(".") + 1)
-                            .toLowerCase()
+                        fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileOldName) ? '0' : '3'
+                        // fileMode: res.fileOldName
+                        //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                        //     .toLowerCase()
                     });
                 }
             },

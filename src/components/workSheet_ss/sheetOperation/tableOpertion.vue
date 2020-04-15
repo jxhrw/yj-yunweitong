@@ -1,7 +1,9 @@
 <template>
     <div class="unit-tab-operation">
         <!-- 维修申报页面，并且状态为大队道管待审核FACILITYSTATUS01时出现，设施科待审核FACILITYSTATUS03 -->
-        <div v-if="(title=='维修申报')&&(scope.row.workordersStatusCode == 'FACILITYSTATUS01'||scope.row.workordersStatusCode == 'FACILITYSTATUS03')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
+        <div v-if="(title=='维修申报'||title=='抢修申报'||title=='优化申报')&&(scope.row.workordersStatusCode == 'FACILITYSTATUS01'||scope.row.workordersStatusCode == 'FACILITYSTATUS03')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
+        <!-- 数字城管页面，并且状态为待下发FACILITYSTATUS06时出现 -->
+        <div v-if="(title=='数字城管')&&(scope.row.workordersStatusCode == 'FACILITYSTATUS06')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
         <!-- 流程审核页面+并且状态为待审核时出现 -->
         <div v-if="(title=='大队道管审核'&&scope.row.workordersStatusCode == 'FACILITYSTATUS01')" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
         <div v-if="(title=='大队领导审核'&&scope.row.workordersStatusCode == 'FACILITYSTATUS02')" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
@@ -35,8 +37,6 @@
         <div v-if="title=='延期审核'&&(scope.row.isDefer===true||scope.row.isDefer===1)" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
         <!-- 转单审核页面，并且状态为待审核时出现 -->
         <!-- <div v-if="title=='转单审核'&&queryConditions.type=='0'" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div> -->
-        <!-- 材料审核页面，并且状态为待审核时出现 -->
-        <!-- <div v-if="title=='材料审核'&&queryConditions.type=='0'" class="tab-operation" @click="handleOther(scope.row)">审核</div> -->
         <!-- 超期工单，并且状态为已超期时出现 -->
         <div v-if="title=='超期工单'&&queryConditions.type=='0'" class="tab-operation" @click="dataDetail(scope.row,'edit')">操作</div>
 
@@ -62,9 +62,6 @@
                     query: { pre: this.title, id: item.signsWorkordersId, isread: type }
                 });
             },
-            handleOther(data) {
-                this.$emit('onOtherEvent', data);
-            }
         }
     }
 </script>

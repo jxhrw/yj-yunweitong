@@ -1,23 +1,16 @@
 <template>
     <div class="ej-main">
-        <wkLayout ref="layout" :title="'标段管理'" :queryConditions="queryConditions" :totalPage="totalPage" :totalCount="totalCount" :searchMore="1" @searchTable="searchTableInfo" @searchPage="searchPageInfo">
+        <wkLayout ref="layout" :title="'标段管理'" :queryConditions="queryConditions" :totalPage="totalPage" :totalCount="totalCount" :searchMore="0" @searchTable="searchTableInfo" @searchPage="searchPageInfo">
 
             <template slot="condFirst">
                 <el-col :span="7">
-                    <label>标段名称</label>
-                    <el-input v-model="contractName" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
-                </el-col>
-                <el-col :span="7">
-                    <label>维护辖区</label>
-                    <mInput :list="battalionList" :code.sync="battalionCode" getAttr="deptId" showAttr="deptName" @keyup.enter.native="searchTableInfo"></mInput>
+                    <label>所属系统</label>
+                    <mInput :list="systemList" :code.sync="systemCode" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
                 <el-col :span="7">
                     <label>维护单位</label>
                     <mInput :list="opDeptList" :code.sync="opDeptCode" getAttr="opsDeptId" showAttr="opsDeptName" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
-            </template>
-
-            <template slot="condSecond">
                 <el-col :span="7">
                     <label>标段年份</label>
                     <el-date-picker v-model="times" type="year" value-format="yyyy" placeholder="选择年" size='mini' class="content-date content-year" @keyup.enter.native="searchTableInfo">
@@ -33,13 +26,10 @@
 
             <template slot="table">
                 <el-table :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
-                    <el-table-column prop="contractId" label="标段编号" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="contractName" label="标段名称" show-overflow-tooltip min-width="120"></el-table-column>
-                    <el-table-column prop="contractYear" label="标段年份" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="contractId" label="编号" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="systemCodeName" label="所属系统" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column prop="contractDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="deptName" label="维护辖区" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="totalExpence" label="总资金(元)" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="contractMoney" label="维护费(元)" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="contractYear" label="标段年份" show-overflow-tooltip></el-table-column>
                     <el-table-column label="标段周期" show-overflow-tooltip min-width="200">
                         <template slot-scope="scope">
                             {{scope.row.contractBeginTime|dateTime}} - {{scope.row.contractEndTime|dateTime}}
@@ -55,32 +45,16 @@
                 <el-dialog title="添加/修改" :visible.sync="detailVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                     <div class="dialog-main">
                         <div class="revoke-reason">
-                            <label class="dialog-label"><span>*</span>标段名称</label>
-                            <el-input v-model="detailInfo.contractName" size='mini' class="dialog-select"></el-input>
+                            <label class="dialog-label"><span>*</span>所属系统</label>
+                            <mInput :list="systemList" :code.sync="detailInfo.systemCode" :name.sync="systemCodeName" class="dialog-select"></mInput>
                         </div>
                         <div class="revoke-reason">
                             <label class="dialog-label">标段编号</label>
                             <el-input v-model="detailInfo.contractId" size='mini' class="dialog-select" readonly></el-input>
                         </div>
                         <div class="revoke-reason">
-                            <label class="dialog-label"><span>*</span>标段类型</label>
-                            <mInput :list="contractTypeList" :code.sync="detailInfo.contractType" :name.sync="contractTypeName" class="dialog-select"></mInput>
-                        </div>
-                        <div class="revoke-reason">
                             <label class="dialog-label"><span>*</span>中标单位</label>
                             <mInput :list="opDeptList" :code.sync="detailInfo.contractDept" :name.sync="contractDeptName" getAttr="opsDeptId" showAttr="opsDeptName" class="dialog-select"></mInput>
-                        </div>
-                        <div class="revoke-reason">
-                            <label class="dialog-label"><span>*</span>维护辖区</label>
-                            <mSelectMult :list="battalionList" :code.sync="deptId" :name.sync="deptName" getAttr="deptId" showAttr="deptName" class="dialog-select"></mSelectMult>
-                        </div>
-                        <div class="revoke-reason">
-                            <label class="dialog-label"><span>*</span>总资金</label>
-                            <el-input v-model="detailInfo.totalExpence" size='mini' class="dialog-select" placeholder="单位（元）"></el-input>
-                        </div>
-                        <div class="revoke-reason">
-                            <label class="dialog-label"><span>*</span>维护费</label>
-                            <el-input v-model="detailInfo.contractMoney" size='mini' class="dialog-select" placeholder="单位（元）"></el-input>
                         </div>
                         <div class="revoke-reason">
                             <label class="dialog-label"><span>*</span>标段年份</label>
@@ -88,15 +62,7 @@
                             </el-date-picker>
                         </div>
                         <div class="revoke-reason">
-                            <label class="dialog-label"><span>*</span>负责人</label>
-                            <mInput :list="resPersonList" :code.sync="resPerson" :name.sync="resPersonName" getAttr="opsPersonId" showAttr="opsPersonName" class="dialog-select"></mInput>
-                        </div>
-                        <div class="revoke-reason">
-                            <label class="dialog-label"><span>*</span>联系电话</label>
-                            <el-input v-model="detailInfo.workphone" size='mini' class="dialog-select"></el-input>
-                        </div>
-                        <div class="revoke-reason">
-                            <label class="dialog-label">标段周期</label>
+                            <label class="dialog-label"><span>*</span>标段周期</label>
                             <el-date-picker v-model="weeks" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" :default-time="['00:00:00', '23:59:59']" size='mini' class="dialog-select">
                             </el-date-picker>
                         </div>
@@ -136,9 +102,8 @@
                 token: "",
                 key: "",
                 times: "",
-                contractName: '',
-                battalionCode: '',
-                battalionList: [],
+                systemCode: '',
+                systemList: [],
                 opDeptCode: '',
                 opDeptList: [],
                 isTableLoading: false,
@@ -149,41 +114,10 @@
                 detailVisible: false,
                 isAjaxing: false,
                 detailInfo: {},
-                contractTypeName: '',
-                contractTypeList: [],
+                systemCodeName: '',
                 contractDeptName: '',
-                contractDeptList: [],
-                deptId: [],
-                deptName: [],
-                deptList: [],
-                resPerson: '',
-                resPersonName: '',
-                resPersonList: [],
                 weeks: '',
             };
-        },
-        watch: {
-            'detailInfo.contractDept'(val) {
-                this.resPerson = '';
-                this.resPersonName = '';
-
-                //负责人
-                if (val == '' || val == null) {
-                    this.personList = [];
-                } else {
-                    this.getDicInfo(`${this.$config.ubms_HOST}/OpsPerson/getOpsPersonInfo.htm`, { opsDeptId: val }).then(res => {
-                        this.resPersonList = res.resultList || [];
-                    });
-                }
-            },
-            resPerson(val) {
-                let arr = this.resPersonList.filter(res => res.opsPersonId == val);
-                if (arr.length > 0) {
-                    this.detailInfo.workphone = arr[0].phone;
-                } else {
-                    this.detailInfo.workphone = '';
-                }
-            }
         },
         methods: {
             searchTableInfo() {
@@ -192,9 +126,8 @@
                 this.queryConditions = {
                     pageSize: pageSize,
                     currentPage: 1,
-                    // contractId: this.contractId,
-                    contractName: this.contractName,
-                    deptId: this.battalionCode,
+
+                    systemCode: this.systemCode,
                     contractDept: this.opDeptCode,
                     contractYear: this.times,
                 };
@@ -204,7 +137,7 @@
                 // console.log("page");
                 this.tableData = [];
                 this.isTableLoading = true;
-                this.$api.get(`${this.$config.efoms_HOST}/ContractInfo/getContractInfoPage`, this.queryConditions, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/ContractInfo/Other/pageContractOther`, this.queryConditions, { token: this.token })
                     .then(res => {
                         setTimeout(load => {
                             this.isTableLoading = false;
@@ -242,17 +175,11 @@
                     this.detailInfo = JSON.parse(JSON.stringify(item));
                     this.contractTypeName = item.contractTypeName || '';
                     this.contractDeptName = item.contractDeptName || '';
-                    this.deptId = item.deptId ? item.deptId.split(",") : [];
-                    this.deptName = item.deptName ? item.deptName.split(",") : [];
                     if (item.contractBeginTime && item.contractEndTime) {
                         this.weeks = [item.contractBeginTime, item.contractEndTime];
                     } else {
                         this.weeks = '';
                     }
-                    setTimeout(() => {
-                        this.resPerson = item.resPerson || '';
-                        this.resPersonName = item.resPersonName || '';
-                    }, 300)
                 });
             },
             saveItem() {
@@ -260,63 +187,31 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                if (!this.detailInfo.contractName) {
-                    Common.ejMessage("warning", "标段名称必填");
-                    return;
-                }
-                if (!this.detailInfo.contractType) {
-                    Common.ejMessage("warning", "标段类型必填");
+                if (!this.detailInfo.systemCode) {
+                    Common.ejMessage("warning", "所属系统必填");
                     return;
                 }
                 if (!this.detailInfo.contractDept) {
                     Common.ejMessage("warning", "中标单位必填");
                     return;
                 }
-                if (this.deptId.length < 1) {
-                    Common.ejMessage("warning", "维护辖区必填");
-                    return;
-                }
-                if (!this.detailInfo.totalExpence) {
-                    Common.ejMessage("warning", "总资金必填");
-                    return;
-                }
-                if (!(/^\d+(\.\d{1,2})?$/.test(this.detailInfo.totalExpence))) {
-                    Common.ejMessage("warning", "总资金最多2位小数");
-                    return;
-                }
-                if (!this.detailInfo.contractMoney) {
-                    Common.ejMessage("warning", "维护费必填");
-                    return;
-                }
-                if (!(/^\d+(\.\d{1,2})?$/.test(this.detailInfo.contractMoney))) {
-                    Common.ejMessage("warning", "维护费最多2位小数");
-                    return;
-                }
                 if (!this.detailInfo.contractYear) {
                     Common.ejMessage("warning", "标段年份必填");
                     return;
                 }
-                if (!this.resPerson) {
-                    Common.ejMessage("warning", "负责人必填");
+                if (!(this.weeks && this.weeks.length > 1)) {
+                    Common.ejMessage("warning", "标段周期必填");
                     return;
                 }
-                if (!this.detailInfo.workphone) {
-                    Common.ejMessage("warning", "联系电话必填");
-                    return;
-                }
-                this.detailInfo.contractTypeName = this.contractTypeName;
+                this.detailInfo.systemCodeName = this.systemCodeName;
                 this.detailInfo.contractDeptName = this.contractDeptName;
-                this.detailInfo.deptId = this.deptId.join(",");
-                this.detailInfo.deptName = this.deptName.join(",");
-                this.detailInfo.resPerson = this.resPerson;
-                this.detailInfo.resPersonName = this.resPersonName;
                 this.detailInfo.contractBeginTime = this.weeks ? this.weeks[0] : '';
                 this.detailInfo.contractEndTime = this.weeks ? this.weeks[1] : '';
                 let murl = '';
                 if (this.detailInfo.contractId) {
-                    murl = '/ContractInfo/updateContractInfo';
+                    murl = '/ContractInfo/Other/updateContractOther';
                 } else {
-                    murl = '/ContractInfo/insertContractInfo';
+                    murl = '/ContractInfo/Other/insertContractOther';
                 }
                 this.isAjaxing = true;
                 this.$api.post(`${this.$config.efoms_HOST}${murl}`, this.detailInfo, { token: this.token }).then(res => {
@@ -339,7 +234,7 @@
                     confirmButtonText: '确认',
                     cancelButtonText: '取消',
                 }).then(() => {
-                    this.$api.delete(`${this.$config.efoms_HOST}/ContractInfo/deleteWorkordersInfo`, { contractId: item.contractId }, { token: this.token })
+                    this.$api.delete(`${this.$config.efoms_HOST}/ContractInfo/Other/deleteContractOther`, { contractId: item.contractId }, { token: this.token })
                         .then(res => {
                             if (res.appCode == 0) {
                                 Common.ejMessage("success", "数据删除成功！");
@@ -368,9 +263,9 @@
             // 页面初始化
             initPage() {
                 this.searchTableInfo();
-                //所属大队
-                this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptRank: 'DEPTRANK04' }).then(res => {
-                    this.battalionList = res.resultList || [];
+                //所属系统
+                this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "SYSTEMOTHERWOR" }).then(res => {
+                    this.systemList = res.resultList || [];
                 });
                 //维护单位
                 this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, { deptTypeCode: 'OPSDEPTTYPE01,OPSDEPTTYPE03' }).then(res => {
@@ -381,8 +276,6 @@
         mounted() {
             this.token = Common.getQueryString("token");
             this.initPage();
-
-            this.contractTypeList = [{ dicCode: '1', dicName: '电子类' }, { dicCode: '2', dicName: '非电子类' }, { dicCode: '3', dicName: '监理' }, { dicCode: '4', dicName: '其他' }]
         }
     };
 </script>

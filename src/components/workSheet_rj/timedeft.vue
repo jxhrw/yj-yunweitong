@@ -127,7 +127,7 @@
             this.searchTableInfo();
 
             //所属系统
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "REPDEVCATEGORY01" }).then(res => {
+            this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "SYSTEMOTHERWOR" }).then(res => {
                 this.systemList = res.resultList || [];
             });
             //维修类型
@@ -147,7 +147,7 @@
             },
             searchPageInfo() {
                 this.isTableLoading = true;
-                this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfPageDev`, this.queryConditions, { token: this.token })
+                this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfPageOther`, this.queryConditions, { token: this.token })
                     .then(res => {
                         setTimeout(load => {
                             this.isTableLoading = false;
@@ -216,9 +216,9 @@
                 this.isAjaxing = true;
                 let ajxQA;
                 if (this.detailInfo.deadlineConfId) {
-                    ajxQA = this.$api.put(`${this.$config.efoms_HOST}/workorderDeadline/updateDeadlineConf`, { ...this.detailInfo, ...{ workType: '1' } }, { token: this.token, "Content-Type": "application/json;charset=UTF-8" });
+                    ajxQA = this.$api.put(`${this.$config.efoms_HOST}/workorderDeadline/updateDeadlineConf`, { ...this.detailInfo, ...{ workType: '4' } }, { token: this.token, "Content-Type": "application/json;charset=UTF-8" });
                 } else {
-                    ajxQA = this.$api.post(`${this.$config.efoms_HOST}/workorderDeadline/insertDeadlineConfDev`, this.detailInfo, { token: this.token });
+                    ajxQA = this.$api.post(`${this.$config.efoms_HOST}/workorderDeadline/insertDeadlineConfOther`, this.detailInfo, { token: this.token });
                 }
                 ajxQA.then(res => {
                         this.isAjaxing = false;

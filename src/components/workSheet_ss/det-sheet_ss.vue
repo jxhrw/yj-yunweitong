@@ -13,7 +13,7 @@
                         <li :class="{'active': activeIndex=='qr'}" @click="scrollIntoView('qr')" v-if="workordersInfo.workordersRecordMap.sureList&&workordersInfo.workordersRecordMap.sureList.length>0">确认</li>
                         <li :class="{'active': activeIndex=='ys'}" @click="scrollIntoView('ys')" v-if="workordersInfo.workordersRecordMap.reviewList&&workordersInfo.workordersRecordMap.reviewList.length>0">验收</li>
                         <li :class="{'active': activeIndex=='ys_aaaa'}" @click="scrollIntoView('ys')" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0">评价</li>
-                        <li :class="{'active': activeIndex=='cx'}" @click="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">撤销</li>
+                        <li :class="{'active': activeIndex=='cx'}" @click="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">关闭</li>
                     </ul>
                 </div>
 
@@ -23,9 +23,6 @@
                         <!-- 转单，材料： 待维修ORDERSSTATUS02，已驳回ORDERSSTATUS05 -->
                         <!-- <div v-if="($config.cityName=='hangzhou')&&(prePage=='维修处置')&&(operatCode.indexOf('ORDEROPERTYPE23')>-1||workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05')" class="ej-content-title-btn ej-content-green" @click="turnWorks">
                             <p>转单</p>
-                        </div> -->
-                        <!-- <div v-if="(prePage=='工程量提报')&&(operatCode.indexOf('FACILITYOPERTYPE15')>-1)" class="ej-content-title-btn ej-content-green" @click="showMaterial" style="width:56px;">
-                            <p>材料提交</p>
                         </div> -->
                         <!-- 可申请延期：ORDEROPERTYPE05 -->
                         <!-- 可申请延期：待指派FACILITYSTATUS07，指派已拒绝FACILITYSTATUS08,待维修FACILITYSTATUS09,已驳回FACILITYSTATUS10，已到达 FACILITYSTATUS11 -->
@@ -37,13 +34,19 @@
                             <p>催办</p>
                         </div>
                         <!-- 可拒绝："FACILITYOPERTYPE10", "指派拒绝" -->
-                        <div v-if="((prePage=='维修处置')&&operatCode.indexOf('FACILITYOPERTYPE10')>-1)" class="ej-content-title-btn ej-content-yellow" @click="showRefuse">
+                        <!-- FACILITYOPERTYPE26，下发拒绝 -->
+                        <div v-if="(prePage=='工单指派'&&operatCode.indexOf('FACILITYOPERTYPE26')>-1)||(prePage=='维修处置'&&operatCode.indexOf('FACILITYOPERTYPE10')>-1)" class="ej-content-title-btn ej-content-yellow" @click="showRefuse">
                             <p>拒绝</p>
                         </div>
-                        <!-- 可撤销： FACILITYOPERTYPE06，REPOPERTYPE02-->
+                        <!-- "FACILITYOPERTYPE06","关闭"；"FACILITYOPERTYPE27","撤销"-->
                         <!-- 或者 超期工单并且状态为非 已撤销状态ORDERSSTATUS08 已完结ORDERSSTATUS07-->
-                        <div v-if="(operatCode.indexOf('FACILITYOPERTYPE06')>-1||(prePage=='超期工单'&&(workordersStatusCode!='ORDERSSTATUS08'&&workordersStatusCode!='ORDERSSTATUS07')))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
-                            <p>撤销</p>
+                        <template v-if="(prePage=='维修申报'||prePage=='优化申报'||prePage=='抢修申报'||prePage=='数字城管')">
+                            <div v-if="(operatCode.indexOf('FACILITYOPERTYPE27')>-1)" class="ej-content-title-btn ej-content-yellow" @click="showRevoke('backout')">
+                                <p>撤销</p>
+                            </div>
+                        </template>
+                        <div v-else-if="(operatCode.indexOf('FACILITYOPERTYPE06')>-1||(prePage=='超期工单'&&(workordersStatusCode!='ORDERSSTATUS08'&&workordersStatusCode!='ORDERSSTATUS07')))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
+                            <p>关闭</p>
                         </div>
                     </template>
 
@@ -172,8 +175,15 @@
                                             <span>{{workordersInfo.failureDescrible}}</span>
                                         </el-col>
                                         <el-col :span="9">
-                                            <label>语音描述</label>
-                                            <span>{{''}}</span>
+                                            <label :style="voiceList.length>0?'line-height:36px;':''">语音描述</label>
+                                            <span class="voice-box">
+                                                <template v-if="voiceList.length<=0">
+                                                    无
+                                                </template>
+                                                <i v-for="(item,index) in voiceList" :key="index">
+                                                    <audio :src="item.fileUrl" controls="controls"></audio>
+                                                </i>
+                                            </span>
                                         </el-col>
 
                                         <el-col :span="24" class="content-row-img">
@@ -199,18 +209,6 @@
                         </div>
                     </div>
                     <div class="step-scroll">
-                        <div class="step-left">
-                            <el-steps class="pos-step" :class="stepPosition" direction="vertical" :space="30" v-if="workordersInfo.workordersRecordMap">
-                                <el-step title="申请" :class="{'active': activeIndex==''||activeIndex=='sq'}" @click.native="scrollIntoView('sq')" v-if="workordersInfo.workordersRecordMap.submitList&&workordersInfo.workordersRecordMap.submitList.length>0"></el-step>
-                                <el-step title="审核" :class="{'active': activeIndex=='sh'}" @click.native="scrollIntoView('sh')" v-if="workordersInfo.workordersRecordMap.checkList&&workordersInfo.workordersRecordMap.checkList.length>0"></el-step>
-                                <el-step title="下发" :class="{'active': activeIndex=='xf'}" @click.native="scrollIntoView('xf')" v-if="workordersInfo.workordersRecordMap.dispatchList&&workordersInfo.workordersRecordMap.dispatchList.length>0"></el-step>
-                                <el-step title="指派" :class="{'active': activeIndex=='zp'}" @click.native="scrollIntoView('zp')" v-if="workordersInfo.workordersRecordMap.appointList&&workordersInfo.workordersRecordMap.appointList.length>0"></el-step>
-                                <el-step title="反馈" :class="{'active': activeIndex=='fk'}" @click.native="scrollIntoView('fk')" v-if="workordersInfo.workordersRecordMap.fackbackList&&workordersInfo.workordersRecordMap.fackbackList.length>0"></el-step>
-                                <el-step title="确认" :class="{'active': activeIndex=='qr'}" @click.native="scrollIntoView('qr')" v-if="workordersInfo.workordersRecordMap.sureList&&workordersInfo.workordersRecordMap.sureList.length>0"></el-step>
-                                <el-step title="评价" :class="{'active': activeIndex=='ys'}" @click.native="scrollIntoView('ys')" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0"></el-step>
-                                <el-step title="撤销" :class="{'active': activeIndex=='cx'}" @click.native="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0"></el-step>
-                            </el-steps>
-                        </div>
                         <div class="step-right">
                             <div class="depiction-info" v-if="workordersInfo.workordersRecordMap">
                                 <!-- 维修申请ORDEROPERTYPE01，优化申请 ORDEROPERTYPE09-->
@@ -451,10 +449,21 @@
                                             </template>
 
                                             <!-- 到达 -->
-                                            <template v-else-if="item.operTypeCode=='ORDEROPERTYPE18'">
+                                            <template v-else-if="item.operTypeCode=='FACILITYOPERTYPE11'">
                                                 <div class="content">
                                                     <label for="">备注</label>
                                                     <span style="width: 996px;">{{item.operExplain}}</span>
+                                                </div>
+                                                <div class="content file-info">
+                                                    <label for="">附件</label>
+                                                    <span class="file-name">
+                                                        <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
+                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
+                                                            <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
+                                                        </div>
+                                                    </span>
                                                 </div>
                                             </template>
 
@@ -570,7 +579,7 @@
                                         </template>
                                     </li>
                                 </ul>
-                                <!-- 撤销 -->
+                                <!-- 撤销/关闭 -->
                                 <ul id="cx" class="sp-info revoke-info" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">
                                     <li v-for="(item,index) in workordersInfo.workordersRecordMap.cancelList" :key="index">
                                         <div class="title">
@@ -579,6 +588,8 @@
                                             <span class="title-person">{{item.operPerson}}</span>
                                         </div>
                                         <div class="content">
+                                            <!-- "FACILITYOPERTYPE06","关闭"；"FACILITYOPERTYPE27","撤销" -->
+                                            <label for="">{{item.operTypeCode=='FACILITYOPERTYPE27'?'撤销':'关闭'}}原因</label>
                                             <label for="">撤销原因</label>
                                             <span style="width: 349px;">{{item.operReasonName}}</span>
                                             <label for="">备注</label>
@@ -665,10 +676,10 @@
                     <el-button @click="dialogRefuseVisible = false" size='mini' class="cancel">取 消</el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="撤销申请" :visible.sync="dialogRevokeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
+            <el-dialog title="关闭申请" :visible.sync="dialogRevokeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                 <div class="dialog-main">
                     <div class="revoke-reason">
-                        <label class="dialog-label"><span>*</span>撤销原因</label>
+                        <label class="dialog-label"><span>*</span>关闭原因</label>
                         <el-select v-model="cancelReasonCode" placeholder="请选择" size='mini' class="content-select" style="width: 290px;">
                             <el-option v-for="item in cancelReasonList" :key="item.dicCode" :label="item.dicName" :value="item.dicCode">
                             </el-option>
@@ -685,90 +696,24 @@
                     <el-button @click="dialogRevokeVisible = false" size='mini' class="cancel">取 消</el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="材料申请" :visible.sync="dialogMaterialVisible" width='700px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
+            <el-dialog title="撤销申请" :visible.sync="dialogBackoutVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                 <div class="dialog-main">
                     <div class="revoke-reason">
-                        <label class="dialog-label"><span>*</span>材料列表</label>
-                        <!-- <el-input rows="6" type="textarea" placeholder="请输入" v-model="materialList" class="dialog-textarea height100" style="width:290px;">
-                        </el-input> -->
-                        <div style="width:590px;display:inline-block;overflow:hidden;">
-                            <ul class="mt-list mt-list-th">
-                                <li>
-                                    <span class="mtl1">材料名称</span>
-                                    <span class="mtl2">申请数量</span>
-                                    <span class="mtl3">数量单位</span>
-                                    <span class="mtl5">附件</span>
-                                    <span class="mtl4"><i class="el-icon-circle-plus-outline" @click="addMaterial"></i></span>
-                                </li>
-                            </ul>
-                            <el-scrollbar class="mtl-scrollbar">
-                                <ul class="mt-list mt-list-scroll">
-                                    <li v-for="(item,index) in materialList" :key="index">
-                                        <!-- <el-input v-model="item.materialName" size='mini' class="content-select mtl1" clearable></el-input> -->
-                                        <mInput :list="materialDic" :code.sync="item.materialCode" :name.sync="item.materialName" class="content-select mtl1"></mInput>
-                                        <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
-                                        <!-- <el-input v-model="item.materialUnit" size='mini' class="content-select mtl3" clearable></el-input> -->
-                                        <mInput :list="materialDUnit" :code.sync="item.materialUnit" :name.sync="item.materialUnit" class="content-select mtl3"></mInput>
-
-                                        <div class="mtl5" v-if="item.fileList && item.fileList.length>0">
-                                            <template v-for="(res,ix) in item.fileList">
-                                                <div class="ms-files" :key="ix">
-                                                    <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${this.token}`:res.fileURL" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${res.fileURL}&token=${this.token}`:res.fileURL]" fit="fill"></el-image>
-                                                    <div v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-doc"></div>
-                                                    <div v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(res.fileName)" :title="res.fileName" class="icon-file file-xls"></div>
-                                                    <div v-else :title="res.fileName" class="icon-file file-other"></div>
-
-                                                    <span class="ms-actions">
-                                                        <span class="ms-delete" @click="handleDownload(res)">下载</span>
-                                                        <span class="ms-delete" @click="handleRemove(res,ix,index)">删除</span>
-                                                    </span>
-                                                </div>
-                                            </template>
-                                        </div>
-                                        <div class="mtl5" v-else>
-                                            <el-upload style="display:block;" :action="`${$config.efoms_HOST}/file/uploadFile`" list-type="picture-card" :headers="{token:token}" :on-success="handleSuccessList" :show-file-list="false" @click.native="materialListIndex=index">
-                                                <i slot="default" class="el-icon-plus"></i>
-                                            </el-upload>
-                                        </div>
-
-                                        <span class="mtl4"><i class="el-icon-remove-outline" @click="removeMaterial(index)"></i></span>
-                                    </li>
-                                </ul>
-                            </el-scrollbar>
-
-                        </div>
+                        <label class="dialog-label"><span>*</span>撤销原因</label>
+                        <el-select v-model="backoutReasonCode" placeholder="请选择" size='mini' class="content-select" style="width: 290px;">
+                            <el-option v-for="item in cancelReasonList" :key="item.dicCode" :label="item.dicName" :value="item.dicCode">
+                            </el-option>
+                        </el-select>
                     </div>
-                    <div class="revoke-reason">
+                    <div>
                         <label class="dialog-label">备注</label>
-                        <el-input rows="6" type="textarea" placeholder="请输入" v-model="operMaterialExplain" class="dialog-textarea height100" style="width:290px;">
+                        <el-input rows="6" type="textarea" placeholder="请输入" v-model="operExplain4Backout" class="dialog-textarea" style="width:290px;">
                         </el-input>
                     </div>
-                    <!-- <div>
-                        <label class="dialog-label">附件</label>
-                        <div class="upload-demo">
-                            <template v-for="(item,index) in materialFiles">
-                                <div class="ms-files" :key="index">
-                                    <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" :src="item.fileURL" :preview-src-list="[item.fileURL]" fit="fill"></el-image>
-                                    <div v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-doc"></div>
-                                    <div v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item.fileName)" :title="item.fileName" class="icon-file file-xls"></div>
-                                    <div v-else :title="item.fileName" class="icon-file file-other"></div>
-
-                                    <span class="ms-actions">
-                                        <span class="ms-delete" @click="handleDownload(item)">下载</span>
-                                        <span class="ms-delete" @click="handleRemove(item,index)">删除</span>
-                                    </span>
-                                </div>
-                            </template>
-
-                            <el-upload style="display:block;" :action="`${$config.efoms_HOST}/file/uploadFile`" list-type="picture-card" :headers="{token:token}" :on-success="handleSuccess" :show-file-list="false">
-                                <i slot="default" class="el-icon-plus"></i>
-                            </el-upload>
-                        </div>
-                    </div> -->
                 </div>
                 <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="submitMaterial" size='mini' class="submit">提 交</el-button>
-                    <el-button @click="dialogMaterialVisible = false" size='mini' class="cancel">取 消</el-button>
+                    <el-button type="primary" @click="backoutWorkorders" size='mini' class="submit">提 交</el-button>
+                    <el-button @click="dialogBackoutVisible = false" size='mini' class="cancel">取 消</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -859,17 +804,21 @@
                 dispatchInfoLast: {},
                 appointInfoLast: {},
 
+                voiceList: [],
                 imgFileList: [],
                 otherFileList: [],
                 cancelReasonCode: "",
+                backoutReasonCode: "",
 
                 dialogDelayVisible: false,
                 dialogUrgeVisible: false,
                 dialogRefuseVisible: false,
                 dialogRevokeVisible: false,
+                dialogBackoutVisible: false,
                 dialogMaterialVisible: false,
                 operExplain: "",
                 operExplain4Cancel: "",
+                operExplain4Backout: "",
                 cancelReasonList: [],
                 operRefuseExplain: "",
                 delayTime: '',
@@ -976,7 +925,7 @@
                         Common.printErrorLog(err);
                     });
             },
-            // 撤销
+            // 关闭
             cancelWorkorders() {
                 let cancelReasonName = '';
                 if (this.isAjaxing) {
@@ -984,10 +933,7 @@
                     return;
                 }
                 if (this.cancelReasonCode == "") {
-                    return Common.ejMessage("warning", "请选择撤销原因");
-                }
-                if (this.cancelReasonCode == "") {
-                    return Common.ejMessage("warning", "请选择撤销原因");
+                    return Common.ejMessage("warning", "请选择关闭原因");
                 } else {
                     this.cancelReasonList.map(res => {
                         if (res.dicCode == this.cancelReasonCode) cancelReasonName = res.dicName;
@@ -1016,6 +962,43 @@
                         Common.printErrorLog(err);
                     });
             },
+            // 撤销
+            backoutWorkorders() {
+                let backoutReasonName = '';
+                if (this.isAjaxing) {
+                    alert('数据请求中，请稍等！');
+                    return;
+                }
+                if (this.backoutReasonCode == "") {
+                    return Common.ejMessage("warning", "请选择撤销原因");
+                } else {
+                    this.cancelReasonList.map(res => {
+                        if (res.dicCode == this.backoutReasonCode) backoutReasonName = res.dicName;
+                    });
+                }
+
+                this.isAjaxing = true;
+                this.$api.putByQs(`${this.$config.efoms_HOST}/signsWorkordersRecord/backoutWorkorders`, {
+                        workordersId: this.workordersInfo.workordersId || this.workordersInfo.repairsId,
+                        operExplain: this.operExplain4Backout,
+                        operReasonCode: this.backoutReasonCode,
+                        operReasonName: backoutReasonName
+                    }, { token: this.token })
+                    .then(res => {
+                        this.isAjaxing = false;
+                        if (res.appCode == 0) {
+                            Common.ejMessage("success");
+                            this.dialogBackoutVisible = false;
+                            this.dataDetail();
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        this.isAjaxing = false;
+                        Common.printErrorLog(err);
+                    });
+            },
             // 拒绝
             handleWorkorders() {
                 if (this.operRefuseExplain == '') {
@@ -1026,24 +1009,24 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                // 下发拒绝 handleAppoWorkorders 状态待指派 ORDERSSTATUS11，指派已拒绝 ORDERSSTATUS13
-                // 指派拒绝 handleDispWorkorders 状态待维修 FACILITYSTATUS09
+                // 下发拒绝  状态待指派 FACILITYSTATUS07，指派已拒绝 FACILITYSTATUS08
+                // 指派拒绝  状态待维修 FACILITYSTATUS09
                 let mturl = `${this.$config.efoms_HOST}/signsWorkordersRecord/handleAppoWorkorders`;
-                // switch (this.workordersStatusCode) {
-                //     case 'ORDERSSTATUS11':
-                //     case 'ORDERSSTATUS13':
-                //         mturl = `${this.$config.efoms_HOST}/workordersRecord/handleDispWorkorders`;
-                //         break;
-                //     case 'ORDERSSTATUS02':
-                //         mturl = `${this.$config.efoms_HOST}/workordersRecord/handleAppoWorkorders`;
-                //         break;
-                //     default:
-                //         break;
-                // }
-                // if (mturl == '') {
-                //     this.$message.error("状态不正确无法进行拒绝操作");
-                //     return;
-                // }
+                switch (this.workordersStatusCode) {
+                    case 'FACILITYSTATUS07':
+                    case 'FACILITYSTATUS08':
+                        mturl = `${this.$config.efoms_HOST}/signsWorkordersRecord/rejectDispWorkorders`;
+                        break;
+                    case 'FACILITYSTATUS09':
+                        mturl = `${this.$config.efoms_HOST}/signsWorkordersRecord/handleAppoWorkorders`;
+                        break;
+                    default:
+                        break;
+                }
+                if (mturl == '') {
+                    this.$message.error("状态不正确无法进行拒绝操作");
+                    return;
+                }
 
                 this.isAjaxing = true;
                 this.$api.putByQs(mturl, {
@@ -1066,64 +1049,23 @@
                         Common.printErrorLog(err);
                     });
             },
-            // 材料申请
-            submitMaterial() {
-                if (this.isAjaxing) {
-                    alert('数据请求中，请稍等！');
-                    return;
-                }
-
-                let isChooseRoal = true;
-                this.materialList.map(item => {
-                    if (!item.materialCode || !item.materialNum || !item.materialUnit) {
-                        isChooseRoal = false;
-                    }
-                });
-                if (this.materialList.length == 0 || !isChooseRoal) {
-                    Common.ejMessage("warning", "材料名称，申请数量，数量单位必填");
-                    return;
-                }
-
-                this.isAjaxing = true;
-                this.$api.post(`${this.$config.efoms_HOST}/signsWorkordersRecord/signsWorkordersMaterial`, {
-                        signsWorkordersId: this.workordersInfo.signsWorkordersId,
-                        materialDtoList: this.materialList,
-                        // fileList: this.materialFiles,
-                        operExplain: this.operMaterialExplain
-                    }, { token: this.token })
-                    .then(res => {
-                        this.isAjaxing = false;
-                        if (res.appCode == 0) {
-                            Common.ejMessage("success");
-                            this.dialogMaterialVisible = false;
-                            this.dataDetail();
-                            // 提交之后置空
-                            this.materialList = [];
-                            this.materialListIndex = -1;
-                            this.materialFiles = [];
-                            this.operMaterialExplain = '';
-                        } else {
-                            Common.printErrorLog(res);
-                        }
-                    })
-                    .catch(err => {
-                        this.isAjaxing = false;
-                        Common.printErrorLog(err);
-                    });
-            },
             // 字典类型接口
             getDicInfo(url, obj) {
                 return this.$api.get(
                     url, { token: this.token, data: JSON.stringify(obj) }, {}
                 );
             },
-            showRevoke() {
+            showRevoke(type) {
                 this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { "parentCode": "CANCELREASON" }).then(res => {
                     if (res.appCode == 0) {
                         this.cancelReasonList = res.resultList;
                     }
                 });
-                this.dialogRevokeVisible = true;
+                if (type == 'backout') {
+                    this.dialogBackoutVisible = true;
+                } else {
+                    this.dialogRevokeVisible = true;
+                }
             },
             async showRefuse() {
                 if (!(await this.stopOpertion())) return;
@@ -1135,16 +1077,6 @@
             async showDelay() {
                 if (!(await this.stopOpertion())) return;
                 this.dialogDelayVisible = true;
-            },
-            async showMaterial() {
-                if (!(await this.stopOpertion())) return;
-                this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { "parentCode": "DEVMATERTYPE" }).then(res => {
-                    if (res.appCode == 0) {
-                        this.materialDic = res.resultList;
-                        this.materialDUnit = [{ dicCode: '个', dicName: '个' }, { dicCode: '台', dicName: '台' }];
-                    }
-                });
-                this.dialogMaterialVisible = true;
             },
             materialFileList(val) {
                 let arr = [];
@@ -1208,9 +1140,10 @@
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
                         fileURL: res.downloadPath,
-                        fileMode: res.fileOldName
-                            .slice(res.fileOldName.lastIndexOf(".") + 1)
-                            .toLowerCase()
+                        fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileOldName) ? '0' : '3'
+                        // fileMode: res.fileOldName
+                        //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                        //     .toLowerCase()
                     });
                 }
             },
@@ -1223,9 +1156,10 @@
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
                         fileURL: res.downloadPath,
-                        fileMode: res.fileOldName
-                            .slice(res.fileOldName.lastIndexOf(".") + 1)
-                            .toLowerCase()
+                        fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileOldName) ? '0' : '3'
+                        // fileMode: res.fileOldName
+                        //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                        //     .toLowerCase()
                     });
                 }
             },
@@ -1292,10 +1226,13 @@
                             }
 
                             let fileInfoList = this.workordersInfo.fileInfoList || [];
+                            this.voiceList = [];
                             this.imgFileList = [];
                             this.otherFileList = [];
                             fileInfoList.forEach(item => {
-                                if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName)) {
+                                if (/\.(mp3|wav|MP3|WAV)$/.test(item.fileName)) {
+                                    this.voiceList.push(item);
+                                } else if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)) {
                                     let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
                                     fileUrl = fileUrl.replace('&fileName=', '/');
                                     item.mappingAddress = fileUrl;
@@ -1324,10 +1261,13 @@
                 this.workordersStatusCode = this.workordersInfo.workordersStatusCode || '';
 
                 let fileInfoList = this.workordersInfo.fileInfoList;
+                this.voiceList = [];
                 this.imgFileList = [];
                 this.otherFileList = [];
                 fileInfoList.forEach(item => {
-                    if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName)) {
+                    if (/\.(mp3|wav|MP3|WAV)$/.test(item.fileName)) {
+                        this.voiceList.push(item);
+                    } else if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)) {
                         let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
                         fileUrl = fileUrl.replace('&fileName=', '/');
                         item.mappingAddress = fileUrl;
@@ -1772,7 +1712,7 @@
 
             &.revoke-info {
                 &::before {
-                    content: "\64A4\9500";
+                    content: "\5173\95ed";
                 }
 
                 // .content .revoke-record {

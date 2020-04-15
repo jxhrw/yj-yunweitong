@@ -1,6 +1,6 @@
 <template>
     <div class="ej-main">
-        <WkLayout ref="layout" :title="title" :queryConditions="queryConditions" :totalPage="totalPage" :totalCount="totalCount" :searchMore="1" :typeTableData="typeTableData" :multipleSelection.sync="multipleSelection" @searchTable="searchTableInfo" @searchPage="searchPageInfo">
+        <WkLayout ref="layout" :title="$route.query.type=='41'?('城管'+title):title" :queryConditions="queryConditions" :totalPage="totalPage" :totalCount="totalCount" :searchMore="1" :typeTableData="typeTableData" :multipleSelection.sync="multipleSelection" @searchTable="searchTableInfo" @searchPage="searchPageInfo">
             <template slot="pageBtn" v-if="$route.query.type=='0'||$route.query.type=='r1'||$route.query.type=='r2'||$route.query.type=='r3'">
                 <div class="ej-content-goto" @click="gotoEqpm">
                     <p>创建工单</p>
@@ -43,7 +43,7 @@
                     <label>申报编号</label>
                     <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
-                <el-col :span="7" v-show="title!='维修申报'&&title!='抢修申报'&&title!='优化申报'&&title!='数字城管'">
+                <el-col :span="7" v-show="title!='维修申报'&&title!='抢修申报'&&title!='优化申报'&&title!='数字城管'&&$route.query.type!='41'">
                     <label>维修类型</label>
                     <mInput :list="reptypeList" :code.sync="reptypeCode" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
@@ -60,6 +60,11 @@
                     <label>申报来源</label>
                     <mInput :list="sourceList" :code.sync="sourceCode" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col> -->
+                <el-col :span="7" v-show="title=='工单查询'">
+                    <label>修复时间</label>
+                    <el-date-picker v-model="repairTimes" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd" @keyup.enter.native="searchTableInfo">
+                    </el-date-picker>
+                </el-col>
             </template>
 
             <template slot="tableBtn">
@@ -90,7 +95,7 @@
                     <el-table-column label="操作" min-width="100">
                         <!-- 操作4个表格都一样 -->
                         <template slot-scope="scope">
-                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions" @onOtherEvent="materialDetail"></TableOpertion>
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions"></TableOpertion>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -116,7 +121,7 @@
                     <el-table-column label="操作" min-width="100">
                         <!-- 操作4个表格都一样 -->
                         <template slot-scope="scope">
-                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions" @onOtherEvent="materialDetail"></TableOpertion>
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions"></TableOpertion>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -143,7 +148,7 @@
                     <el-table-column label="操作" min-width="100">
                         <!-- 操作4个表格都一样 -->
                         <template slot-scope="scope">
-                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions" @onOtherEvent="materialDetail"></TableOpertion>
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions"></TableOpertion>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -164,13 +169,13 @@
                     </el-table-column>
                     <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="repDateaaaaa" label="下发时间" show-overflow-tooltip min-width="120"></el-table-column> -->
-                    <el-table-column prop="updateDate" label="维修完成时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="repairTime" label="修复时间" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column> -->
                     <el-table-column label="操作" min-width="100">
                         <!-- 操作4个表格都一样 -->
                         <template slot-scope="scope">
-                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions" @onOtherEvent="materialDetail"></TableOpertion>
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions"></TableOpertion>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -201,11 +206,40 @@
                     <el-table-column label="操作" min-width="110">
                         <!-- 操作4个表格都一样 -->
                         <template slot-scope="scope">
-                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions" @onOtherEvent="materialDetail"></TableOpertion>
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions"></TableOpertion>
                         </template>
                     </el-table-column>
                 </el-table>
             </template>
+            <template slot="table">
+                <el-table v-show="tableShowType==11" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
+                    <el-table-column type="index" label="序号"></el-table-column>
+                    <el-table-column prop="signsWorkordersId" label="申报编号" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devTypeName" label="设施类别" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devDeptName" label="所属大队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="squadronName" label="所属中队" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="" label="道路信息" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{scope.row.listSignsWorkordersRoad|roadShow}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="oppmDeptName" label="维修单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repairTime" label="修复时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip></el-table-column>
+                    <!-- <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column> -->
+                    <el-table-column label="操作" min-width="100">
+                        <!-- 操作4个表格都一样 -->
+                        <template slot-scope="scope">
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions"></TableOpertion>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+
 
             <template slot="dialog">
                 <el-dialog title="工单催办" :visible.sync="dialogUrgeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
@@ -391,6 +425,7 @@
                 listUrl: {},
                 key: "",
                 times: "",
+                repairTimes: '',
                 declareId: '',
                 departCode: '',
                 departList: [],
@@ -467,6 +502,8 @@
                         key: this.key,
                         repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
                         repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
+                        repairStartTime: this.repairTimes ? `${this.repairTimes[0]} 00:00:00` : "",
+                        repairEndTime: this.repairTimes ? `${this.repairTimes[1]} 23:59:59` : "",
                         repDeptId: this.departCode,
                         workordersStatusCode: this.stateCode.join(','),
                         signsWorkordersId: this.declareId,
@@ -771,31 +808,6 @@
                 this.operTransferExplain = '';
                 this.dialogTransferVisible = true;
             },
-            materialDetail(item) {
-                this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { "parentCode": "DEVMATERTYPE" }).then(res => {
-                    if (res.appCode == 0) {
-                        this.materialDic = res.resultList;
-                        this.materialDUnit = [{ dicCode: '个', dicName: '个' }, { dicCode: '台', dicName: '台' }];
-                    }
-                });
-                this.dialogMaterialVisible = true;
-                this.detailInfo = item || {};
-                this.operMaterialExplain = item.operExplain || '';
-                this.materialOldFiles = item.fileInfoList || [];
-                this.materialFiles = [];
-
-                let abc = item.materialRltList || [];
-                let arr = [];
-                abc.map(res => {
-                    arr.push({});
-                });
-                this.materialList = arr; // 先把材料的数量对应的dom加载出来
-                this.$nextTick(() => {
-                    setTimeout(() => {
-                        this.materialList = abc; // dom加载完成后再赋值数据才能渲染成功
-                    })
-                });
-            },
             // 字典类型接口
             getDicInfo(url, obj) {
                 return this.$api.get(
@@ -812,9 +824,10 @@
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
                         fileURL: res.downloadPath,
-                        fileMode: res.fileOldName
-                            .slice(res.fileOldName.lastIndexOf(".") + 1)
-                            .toLowerCase()
+                        fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileOldName) ? '0' : '3'
+                        // fileMode: res.fileOldName
+                        //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                        //     .toLowerCase()
                     });
                 }
             },
@@ -828,9 +841,10 @@
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
                         fileURL: res.downloadPath,
-                        fileMode: res.fileOldName
-                            .slice(res.fileOldName.lastIndexOf(".") + 1)
-                            .toLowerCase()
+                        fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileOldName) ? '0' : '3'
+                        // fileMode: res.fileOldName
+                        //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                        //     .toLowerCase()
                     });
                 }
             },
@@ -880,6 +894,7 @@
             initPage() {
                 this.key = "";
                 this.times = "";
+                this.repairTimes = "";
                 this.declareId = "";
                 this.departCode = '';
                 this.stateCode = [];
@@ -887,6 +902,7 @@
                 this.typeCode = '';
                 this.battalionCode = [];
                 this.sourceCode = '';
+                this.facTypeCode = '';
 
                 this.queryConditions = {};
                 this.multipleSelection = [];
@@ -896,6 +912,15 @@
                 this.token = Common.getQueryString("token");
                 this.typeList = [];
                 this.tableShowType = 0;
+
+                //维修类型
+                let arrRpType = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }];
+                let arrRpTypeAl = [{ dicCode: 'REPAIRTYPE04', dicName: '数字城管' }];
+                if(this.$route.query.type=='4'){
+                    this.reptypeList = [...arrRpType];
+                }else{
+                    this.reptypeList = [...arrRpType,...arrRpTypeAl];
+                }
 
                 this.listUrl.download = '';
                 this.listUrl.table = `${this.$config.efoms_HOST}/SignsWorkordersInfo/getSignsWorkordersInfoPage`;
@@ -936,26 +961,30 @@
                     case 's1':
                         this.tableShowType = 2;
                         this.title = '大队道管审核';
-                        this.typeList = [{ dicCode: 'DDDG001', dicName: '全部' }, { dicCode: 'DDDG002', dicName: '待审核' }, { dicCode: 'DDDG003', dicName: '审核通过' }, { dicCode: 'DDDG004', dicName: '审核不通过' }];
-                        this.typeCode = this.typeList[1].dicCode;
+                        this.typeList = [{ dicCode: 'DDDG002', dicName: '待审核' }, { dicCode: 'DDDG003', dicName: '审核通过' }, { dicCode: 'DDDG004', dicName: '审核不通过' }];
+                        // this.typeList = [{ dicCode: 'DDDG001', dicName: '全部' }, { dicCode: 'DDDG002', dicName: '待审核' }, { dicCode: 'DDDG003', dicName: '审核通过' }, { dicCode: 'DDDG004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[0].dicCode;
                         break;
                     case 's2':
                         this.tableShowType = 2;
                         this.title = '大队领导审核';
-                        this.typeList = [{ dicCode: 'DDLD001', dicName: '全部' }, { dicCode: 'DDLD002', dicName: '待审核' }, { dicCode: 'DDLD003', dicName: '审核通过' }, { dicCode: 'DDLD004', dicName: '审核不通过' }];
-                        this.typeCode = this.typeList[1].dicCode;
+                        this.typeList = [{ dicCode: 'DDLD002', dicName: '待审核' }, { dicCode: 'DDLD003', dicName: '审核通过' }, { dicCode: 'DDLD004', dicName: '审核不通过' }];
+                        // this.typeList = [{ dicCode: 'DDLD001', dicName: '全部' }, { dicCode: 'DDLD002', dicName: '待审核' }, { dicCode: 'DDLD003', dicName: '审核通过' }, { dicCode: 'DDLD004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[0].dicCode;
                         break;
                     case 's3':
                         this.tableShowType = 2;
                         this.title = '设施科审核';
-                        this.typeList = [{ dicCode: 'ZDSSK001', dicName: '全部' }, { dicCode: 'ZDSSK002', dicName: '待审核' }, { dicCode: 'ZDSSK003', dicName: '审核通过' }, { dicCode: 'ZDSSK004', dicName: '审核不通过' }];
-                        this.typeCode = this.typeList[1].dicCode;
+                        this.typeList = [{ dicCode: 'ZDSSK002', dicName: '待审核' }, { dicCode: 'ZDSSK003', dicName: '审核通过' }, { dicCode: 'ZDSSK004', dicName: '审核不通过' }];
+                        // this.typeList = [{ dicCode: 'ZDSSK001', dicName: '全部' }, { dicCode: 'ZDSSK002', dicName: '待审核' }, { dicCode: 'ZDSSK003', dicName: '审核通过' }, { dicCode: 'ZDSSK004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[0].dicCode;
                         break;
                     case 's4':
                         this.tableShowType = 2;
                         this.title = '秩序处审核';
-                        this.typeList = [{ dicCode: 'ZXC001', dicName: '全部' }, { dicCode: 'ZXC002', dicName: '待审核' }, { dicCode: 'ZXC003', dicName: '审核通过' }, { dicCode: 'ZXC004', dicName: '审核不通过' }];
-                        this.typeCode = this.typeList[1].dicCode;
+                        this.typeList = [{ dicCode: 'ZXC002', dicName: '待审核' }, { dicCode: 'ZXC003', dicName: '审核通过' }, { dicCode: 'ZXC004', dicName: '审核不通过' }];
+                        // this.typeList = [{ dicCode: 'ZXC001', dicName: '全部' }, { dicCode: 'ZXC002', dicName: '待审核' }, { dicCode: 'ZXC003', dicName: '审核通过' }, { dicCode: 'ZXC004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[0].dicCode;
                         break;
                     case '3':
                         this.tableShowType = 1;
@@ -969,6 +998,13 @@
                         this.title = '延期审核';
                         // this.listUrl.download = `${this.$config.efoms_HOST}/export/exportYQGD`;
                         this.typeList = [{ dicCode: 'YQGD000', dicName: '待审核' }, { dicCode: 'YQGD001', dicName: '审核通过' }, { dicCode: 'YQGD002', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        break;
+                    case '41':
+                        this.tableShowType = 2;
+                        this.title = '延期审核';
+                        // this.listUrl.download = `${this.$config.efoms_HOST}/export/exportYQGD`;
+                        this.typeList = [{ dicCode: 'CGYQ000', dicName: '待审核' }, { dicCode: 'CGYQ001', dicName: '审核通过' }, { dicCode: 'CGYQ002', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
                         break;
                     case '5':
@@ -985,7 +1021,7 @@
                         this.typeCode = this.typeList[0].dicCode;
                         break;
                     case '7':
-                        this.tableShowType = 1;
+                        this.tableShowType = 11;
                         this.title = '工单查询';
                         if (this.$route.query.devId) {
                             this.key = this.$route.query.devId;
@@ -1023,40 +1059,46 @@
                     case 's6':
                         this.tableShowType = 4;
                         this.title = '经理审核';
-                        this.typeList = [{ dicCode: 'MJ001', dicName: '全部' }, { dicCode: 'MJ002', dicName: '待审核' }, { dicCode: 'MJ003', dicName: '审核通过' }, { dicCode: 'MJ004', dicName: '审核不通过' }];
-                        this.typeCode = this.typeList[1].dicCode;
+                        this.typeList = [{ dicCode: 'MJ002', dicName: '待审核' }, { dicCode: 'MJ003', dicName: '审核通过' }, { dicCode: 'MJ004', dicName: '审核不通过' }];
+                        // this.typeList = [{ dicCode: 'MJ001', dicName: '全部' }, { dicCode: 'MJ002', dicName: '待审核' }, { dicCode: 'MJ003', dicName: '审核通过' }, { dicCode: 'MJ004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[0].dicCode;
                         break;
                     case 's7':
                         this.tableShowType = 4;
                         this.title = '监理审核';
-                        this.typeList = [{ dicCode: 'JL001', dicName: '全部' }, { dicCode: 'JL002', dicName: '待审核' }, { dicCode: 'JL003', dicName: '审核通过' }, { dicCode: 'JL004', dicName: '审核不通过' }];
-                        this.typeCode = this.typeList[1].dicCode;
+                        this.typeList = [{ dicCode: 'JL002', dicName: '待审核' }, { dicCode: 'JL003', dicName: '审核通过' }, { dicCode: 'JL004', dicName: '审核不通过' }];
+                        // this.typeList = [{ dicCode: 'JL001', dicName: '全部' }, { dicCode: 'JL002', dicName: '待审核' }, { dicCode: 'JL003', dicName: '审核通过' }, { dicCode: 'JL004', dicName: '审核不通过' }];
+                        this.typeCode = this.typeList[0].dicCode;
                         break;
                     case 's8':
                         this.tableShowType = 4;
                         this.title = '中队验收';
-                        this.typeList = [{ dicCode: 'ZDYZ001', dicName: '全部' }, { dicCode: 'ZDYZ002', dicName: '待审核' }, { dicCode: 'ZDYZ003', dicName: '审核通过' }, { dicCode: 'ZDYZ004', dicName: '审核不通过' }];
+                        this.typeList = [{ dicCode: 'ZDYZ002', dicName: '待审核' }, { dicCode: 'ZDYZ003', dicName: '审核通过' }, { dicCode: 'ZDYZ004', dicName: '审核不通过' }];
+                        // this.typeList = [{ dicCode: 'ZDYZ001', dicName: '全部' }, { dicCode: 'ZDYZ002', dicName: '待审核' }, { dicCode: 'ZDYZ003', dicName: '审核通过' }, { dicCode: 'ZDYZ004', dicName: '审核不通过' }];
                         this.typeList = [{ dicCode: 'DYS002', dicName: '待验收' }];
                         this.typeCode = this.typeList[0].dicCode;
                         break;
                     case 's9':
                         this.tableShowType = 4;
                         this.title = '大队验收';
-                        this.typeList = [{ dicCode: 'DDYZ001', dicName: '全部' }, { dicCode: 'DDYZ002', dicName: '待审核' }, { dicCode: 'DDYZ003', dicName: '审核通过' }, { dicCode: 'DDYZ004', dicName: '审核不通过' }];
+                        this.typeList = [{ dicCode: 'DDYZ002', dicName: '待审核' }, { dicCode: 'DDYZ003', dicName: '审核通过' }, { dicCode: 'DDYZ004', dicName: '审核不通过' }];
+                        // this.typeList = [{ dicCode: 'DDYZ001', dicName: '全部' }, { dicCode: 'DDYZ002', dicName: '待审核' }, { dicCode: 'DDYZ003', dicName: '审核通过' }, { dicCode: 'DDYZ004', dicName: '审核不通过' }];
                         this.typeList = [{ dicCode: 'DYS001', dicName: '待验收' }];
                         this.typeCode = this.typeList[0].dicCode;
                         break;
                     case 's10':
                         this.tableShowType = 4;
                         this.title = '民警验收';
-                        this.typeList = [{ dicCode: 'MJYZ001', dicName: '全部' }, { dicCode: 'MJYZ002', dicName: '待审核' }, { dicCode: 'MJYZ003', dicName: '审核通过' }, { dicCode: 'MJYZ004', dicName: '审核不通过' }];
+                        this.typeList = [{ dicCode: 'MJYZ002', dicName: '待审核' }, { dicCode: 'MJYZ003', dicName: '审核通过' }, { dicCode: 'MJYZ004', dicName: '审核不通过' }];
+                        // this.typeList = [{ dicCode: 'MJYZ001', dicName: '全部' }, { dicCode: 'MJYZ002', dicName: '待审核' }, { dicCode: 'MJYZ003', dicName: '审核通过' }, { dicCode: 'MJYZ004', dicName: '审核不通过' }];
                         this.typeList = [{ dicCode: 'DYS004', dicName: '待验收' }];
                         this.typeCode = this.typeList[0].dicCode;
                         break;
                     case 's11':
                         this.tableShowType = 4;
                         this.title = '干部验收';
-                        this.typeList = [{ dicCode: 'LDYZ001', dicName: '全部' }, { dicCode: 'LDYZ002', dicName: '待审核' }, { dicCode: 'LDYZ003', dicName: '审核通过' }, { dicCode: 'LDYZ004', dicName: '审核不通过' }];
+                        this.typeList = [{ dicCode: 'LDYZ002', dicName: '待审核' }, { dicCode: 'LDYZ003', dicName: '审核通过' }, { dicCode: 'LDYZ004', dicName: '审核不通过' }];
+                        // this.typeList = [{ dicCode: 'LDYZ001', dicName: '全部' }, { dicCode: 'LDYZ002', dicName: '待审核' }, { dicCode: 'LDYZ003', dicName: '审核通过' }, { dicCode: 'LDYZ004', dicName: '审核不通过' }];
                         this.typeList = [{ dicCode: 'DYS003', dicName: '待验收' }];
                         this.typeCode = this.typeList[0].dicCode;
                         break;
@@ -1128,8 +1170,6 @@
             }).then(res => {
                 this.stateList = res.resultList || [];
             });
-            //维修类型
-            this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }, { dicCode: 'REPAIRTYPE04', dicName: '数字城管' }];
             // 设施类别
             this.facTypeList = [{ dicCode: 'REPDEVTYPE24', dicName: '电子设施' }, { dicCode: 'REPDEVTYPE21', dicName: '交通标线' }, { dicCode: 'REPDEVTYPE22', dicName: '交通护栏' }, { dicCode: 'REPDEVTYPE23', dicName: '交通标志' }, { dicCode: 'REPDEVTYPE25', dicName: '临时设施' }, { dicCode: 'REPDEVTYPE26', dicName: '其他设施' }];
             //所属大队

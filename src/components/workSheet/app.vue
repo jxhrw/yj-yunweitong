@@ -328,6 +328,7 @@
             border: 1px solid #e1e7ed;
             font-size: 50px;
             position: relative;
+            text-align: center;
 
             &:hover {
                 .img-del {

@@ -18,11 +18,12 @@ const knowledge = resolve => require(['components/workSheet/knowledge'], resolve
 const detKnow = resolve => require(['components/workSheet/det-know'], resolve);
 
 // 设施
+const timess = resolve => require(['components/workSheet_ss/timedeft'], resolve);
 const sheetss = resolve => require(['components/workSheet_ss/sheet_ss'], resolve);
 const detrepss = resolve => require(['components/workSheet_ss/det-repair_ss'], resolve);
 const detsheetss = resolve => require(['components/workSheet_ss/det-sheet_ss'], resolve);
-const contract = resolve => require(['components/workSheet_ss/contract'], resolve);
-const detcontract = resolve => require(['components/workSheet_ss/det-contract'], resolve);
+const contractss = resolve => require(['components/workSheet_ss/contract'], resolve);
+// const detcontract = resolve => require(['components/workSheet_ss/det-contract'], resolve);
 const material = resolve => require(['components/workSheet_ss/material'], resolve);
 const detmaterial = resolve => require(['components/workSheet_ss/det-material'], resolve);
 const contact = resolve => require(['components/workSheet_ss/contact'], resolve);
@@ -50,17 +51,9 @@ export default new Router({
             keepAlive: true
         }
     }, {
-        path: '/detcontract',
-        name: 'detcontract',
-        component: detcontract
-    }, {
-        path: '/contract',
-        name: 'contract',
-        component: contract,
-        meta: {
-            isUseCache: false,
-            keepAlive: true
-        }
+        path: '/contractss',
+        name: 'contractss',
+        component: contractss,
     }, {
         path: '/detrepss',
         name: 'detrepss',
@@ -154,8 +147,8 @@ export default new Router({
             keepAlive: true
         }
     }, {
-        path: '/time',
-        name: 'time',
-        component: time
+        path: '/timess',
+        name: 'timess',
+        component: timess
     }, ]
 });

@@ -10,10 +10,20 @@ const detKnow = resolve => require(['components/workSheet/det-know'], resolve);
 const sheetrj = resolve => require(['components/workSheet_rj/sheet_rj'], resolve);
 const detreprj = resolve => require(['components/workSheet_rj/det-repair_rj'], resolve);
 const detsheetrj = resolve => require(['components/workSheet_rj/det-sheet_rj'], resolve);
+const timerj = resolve => require(['components/workSheet_rj/timedeft'], resolve);
+const contractrj = resolve => require(['components/workSheet_rj/contract'], resolve);
 
 export default new Router({
     mode: 'hash',
     routes: [{
+        path: '/contractrj',
+        name: 'contractrj',
+        component: contractrj,
+    }, {
+        path: '/timerj',
+        name: 'timerj',
+        component: timerj,
+    }, {
         path: '/detKnow',
         name: 'detKnow',
         component: detKnow,

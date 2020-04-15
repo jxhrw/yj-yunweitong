@@ -94,8 +94,10 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
-                    <el-table-column label="操作">
+                    <el-table-column label="操作" min-width="100">
                         <template slot-scope="scope">
+                            <!-- 优化申报页面，并且状态为科室待审核REPAIRSTATUS05时出现 -->
+                            <div v-if="(scope.row.workordersStatusCode == 'REPAIRSTATUS05')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
                             <div class="tab-operation" @click="dataDetail(scope.row)">详情</div>
                         </template>
                     </el-table-column>
@@ -326,11 +328,14 @@
                         Common.printErrorLog(err);
                     });
             },
-            dataDetail(item) {
+            dataDetail(item, type) {
+                if (type == 'edit') {
+                    sessionStorage.setItem('relaodPage', '1');
+                }
                 if (item.workordersId) {
                     this.$router.push({
                         path: "/detsheet",
-                        query: { id: item.workordersId, pre: '优化申报' }
+                        query: { id: item.workordersId, pre: '优化申报', isread: type }
                     });
                 } else {
                     this.$router.push({

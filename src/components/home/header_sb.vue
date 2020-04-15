@@ -2,7 +2,7 @@
     <div class="header">
         <div></div>
         <div class="time">
-            <a v-popover:tpll>当前在线人数： <i class="txt-futura-hd">{{(parseInt(onlineCount.APP)||0)+(parseInt(onlineCount.WEB)||0)}}</i></a>
+            <!-- <a v-popover:tpll>当前在线人数： <i class="txt-futura-hd">{{(parseInt(onlineCount.APP)||0)+(parseInt(onlineCount.WEB)||0)}}</i></a> -->
             <span class="txt-futura-hd">{{date}}</span> {{week}}
 
             <el-popover ref="tpll" placement="bottom" width="128" trigger="hover" popper-class='tp-pop'>
@@ -69,12 +69,15 @@
             this.date = Common.dateFormat('yyyy/MM/dd hh:mm:ss', new Date(nowTime));
             let i = 1;
             // this.getOnline();
-            // setInterval(() => {
-            //     i++;
-            //     if (i % 60 == 0) this.getOnline();
-            //     nowTime += 1000;
-            //     this.date = Common.dateFormat('yyyy/MM/dd hh:mm:ss', new Date(nowTime));
-            // }, 1000);
+            setInterval(() => {
+                i++;
+                if (i % 60 == 0) {
+                    this.week = Common.showWeek();
+                    // this.getOnline();
+                }
+                nowTime += 1000;
+                this.date = Common.dateFormat('yyyy/MM/dd hh:mm:ss', new Date(nowTime));
+            }, 1000);
         }
     };
 </script>

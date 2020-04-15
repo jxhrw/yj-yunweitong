@@ -1,7 +1,9 @@
 <template>
     <div class="unit-tab-operation">
-        <!-- 维修申报页面，并且状态为待下发ORDERSSTATUS01时出现，下发已拒绝ORDERSSTATUS10 -->
-        <div v-if="(title=='维修申报')&&(scope.row.workordersStatusCode == 'ORDERSSTATUS01'||scope.row.workordersStatusCode == 'ORDERSSTATUS10')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
+        <!-- 维修申报页面，并且状态为待下发ORDERSSTATUS01时出现，下发已拒绝ORDERSSTATUS10（取消） -->
+        <div v-if="(title=='维修申报')&&(scope.row.workordersStatusCode == 'ORDERSSTATUS01')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
+        <!-- 优化申报页面，并且状态为科室待审核REPAIRSTATUS05时出现 -->
+        <div v-if="(title=='优化申报')&&(scope.row.workordersStatusCode == 'REPAIRSTATUS05')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
         <!-- 科室审核页面+处室审核页面，并且状态为待审核时出现 -->
         <div v-if="(title=='科室审核'&&scope.row.repStatusCode == 'REPAIRSTATUS05')||(title=='处室审核'&&scope.row.repStatusCode == 'REPAIRSTATUS06')" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
         <!-- 工单下发页面，并且状态为待下发ORDERSSTATUS01时出现，下发已拒绝ORDERSSTATUS10 -->

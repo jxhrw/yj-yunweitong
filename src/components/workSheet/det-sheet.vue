@@ -12,7 +12,7 @@
                         <li :class="{'active': activeIndex=='fk'}" @click="scrollIntoView('fk')" v-if="workordersInfo.workordersRecordMap.fackbackList&&workordersInfo.workordersRecordMap.fackbackList.length>0">反馈</li>
                         <li :class="{'active': activeIndex=='qr'}" @click="scrollIntoView('qr')" v-if="workordersInfo.workordersRecordMap.sureList&&workordersInfo.workordersRecordMap.sureList.length>0">确认</li>
                         <li :class="{'active': activeIndex=='pj'}" @click="scrollIntoView('pj')" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0">评价</li>
-                        <li :class="{'active': activeIndex=='cx'}" @click="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">撤销</li>
+                        <li :class="{'active': activeIndex=='cx'}" @click="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">关闭</li>
                     </ul>
                 </div>
 
@@ -45,10 +45,16 @@
                         <div v-if="(prePage=='工单指派')&&(workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05'||workordersStatusCode=='ORDERSSTATUS14')" class="ej-content-title-btn ej-content-yellow" @click="showReturn">
                             <p>退回</p>
                         </div>
-                        <!-- 可撤销： ORDEROPERTYPE02，REPOPERTYPE02-->
+                        <!-- 可撤销/关闭： ORDEROPERTYPE02，REPOPERTYPE02-->
+                        <!-- "ORDEROPERTYPE02", "关闭"；"ORDEROPERTYPE27", "撤销-->
                         <!-- 或者 超期工单并且状态为非 已撤销状态ORDERSSTATUS08 已完结ORDERSSTATUS07-->
-                        <div v-if="((prePage!='工单指派'&&(operatCode.indexOf('ORDEROPERTYPE02')>-1||operatCode.indexOf('REPOPERTYPE02')>-1)) ||(prePage=='超期工单'&&(workordersStatusCode!='ORDERSSTATUS08'&&workordersStatusCode!='ORDERSSTATUS07')))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
-                            <p>撤销</p>
+                        <template v-if="(prePage=='维修申报'||prePage=='优化申报')">
+                            <div v-if="(operatCode.indexOf('ORDEROPERTYPE27')>-1)" class="ej-content-title-btn ej-content-yellow" @click="showRevoke('backout')">
+                                <p>撤销</p>
+                            </div>
+                        </template>
+                        <div v-else-if="((prePage!='工单指派'&&(operatCode.indexOf('ORDEROPERTYPE02')>-1||operatCode.indexOf('REPOPERTYPE02')>-1)) ||(prePage=='超期工单'&&(workordersStatusCode!='ORDERSSTATUS08'&&workordersStatusCode!='ORDERSSTATUS07')))" class="ej-content-title-btn ej-content-yellow" @click="showRevoke">
+                            <p>关闭</p>
                         </div>
                     </template>
 
@@ -157,9 +163,16 @@
                                             <label>情况描述</label>
                                             <span>{{workordersInfo.failureDescrible}}</span>
                                         </el-col>
-                                        <el-col :span="9">
-                                            <label>语音描述</label>
-                                            <span>{{''}}</span>
+                                        <el-col :span="24">
+                                            <label :style="voiceList.length>0?'line-height:36px;':''">语音描述</label>
+                                            <span class="voice-box">
+                                                <template v-if="voiceList.length<=0">
+                                                    无
+                                                </template>
+                                                <i v-for="(item,index) in voiceList" :key="index">
+                                                    <audio :src="item.fileUrl" controls="controls"></audio>
+                                                </i>
+                                            </span>
                                         </el-col>
 
                                         <el-col :span="24" class="content-row-img">
@@ -187,7 +200,7 @@
                                 <el-step title="反馈" :class="{'active': activeIndex=='fk'}" @click.native="scrollIntoView('fk')" v-if="workordersInfo.workordersRecordMap.fackbackList&&workordersInfo.workordersRecordMap.fackbackList.length>0"></el-step>
                                 <el-step title="确认" :class="{'active': activeIndex=='qr'}" @click.native="scrollIntoView('qr')" v-if="workordersInfo.workordersRecordMap.sureList&&workordersInfo.workordersRecordMap.sureList.length>0"></el-step>
                                 <el-step title="评价" :class="{'active': activeIndex=='pj'}" @click.native="scrollIntoView('pj')" v-if="workordersInfo.workordersRecordMap.evaluateList&&workordersInfo.workordersRecordMap.evaluateList.length>0"></el-step>
-                                <el-step title="撤销" :class="{'active': activeIndex=='cx'}" @click.native="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0"></el-step>
+                                <el-step title="关闭" :class="{'active': activeIndex=='cx'}" @click.native="scrollIntoView('cx')" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0"></el-step>
                             </el-steps>
                         </div>
                         <div class="step-right">
@@ -435,6 +448,17 @@
                                                     <label for="">备注</label>
                                                     <span style="width: 996px;">{{item.operExplain}}</span>
                                                 </div>
+                                                <div class="content file-info">
+                                                    <label for="">附件</label>
+                                                    <span class="file-name">
+                                                        <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
+                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
+                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
+                                                            <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
+                                                        </div>
+                                                    </span>
+                                                </div>
                                             </template>
 
                                             <!-- 反馈ORDEROPERTYPE07 -->
@@ -521,7 +545,7 @@
                                         </template>
                                     </li>
                                 </ul>
-                                <!-- 撤销 -->
+                                <!-- 撤销/关闭 -->
                                 <ul id="cx" class="sp-info revoke-info" v-if="workordersInfo.workordersRecordMap.cancelList&&workordersInfo.workordersRecordMap.cancelList.length>0">
                                     <li v-for="(item,index) in workordersInfo.workordersRecordMap.cancelList" :key="index">
                                         <div class="title">
@@ -530,7 +554,8 @@
                                             <span class="title-person">{{item.operPerson}}</span>
                                         </div>
                                         <div class="content">
-                                            <label for="">撤销原因</label>
+                                            <!-- ("ORDEROPERTYPE02", "关闭"), ("ORDEROPERTYPE27", "撤销") -->
+                                            <label for="">{{item.operTypeCode=='ORDEROPERTYPE27'?'撤销':'关闭'}}原因</label>
                                             <span style="width: 349px;">{{item.operReasonName}}</span>
                                             <label for="">备注</label>
                                             <span style="width: 567px;">{{item.operExplain}}</span>
@@ -618,10 +643,10 @@
                     <el-button @click="dialogReturnVisible = false" size='mini' class="cancel">取 消</el-button>
                 </div>
             </el-dialog>
-            <el-dialog title="撤销申请" :visible.sync="dialogRevokeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
+            <el-dialog title="关闭申请" :visible.sync="dialogRevokeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                 <div class="dialog-main">
                     <div class="revoke-reason">
-                        <label class="dialog-label"><span>*</span>撤销原因</label>
+                        <label class="dialog-label"><span>*</span>关闭原因</label>
                         <el-select v-model="cancelReasonCode" placeholder="请选择" size='mini' class="content-select" style="width: 290px;">
                             <el-option v-for="item in cancelReasonList" :key="item.dicCode" :label="item.dicName" :value="item.dicCode">
                             </el-option>
@@ -636,6 +661,26 @@
                 <div slot="footer" class="dialog-footer">
                     <el-button type="primary" @click="cancelWorkorders" size='mini' class="submit">提 交</el-button>
                     <el-button @click="dialogRevokeVisible = false" size='mini' class="cancel">取 消</el-button>
+                </div>
+            </el-dialog>
+            <el-dialog title="撤销申请" :visible.sync="dialogBackoutVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
+                <div class="dialog-main">
+                    <div class="revoke-reason">
+                        <label class="dialog-label"><span>*</span>撤销原因</label>
+                        <el-select v-model="backoutReasonCode" placeholder="请选择" size='mini' class="content-select" style="width: 290px;">
+                            <el-option v-for="item in cancelReasonList" :key="item.dicCode" :label="item.dicName" :value="item.dicCode">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <label class="dialog-label">备注</label>
+                        <el-input rows="6" type="textarea" placeholder="请输入" v-model="operExplain4Backout" class="dialog-textarea" style="width:290px;">
+                        </el-input>
+                    </div>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="backoutWorkorders" size='mini' class="submit">提 交</el-button>
+                    <el-button @click="dialogBackoutVisible = false" size='mini' class="cancel">取 消</el-button>
                 </div>
             </el-dialog>
             <el-dialog title="材料申请" :visible.sync="dialogMaterialVisible" width='700px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
@@ -679,9 +724,13 @@
                                             </template>
                                         </div>
                                         <div class="mtl5" v-else>
-                                            <el-upload style="display:block;" :action="`${$config.efoms_HOST}/file/uploadFile`" list-type="picture-card" :headers="{token:token}" :on-success="handleSuccessList" :show-file-list="false" @click.native="materialListIndex=index">
+                                            <!--<el-upload style="display:block;" accept="image/jpeg, image/png" :action="`${$config.efoms_HOST}/file/uploadFile`" list-type="picture-card" :headers="{'token':token}" :on-success="handleSuccessList" :show-file-list="false">
                                                 <i slot="default" class="el-icon-plus"></i>
-                                            </el-upload>
+                                            </el-upload>-->
+                                            <div class="img-add" @click="openFile('mtlID'+index,index)">
+                                                <i class="el-icon-plus"></i>
+                                                <input type="file" :id="'mtlID'+index" name="" style="display:none" @change="uploadPh('mtlID'+index)">
+                                            </div>
                                         </div>
 
                                         <span class="mtl4"><i class="el-icon-remove-outline" @click="removeMaterial(index)"></i></span>
@@ -802,17 +851,21 @@
                 dispatchInfoLast: {},
                 appointInfoLast: {},
 
+                voiceList: [],
                 imgFileList: [],
                 cancelReasonCode: "",
+                backoutReasonCode: "",
 
                 dialogDelayVisible: false,
                 dialogUrgeVisible: false,
                 dialogRefuseVisible: false,
                 dialogReturnVisible: false,
                 dialogRevokeVisible: false,
+                dialogBackoutVisible: false,
                 dialogMaterialVisible: false,
                 operExplain: "",
                 operExplain4Cancel: "",
+                operExplain4Backout: "",
                 cancelReasonList: [],
                 operRefuseExplain: "",
                 operReturnExplain: "",
@@ -920,7 +973,7 @@
                         Common.printErrorLog(err);
                     });
             },
-            // 撤销
+            // 关闭
             cancelWorkorders() {
                 let cancelReasonName = '';
                 if (this.isAjaxing) {
@@ -928,7 +981,7 @@
                     return;
                 }
                 if (this.cancelReasonCode == "") {
-                    return Common.ejMessage("warning", "请选择撤销原因");
+                    return Common.ejMessage("warning", "请选择关闭原因");
                 } else {
                     this.cancelReasonList.map(res => {
                         if (res.dicCode == this.cancelReasonCode) cancelReasonName = res.dicName;
@@ -957,6 +1010,43 @@
                         Common.printErrorLog(err);
                     });
             },
+            // 撤销
+            backoutWorkorders() {
+                let backoutReasonName = '';
+                if (this.isAjaxing) {
+                    alert('数据请求中，请稍等！');
+                    return;
+                }
+                if (this.backoutReasonCode == "") {
+                    return Common.ejMessage("warning", "请选择撤销原因");
+                } else {
+                    this.cancelReasonList.map(res => {
+                        if (res.dicCode == this.backoutReasonCode) backoutReasonName = res.dicName;
+                    });
+                }
+
+                this.isAjaxing = true;
+                this.$api.putByQs(`${this.$config.efoms_HOST}/workordersRecord/backoutWorkorders`, {
+                        workordersId: this.workordersInfo.workordersId || this.workordersInfo.repairsId,
+                        operExplain: this.operExplain4Backout,
+                        operReasonCode: this.backoutReasonCode,
+                        operReasonName: backoutReasonName
+                    }, { token: this.token })
+                    .then(res => {
+                        this.isAjaxing = false;
+                        if (res.appCode == 0) {
+                            Common.ejMessage("success");
+                            this.dialogBackoutVisible = false;
+                            this.dataDetail();
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        this.isAjaxing = false;
+                        Common.printErrorLog(err);
+                    });
+            },
             // 拒绝
             handleWorkorders() {
                 if (this.operRefuseExplain == '') {
@@ -967,8 +1057,8 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                // 下发拒绝 handleAppoWorkorders 状态待指派 ORDERSSTATUS11，指派已拒绝 ORDERSSTATUS13
-                // 指派拒绝 handleDispWorkorders 状态待维修 ORDERSSTATUS02
+                // 下发拒绝  状态待指派 ORDERSSTATUS11，指派已拒绝 ORDERSSTATUS13
+                // 指派拒绝  状态待维修 ORDERSSTATUS02
                 let mturl = '';
                 switch (this.workordersStatusCode) {
                     case 'ORDERSSTATUS11':
@@ -1088,13 +1178,17 @@
                     url, { token: this.token, data: JSON.stringify(obj) }, {}
                 );
             },
-            showRevoke() {
+            showRevoke(type) {
                 this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { "parentCode": "CANCELREASON" }).then(res => {
                     if (res.appCode == 0) {
                         this.cancelReasonList = res.resultList;
                     }
                 });
-                this.dialogRevokeVisible = true;
+                if (type == 'backout') {
+                    this.dialogBackoutVisible = true;
+                } else {
+                    this.dialogRevokeVisible = true;
+                }
             },
             async showRefuse() {
                 if (!(await this.stopOpertion())) return;
@@ -1183,14 +1277,50 @@
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
                         fileURL: res.downloadPath,
-                        fileMode: res.fileOldName
-                            .slice(res.fileOldName.lastIndexOf(".") + 1)
-                            .toLowerCase()
+                        fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileOldName) ? '0' : '3'
+                        // fileMode: res.fileOldName
+                        //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                        //     .toLowerCase()
                     });
                 }
             },
+            openFile(id, index) {
+                this.materialListIndex = index;
+                document.getElementById(id).click()
+            },
+            uploadPh(fileId) {
+                var header = {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    token: this.token
+                };
+                var formData = new FormData();
+                var file = document.getElementById(fileId).files[0];
+                formData.append("file", file);
+                this.$api.post(`${this.$config.efoms_HOST}/file/uploadFile`, formData, header).then(res => {
+                        if (res.appCode == 0) {
+                            let data = res.resultList || {};
+                            this.materialList[this.materialListIndex].fileInfoList.push({
+                                secondDir: data.secondDir,
+                                fileName: data.fileName,
+                                fileOldName: data.fileOldName,
+                                fileURL: data.downloadPath,
+                                fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(data.fileOldName) ? '0' : '3'
+                                // fileMode: res.fileOldName
+                                //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                                //     .toLowerCase()
+                            });
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+                document.getElementById(fileId).value = '';
+            },
             handleSuccessList(response, file, fileList) {
                 console.log(response);
+                this.materialListIndex = 0;
                 if (response.appCode == '0') {
                     let res = response.resultList || {};
                     this.materialList[this.materialListIndex].fileInfoList.push({
@@ -1198,9 +1328,10 @@
                         fileName: res.fileName,
                         fileOldName: res.fileOldName,
                         fileURL: res.downloadPath,
-                        fileMode: res.fileOldName
-                            .slice(res.fileOldName.lastIndexOf(".") + 1)
-                            .toLowerCase()
+                        fileMode: /\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(res.fileOldName) ? '0' : '3'
+                        // fileMode: res.fileOldName
+                        //     .slice(res.fileOldName.lastIndexOf(".") + 1)
+                        //     .toLowerCase()
                     });
                 }
             },
@@ -1263,9 +1394,12 @@
                             this.appointInfoLast = arr2.length > 0 ? arr2[arr2.length - 1] : {};
 
                             let fileInfoList = this.workordersInfo.fileInfoList;
+                            this.voiceList = [];
                             this.imgFileList = [];
                             fileInfoList.forEach(item => {
-                                if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName)) {
+                                if (/\.(mp3|wav|MP3|WAV)$/.test(item.fileName)) {
+                                    this.voiceList.push(item);
+                                } else if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)) {
                                     let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
                                     fileUrl = fileUrl.replace('&fileName=', '/');
                                     item.mappingAddress = fileUrl;
@@ -1295,9 +1429,12 @@
                             this.workordersStatusCode = this.workordersInfo.workordersStatusCode || '';
 
                             let fileInfoList = this.workordersInfo.fileInfoList;
+                            this.voiceList = [];
                             this.imgFileList = [];
                             fileInfoList.forEach(item => {
-                                if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName)) {
+                                if (/\.(mp3|wav|MP3|WAV)$/.test(item.fileName)) {
+                                    this.voiceList.push(item);
+                                } else if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)) {
                                     let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
                                     fileUrl = fileUrl.replace('&fileName=', '/');
                                     item.mappingAddress = fileUrl;
@@ -1325,9 +1462,12 @@
                 this.workordersStatusCode = this.workordersInfo.workordersStatusCode || '';
 
                 let fileInfoList = this.workordersInfo.fileInfoList;
+                this.voiceList = [];
                 this.imgFileList = [];
                 fileInfoList.forEach(item => {
-                    if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName)) {
+                    if (/\.(mp3|wav|MP3|WAV)$/.test(item.fileName)) {
+                        this.voiceList.push(item);
+                    } else if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)) {
                         let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
                         fileUrl = fileUrl.replace('&fileName=', '/');
                         item.mappingAddress = fileUrl;
@@ -1764,7 +1904,7 @@
 
             &.revoke-info {
                 &::before {
-                    content: "\64A4\9500";
+                    content: "\5173\95ed";
                 }
 
                 // .content .revoke-record {

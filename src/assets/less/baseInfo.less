@@ -233,6 +233,13 @@
             border: 1px solid #E1E7ED;
         }
 
+        .content-year {
+            /deep/ .el-input__inner {
+                background: #F9FAFC;
+                border: none;
+            }
+        }
+
         .content-search {
             background: #00C187;
             border-radius: 1px;
@@ -300,6 +307,7 @@
             background: #FFFFFF;
             border: 1px solid #E1E7ED;
             position: relative;
+            text-align: center;
 
             .icon-file {
                 width: 100%;
@@ -330,6 +338,22 @@
                 color: #6BA1EB;
                 cursor: pointer;
                 text-decoration: underline;
+            }
+        }
+
+        .voice-box {
+            overflow: auto;
+
+            i {
+                display: inline-block;
+                cursor: pointer;
+                width: 100%;
+
+                audio {
+                    height: 35px;
+                    max-width: 100%;
+                    outline: none;
+                }
             }
         }
 

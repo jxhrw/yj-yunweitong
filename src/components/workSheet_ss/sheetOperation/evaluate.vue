@@ -64,7 +64,8 @@
                             evalItemId: e.evalItemId,
                             evalItemName: e.evalItemName,
                             evalGrades: 0,
-                            evalExplain: e.evalItemExplain
+                            evalExplain: e.evalItemName,
+                            evalItemExplain: e.evalItemExplain,
                         });
                     });
                 }

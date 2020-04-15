@@ -252,9 +252,7 @@
                                     this[`${arrNamePre}List`].push({
                                         fileName: file.name,
                                         fileURL: res.resultList.downloadPath,
-                                        fileMode: file.name
-                                            .slice(file.name.lastIndexOf(".") + 1)
-                                            .toLowerCase()
+                                        fileMode: 0
                                     });
                                     break;
                                     // case "otherFile":

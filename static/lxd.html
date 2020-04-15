@@ -104,9 +104,9 @@
                 <td class="project">施工单位</td>
                 <td class="">{{content.oppmDeptName}}</td>
                 <td class="">联系人</td>
-                <td class="">{{content.dealDeptLeader}}</td>
+                <td class="">{{opPersonInfo.opPersonName}}</td>
                 <td class="">联系电话</td>
-                <td class="">{{content.dealDeptLeaderPhone}}</td>
+                <td class="">{{opPersonInfo.contactTel}}</td>
             </tr>
             <tr>
                 <td class="project">施工地点</td>
@@ -212,11 +212,11 @@
                         </tr>
                         <tr v-for="(item, idx) in content.materialInfos">
                             <td class="">{{idx + 1}}</td>
-                            <td class="">{{item.materialInfo[0].materialName}}</td>
-                            <td class="">{{item.materialInfo[0].materialSpecification}}</td>
-                            <td class="">{{item.materialInfo[0].materialUnitPrice}}</td>
-                            <td class="">{{item.materialNum||0}}（{{item.materialInfo[0].materialUnit}}）</td>
-                            <td class="">{{item.materialInfo[0].materialUnitPrice*item.materialNum | numberFormat }}</td>
+                            <td class="">{{item.materialName}}</td>
+                            <td class="">{{item.materialSpecification||(item.materialInfo&&item.materialInfo.length>0?item.materialInfo[0].materialSpecification:'')}}</td>
+                            <td class="">{{item.materialUnitPrice||(item.materialInfo&&item.materialInfo.length>0?item.materialInfo[0].materialUnitPrice:'')}}</td>
+                            <td class="">{{item.materialNum||0}}（{{item.materialUnit}}）</td>
+                            <td class="">{{(item.materialUnitPrice||(item.materialInfo&&item.materialInfo.length>0?item.materialInfo[0].materialUnitPrice:''))*item.materialNum | numberFormat }}</td>
                         </tr>
                         <tr>
                             <td class="" colspan="6" style="text-align: right;font-size: 18px">总金额：{{priceTotal | numberFormat}}元</td>
@@ -227,7 +227,7 @@
                     </table>
                 </td>
             </tr>
-            <tr v-if="jlAuditOpt">
+            <tr v-if="sureInfo">
                 <td class="_title" rowspan="2" style="text-align: center;">
                     <div>竣</div>
                     <div>工</div>
@@ -235,19 +235,19 @@
                     <div>收</div>
                 </td>
                 <td class="">监理单位</td>
-                <td class="">{{jlAuditOpt?jlAuditOpt.optUserDeptName:''}}</td>
-                <td class="">{{middleAudit?'属地中队':'支队验收'}}</td>
-                <td class="">{{middleAudit?middleAudit.optUserDeptName:divisionAudit[0].optUserDeptName}}</td>
-                <td class="">{{higherAudit?'大队道管':'支队验收'}}</td>
-                <td class="">{{higherAudit?higherAudit.optUserDeptName:divisionAudit[1].optUserDeptName}}</td>
+                <td class="">{{sureInfo.ab}}</td>
+                <td class="">{{sureInfo.ba}}</td>
+                <td class="">{{sureInfo.bb}}</td>
+                <td class="">{{sureInfo.ca}}</td>
+                <td class="">{{sureInfo.cb}}</td>
             </tr>
-            <tr v-if="jlAuditOpt">
-                <td class="td-special-time">{{(jlAuditOpt?jlAuditOpt.optTime:'')|dateFormat}}</td>
-                <td class="td-special-height">{{jlAuditOpt?jlAuditOpt.optUserName:''}}</td>
-                <td class="td-special-time">{{(middleAudit?middleAudit.optTime:divisionAudit[0].optTime)|dateFormat}}</td>
-                <td class="td-special-height">{{middleAudit?middleAudit.optUserName:divisionAudit[0].optUserName}}</td>
-                <td class="td-special-time">{{(higherAudit?higherAudit.optTime:divisionAudit[1].optTime)|dateFormat}}</td>
-                <td class="td-special-height">{{higherAudit?higherAudit.optUserName:divisionAudit[1].optUserName}}</td>
+            <tr v-if="sureInfo">
+                <td class="td-special-time">{{sureInfo.ac|dateFormat}}</td>
+                <td class="td-special-height">{{sureInfo.ad}}</td>
+                <td class="td-special-time">{{sureInfo.bc|dateFormat}}</td>
+                <td class="td-special-height">{{sureInfo.bd}}</td>
+                <td class="td-special-time">{{sureInfo.cc|dateFormat}}</td>
+                <td class="td-special-height">{{sureInfo.cd}}</td>
             </tr>
         </table>
         <div style="font-size: 14px;">
@@ -285,9 +285,10 @@
                 middleAudit: null,
                 higherAudit: null,
                 divisionAudit: [],
-                sureInfo: {},
+                sureInfo: null,
                 prePhoto: [],
                 photo: [],
+                opPersonInfo: {}, //维护单位信息
             },
             created: function() {
                 var _that = this;
@@ -301,7 +302,7 @@
                     success: function(res, status) {
                         $.ajax({
                             dataType: "json",
-                            url: res.efoms_HOST + "/SignsWorkordersInfo/getSignsWorkordersInfo",
+                            url: res.efoms_HOST + "/SignsWorkordersInfo/getSignsContactManageInfo",
                             type: "GET",
                             async: false,
                             data: {
@@ -314,48 +315,58 @@
                                     var opt = _that.content.workordersRecordMap || {};
                                     _that.content.materialInfos = _that.content.listMaterialRlt.length > 0 ? _that.content.listMaterialRlt : null;
                                     _that.checkOpt = opt.checkList;
+
+                                    opt.dispatchList.map(item => {
+                                        // 下发操作的有效数据
+                                        if (item.operResultCode == 'OPERRESULT07') {
+                                            _that.opPersonInfo = {
+                                                opPersonName: item.opPersonName,
+                                                contactTel: item.contactTel,
+                                            }
+                                        }
+                                    });
+
                                     //存在电子类
-                                    if (_that.content.devTypeCode.indexOf('REPDEVTYPE24') > -1) {
-
-                                    }
-                                    _that.sureInfo = {};
-
-                                    // var subSystem = "";
-                                    // var middle = null;
-                                    // var zsHigher = null;
-                                    // var temHigher = null;
-                                    // for (var i = 0; i < opt.length; i++) {
-                                    //     if (opt[i].optType == 0) {
-                                    //         subSystem = opt[i].refDict2;
-                                    //     } else if (opt[i].optType == 1) {
-                                    //         opt[i].engineName = _that.engineIDToName(opt[i].engineID)
-                                    //         _that.checkOpt.push(opt[i])
-                                    //     } else if (opt[i].optType == 12) {
-                                    //         _that.jlAuditOpt = opt[i]
-                                    //     } else if (opt[i].optType == 20) {
-                                    //         if (subSystem.indexOf("1") > -1) {
-                                    //             _that.divisionAudit.push(opt[i])
-                                    //         } else {
-                                    //             if (opt[i].refDict2 == 5) {
-                                    //                 middle = opt[i];
-                                    //             } else if (opt[i].refDict2 == 2) {
-                                    //                 temHigher = opt[i];
-                                    //             } else if (opt[i].refDict2 == 6) {
-                                    //                 zsHigher = opt[i];
-                                    //             }
-                                    //         }
-                                    //     }
+                                    // if (_that.content.devTypeCode.indexOf('REPDEVTYPE24') > -1) {
                                     // }
-                                    // _that.middleAudit = middle ? middle : zsHigher;
-                                    // // 判断直属中队还是大队 默认显示大队
-                                    // _that.higherAudit = temHigher ? temHigher : zsHigher;
-                                    // // 防止出错
-                                    // if (_that.middleAudit == null && _that.divisionAudit.length < 1) {
-                                    //     _that.middleAudit = { optUserDeptName: '', optTime: '', optUserName: '' }
-                                    // }
-                                    // if (_that.higherAudit == null && _that.divisionAudit.length < 1) {
-                                    //     _that.higherAudit = { optUserDeptName: '', optTime: '', optUserName: '' }
-                                    // }
+                                    var qwertyu = {};
+                                    opt.reviewList.map(item => {
+                                        // 监理审核
+                                        if (item.operTypeCode == 'FACILITYOPERTYPE17') {
+                                            qwertyu.ab = item.opDeptName;
+                                            qwertyu.ac = item.operDate;
+                                            qwertyu.ad = item.operPerson;
+                                        }
+                                        //中队验收
+                                        else if (item.operTypeCode == 'FACILITYOPERTYPE18') {
+                                            qwertyu.ba = '属地中队';
+                                            qwertyu.bb = item.opDeptName;
+                                            qwertyu.bc = item.operDate;
+                                            qwertyu.bd = item.operPerson;
+                                        }
+                                        // 大队验收
+                                        else if (item.operTypeCode == 'FACILITYOPERTYPE19') {
+                                            qwertyu.ca = '大队道管';
+                                            qwertyu.cb = item.opDeptName;
+                                            qwertyu.cc = item.operDate;
+                                            qwertyu.cd = item.operPerson;
+                                        }
+                                        // 民警验收
+                                        else if (item.operTypeCode == 'FACILITYOPERTYPE20') {
+                                            qwertyu.ba = '支队验收';
+                                            qwertyu.bb = item.opDeptName;
+                                            qwertyu.bc = item.operDate;
+                                            qwertyu.bd = item.operPerson;
+                                        }
+                                        // 干部验收
+                                        else if (item.operTypeCode == 'FACILITYOPERTYPE21') {
+                                            qwertyu.ca = '支队验收';
+                                            qwertyu.cb = item.opDeptName;
+                                            qwertyu.cc = item.operDate;
+                                            qwertyu.cd = item.operPerson;
+                                        }
+                                    });
+                                    _that.sureInfo = opt.reviewList.length > 0 ? qwertyu : null;
 
                                     var pre = _that.content.fileInfoList || [];
                                     var arr = [];
@@ -366,25 +377,17 @@
                                         arr = [...arr, ...aw];
                                     });
                                     pre.map(item => {
-                                        if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName) && item.fileUrl) {
+                                        if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName) && item.fileUrl) {
                                             prePo.push(item.fileUrl);
                                         }
                                     });
                                     arr.map(item => {
-                                        if (/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/.test(item.fileName) && item.fileUrl) {
+                                        if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName) && item.fileUrl) {
                                             po.push(item.fileUrl);
                                         }
                                     });
                                     _that.prePhoto = prePo;
                                     _that.photo = [...prePo, ...po];
-
-
-                                    // var materialMedias = data.materialMedias;
-                                    // for (var j = 0; j < materialMedias.length; j++) {
-                                    //     if (materialMedias[j].mediaType == 0 && materialMedias[j].path) {
-                                    //         _that.photo.push(materialMedias[j])
-                                    //     }
-                                    // }
                                 }
                             }
                         });
@@ -402,7 +405,7 @@
                     var total = 0
                     var material = this.content.materialInfos
                     for (var i = 0; i < material.length; i++) {
-                        total += material[i].materialNum * material[i].materialInfo[0].materialUnitPrice
+                        total += material[i].materialNum * (material[i].materialUnitPrice || (material[i].materialInfo && material[i].materialInfo.length > 0 ? material[i].materialInfo[0].materialUnitPrice : ''))
                     }
                     return total
                 }
