@@ -129,7 +129,7 @@
             //设施类别
             this.systemList = [{ dicCode: '1', dicName: '电子设施' }, { dicCode: '2', dicName: '非电子设施' }];
             //维修类型
-            this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }];
+            this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }, { dicCode: 'REPAIRTYPE04', dicName: '数字城管' }];
         },
         methods: {
             searchTableInfo() {

@@ -244,7 +244,7 @@
                     this.squadronList = [];
                 } else {
                     //所属中队
-                    this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { parentId: val }).then(res => {
+                    this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { parentId: val, deptRank: 'DEPTRANK05' }).then(res => {
                         this.squadronList = res.resultList || [];
                     });
                 }
@@ -299,7 +299,7 @@
             this.userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
 
             //所属大队
-            this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptRank: 'DEPTRANK04' }).then(res => {
+            this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptProperCode: 'DEPTPROPER01', deptRank: 'DEPTRANK04' }).then(res => {
                 this.battalionList = res.resultList || [];
             });
             //维修类型

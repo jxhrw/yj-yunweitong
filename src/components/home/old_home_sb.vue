@@ -1,9 +1,13 @@
 <template>
     <div class="ej-main">
         <div class="layout">
-            <Header v-show="isHeadVisible"></Header>
-            <div v-show="!isHeadVisible" style="height: 60px"></div>
-            <div class="h-content h-currency">
+            <div class="top-title Driver">
+                <p>智能运维平台</p>
+            </div>
+            <div style="height: 60px"></div>
+            <!-- <Header v-show="isHeadVisible"></Header>
+            <div v-show="!isHeadVisible" style="height: 60px"></div> -->
+            <div class="h-content h-currency" style="padding-top:25px;">
                 <div class="h-top">
                     <div class="h-left">
                         <div class="bg-style h-top-left">
@@ -104,54 +108,61 @@
                             <div class="m-map m-hz" v-if="$config.cityName=='hangzhou'">
                                 <div class="box-map"></div>
                                 <ul class="m-area">
-                                    <li v-popover:aba>
+                                    <li v-popover:aba :class="getColor(getAreaGoodRate('西湖区'))">
                                         <el-popover ref="aba" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['西湖区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 100*getAreaPer('西湖区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('西湖区')+'px'}"></div>
                                         <p>西湖区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('西湖区')+'px)'}">{{getAreaGoodRate('西湖区')|twoDecimal}}%</span>
                                     </li>
-                                    <li v-popover:abb>
+                                    <li v-popover:abb :class="getColor(getAreaGoodRate('拱墅区'))">
                                         <el-popover ref="abb" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['拱墅区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 100*getAreaPer('拱墅区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('拱墅区')+'px'}"></div>
                                         <p>拱墅区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('拱墅区')+'px)'}">{{getAreaGoodRate('拱墅区')|twoDecimal}}%</span>
                                     </li>
-                                    <li v-popover:abc>
+                                    <li v-popover:abc :class="getColor(getAreaGoodRate('下城区'))">
                                         <el-popover ref="abc" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['下城区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 100*getAreaPer('下城区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('下城区')+'px'}"></div>
                                         <p>下城区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('下城区')+'px)'}">{{getAreaGoodRate('下城区')|twoDecimal}}%</span>
                                     </li>
-                                    <li v-popover:abd>
+                                    <li v-popover:abd :class="getColor(getAreaGoodRate('上城区'))">
                                         <el-popover ref="abd" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['上城区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 100*getAreaPer('上城区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('上城区')+'px'}"></div>
                                         <p>上城区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('上城区')+'px)'}">{{getAreaGoodRate('上城区')|twoDecimal}}%</span>
                                     </li>
-                                    <li v-popover:abe>
+                                    <li v-popover:abe :class="getColor(getAreaGoodRate('江干区'))">
                                         <el-popover ref="abe" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['江干区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 100*getAreaPer('江干区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('江干区')+'px'}"></div>
                                         <p>江干区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('江干区')+'px)'}">{{getAreaGoodRate('江干区')|twoDecimal}}%</span>
                                     </li>
-                                    <li v-popover:abf>
+                                    <li v-popover:abf :class="getColor(getAreaGoodRate('滨江区'))">
                                         <el-popover ref="abf" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['滨江区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 100*getAreaPer('滨江区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('滨江区')+'px'}"></div>
                                         <p>滨江区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('滨江区')+'px)'}">{{getAreaGoodRate('滨江区')|twoDecimal}}%</span>
                                     </li>
-                                    <li v-popover:abg>
+                                    <li v-popover:abg :class="getColor(getAreaGoodRate('景区'))">
                                         <el-popover ref="abg" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['景区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 100*getAreaPer('景区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('景区')+'px'}"></div>
                                         <p>景区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('景区')+'px)'}">{{getAreaGoodRate('景区')|twoDecimal}}%</span>
                                     </li>
                                 </ul>
                             </div>
@@ -162,45 +173,51 @@
                                         <el-popover ref="abca" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['西湖区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 80*getAreaPer('西湖区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('西湖区')+'px'}"></div>
                                         <p>西湖区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('西湖区')+'px)'}">{{getAreaGoodRate('西湖区')|twoDecimal}}%</span>
                                     </li>
                                     <li v-popover:abcb>
                                         <el-popover ref="abcb" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['红谷滩区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 80*getAreaPer('红谷滩区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('红谷滩区')+'px'}"></div>
                                         <p>红谷滩区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('红谷滩区')+'px)'}">{{getAreaGoodRate('红谷滩区')|twoDecimal}}%</span>
                                     </li>
                                     <li v-popover:abcc>
                                         <el-popover ref="abcc" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['青山湖区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 80*getAreaPer('青山湖区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('青山湖区')+'px'}"></div>
                                         <p>青山湖区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('青山湖区')+'px)'}">{{getAreaGoodRate('青山湖区')|twoDecimal}}%</span>
                                     </li>
                                     <li v-popover:abcd>
                                         <el-popover ref="abcd" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['东湖区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 80*getAreaPer('东湖区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('东湖区')+'px'}"></div>
                                         <p>东湖区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('东湖区')+'px)'}">{{getAreaGoodRate('东湖区')|twoDecimal}}%</span>
                                     </li>
                                     <li v-popover:abce>
                                         <el-popover ref="abce" popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('area',devFaultAreaObj['青云谱区'])">
                                             <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
                                         </el-popover>
-                                        <div :style="{'height': 80*getAreaPer('青云谱区')+'px'}"></div>
+                                        <div :style="{'height': 1*getAreaGoodRate('青云谱区')+'px'}"></div>
                                         <p>青云谱区</p>
+                                        <span class="span" :style="{'transform':'translate(-50%,-'+getAreaGoodRate('青云谱区')+'px)'}">{{getAreaGoodRate('青云谱区')|twoDecimal}}%</span>
                                     </li>
                                 </ul>
                             </div>
-                            <table class="m-table">
+                            <!-- <table class="m-table">
                                 <tr v-for="item in devFaultAreaList" :key="item.DEV_AREA_NAME">
                                     <td>{{item.DEV_AREA_NAME}}</td>
                                     <td>{{item.GOOD_RATE|twoDecimal}}%</td>
                                 </tr>
-                            </table>
+                            </table> -->
+                            <img style="display:block;position: absolute;bottom: 14px;right: 14px;width:137px;" src="../../assets/images/home/icon-map-legend.png" alt="">
                         </div>
 
                         <div class="bg-style h-top-middle-3">
@@ -211,15 +228,17 @@
                                 <h5>设备类型完好率</h5>
                             </div>
                             <ul class="h-top-middle-ul">
-                                <li v-for="item in devRepDevType" :key="item.DEV_TYPE_NAME">
-                                    <el-popover popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('devtype',item)">
-                                        <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
-                                        <div slot="reference" style="cursor: pointer;">
-                                            <div class="speed" :alt="Math.round(item.GOOD_RATE*100)/100+'%'"><i :style="'transform:rotate('+(item.GOOD_RATE*180/100-135)+'deg)'"></i><span>{{item.TOTAL_SUM}}</span></div>
-                                            <p>{{item.DEV_TYPE_NAME}}</p>
-                                        </div>
-                                    </el-popover>
-                                </li>
+                                <template v-for="(item,index) in devRepDevType">
+                                    <li v-if="index<10" :key="item.DEV_TYPE_NAME">
+                                        <el-popover popper-class="pop-table" placement="right" width="710" trigger="click" @show="getDevDteail('devtype',item)">
+                                            <Popover :popoverData="popoverDatas" :popoverList="popoverLists" @fatherMethod="getDevDetailPage"></Popover>
+                                            <div slot="reference" style="cursor: pointer;">
+                                                <div class="speed" :alt="Math.round(item.GOOD_RATE*100)/100+'%'"><i :style="'transform:rotate('+(item.GOOD_RATE*180/100-135)+'deg)'"></i><span>{{item.TOTAL_SUM}}</span></div>
+                                                <p>{{item.DEV_TYPE_NAME}}</p>
+                                            </div>
+                                        </el-popover>
+                                    </li>
+                                </template>
                             </ul>
                         </div>
                     </div>
@@ -447,6 +466,28 @@
         methods: {
             getAreaPer(name) {
                 return (this.devFaultAreaObj[name] ? this.devFaultAreaObj[name].GOOD_RATE : 0) / (this.devFaultAreaObj.maxNum || 1);
+            },
+            getAreaGoodRate(name) {
+                return (this.devFaultAreaObj[name] ? this.devFaultAreaObj[name].GOOD_RATE : 0);
+            },
+            // 根据完好率的值给颜色
+            getColor(num) {
+                num = parseFloat(num);
+                let arr = [90, 80, 70, 60]; //颜色层次
+                let txt = '';
+                if (num >= arr[0]) {
+                    txt = 'color1';
+                } else if (num >= arr[1]) {
+                    txt = 'color2';
+                } else if (num >= arr[2]) {
+                    txt = 'color3';
+                } else if (num >= arr[3]) {
+                    txt = 'color4';
+                } else {
+                    txt = 'color5';
+                }
+                if (num == 0) txt = '';
+                return txt;
             },
             getDevDteail(type, data) {
                 this.popoverLists = {}; //重置浮窗数据，其实是初始化浮窗位置
@@ -983,14 +1024,13 @@
 
             if (this.isHeadMenuVisible) {
                 this.tipsPush('EFOMS_OPERATION');
-                this.tipsPush('efoms_heartbeat');
             }
 
             this.initGet();
             // 一定时间后刷新页面数据
-            setInterval(() => {
-                this.initGet();
-            }, 1 * 60 * 1000);
+            // setInterval(() => {
+            //     this.initGet();
+            // }, 1 * 60 * 1000);
 
             // 监听窗口的变化，实时调用 echarts的 resize事件
             window.onresize = () => {
@@ -1010,6 +1050,47 @@
 <style lang="less" scoped>
     @import "../../assets/css/main.css";
     @import "./home.less";
+
+    .top-title.Driver {
+        background: url(../../assets/images/home/title-flow.png) no-repeat center;
+        width: 100%;
+        height: 65px;
+        position: absolute;
+
+        p {
+            line-height: 60px;
+            font-family: HYGangYiTi-GEW;
+            font-size: 30px;
+            color: #FFFFFF;
+            letter-spacing: 1px;
+            text-align: center;
+            text-shadow: 0 6px 8px rgba(25, 37, 78, 0.84);
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0px;
+            width: 529px;
+            height: 22px;
+            top: 19px;
+            background: url(../../assets/images/home/title-flowl.png) repeat-x;
+        }
+
+        &::after {
+            content: '';
+            position: absolute;
+            right: 0px;
+            width: 529px;
+            height: 22px;
+            top: 19px;
+            background: url(../../assets/images/home/title-flowl.png) repeat-x;
+        }
+    }
+
+    .h-top-middle-ul {
+        overflow: hidden;
+    }
 </style>
 <style>
     /* 下拉框弹出样式 */

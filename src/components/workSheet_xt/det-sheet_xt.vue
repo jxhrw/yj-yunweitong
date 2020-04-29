@@ -112,7 +112,7 @@
                                         <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
                                             <div class="content">
                                                 <label for="">催办原因</label>
-                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                                <span class="width5">{{item.operExplain}}</span>
                                             </div>
                                         </template>
                                     </li>
@@ -129,7 +129,7 @@
                                         <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
                                             <div class="content">
                                                 <label for="">催办原因</label>
-                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                                <span class="width5">{{item.operExplain}}</span>
                                             </div>
                                         </template>
 
@@ -137,11 +137,11 @@
                                             <div class="content">
                                                 <template v-if="workordersInfo.optimeScheme">
                                                     <label for="">优化方案</label>
-                                                    <span style="width: 996px;">{{workordersInfo.optimeScheme}}</span>
+                                                    <span class="width5">{{workordersInfo.optimeScheme}}</span>
                                                 </template>
                                                 <template v-else>
                                                     <label for="">情况描述</label>
-                                                    <span style="width: 996px;">{{workordersInfo.failureDescrible}}</span>
+                                                    <span class="width5">{{workordersInfo.failureDescrible}}</span>
                                                 </template>
                                             </div>
                                         </template>
@@ -161,7 +161,7 @@
                                             <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
                                                 <div class="content">
                                                     <label for="">催办原因</label>
-                                                    <span style="width: 996px;">{{item.operExplain}}</span>
+                                                    <span class="width5">{{item.operExplain}}</span>
                                                 </div>
                                             </template>
 
@@ -169,7 +169,7 @@
                                             <template v-else-if="item.operTypeCode=='ORDEROPERTYPE23'">
                                                 <div class="content">
                                                     <label for="">记录编号</label>
-                                                    <span style="width: 996px;">{{item.workordersRecordId}}</span>
+                                                    <span class="width5">{{item.workordersRecordId}}</span>
                                                 </div>
                                             </template>
 
@@ -177,9 +177,9 @@
                                             <template v-else-if="item.operTypeCode=='ORDEROPERTYPE24'||item.operTypeCode=='ORDEROPERTYPE25'">
                                                 <div class="content">
                                                     <label for="">审核结果</label>
-                                                    <span style="width:349px;">{{item.operResult}}</span>
+                                                    <span class="width2">{{item.operResult}}</span>
                                                     <label for="">审核意见</label>
-                                                    <span style="width: 567px;">{{item.operExplain}}</span>
+                                                    <span class="width3">{{item.operExplain}}</span>
                                                 </div>
                                             </template>
 
@@ -187,13 +187,13 @@
                                             <template v-else-if="item.operTypeCode=='ORDEROPERTYPE26'||item.operTypeCode=='ORDEROPERTYPE21'||item.operTypeCode=='ORDEROPERTYPE22'">
                                                 <div class="content">
                                                     <label for="">申请材料</label>
-                                                    <span :title="item.materialRltList|materialShow" style="width:349px;">{{item.materialRltList|materialShow}}</span>
+                                                    <span :title="item.materialRltList|materialShow" class="width2">{{item.materialRltList|materialShow}}</span>
                                                     <label for="">备注</label>
-                                                    <span style="width: 567px;">{{item.operExplain}}</span>
+                                                    <span class="width3">{{item.operExplain}}</span>
                                                 </div>
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
-                                                    <span class="file-name">
+                                                    <span class="file-name width5">
                                                         <div v-for="(item1,index) in materialFileList(item.materialRltList)" :key="index" class="file-single">
                                                             <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
                                                             <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
@@ -210,9 +210,9 @@
                                                     <!-- <label for="">申请期限</label>
                                                     <span>{{item.deadlineDate}}</span> -->
                                                     <label for="">申请天数</label>
-                                                    <span style="width:349px;">{{item.score}}</span>
+                                                    <span class="width2">{{item.score}}</span>
                                                     <label for="">延期原因</label>
-                                                    <span style="width: 567px;">{{item.operExplain}}</span>
+                                                    <span class="width3">{{item.operExplain}}</span>
                                                 </div>
                                             </template>
 
@@ -220,11 +220,11 @@
                                             <template v-else-if="item.operTypeCode=='ORDEROPERTYPE06'">
                                                 <div class="content">
                                                     <label for="">审核结果</label>
-                                                    <span>{{item.operResult}}</span>
+                                                    <span class="width1">{{item.operResult}}</span>
                                                     <label for="">期限时间</label>
-                                                    <span>{{item.deadlineDate}}</span>
+                                                    <span class="width1">{{item.deadlineDate}}</span>
                                                     <label for="">审核意见</label>
-                                                    <span style="width: 567px;">{{item.operExplain}}</span>
+                                                    <span class="width3">{{item.operExplain}}</span>
                                                 </div>
                                             </template>
 
@@ -232,11 +232,11 @@
                                             <template v-else-if="item.operTypeCode=='ORDEROPERTYPE18'">
                                                 <div class="content">
                                                     <label for="">备注</label>
-                                                    <span style="width: 996px;">{{item.operExplain}}</span>
+                                                    <span class="width5">{{item.operExplain}}</span>
                                                 </div>
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
-                                                    <span class="file-name">
+                                                    <span class="file-name width5">
                                                         <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
                                                             <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
                                                             <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
@@ -251,17 +251,17 @@
                                             <template v-else>
                                                 <div class="content">
                                                     <label for="">操作类型</label>
-                                                    <span>{{item.operResult}}</span>
+                                                    <span class="width1">{{item.operResult}}</span>
                                                     <!-- <label for="">故障类型</label>
                                                     <span>{{item.failureTypeName}}</span> -->
                                                     <label for="">故障原因</label>
-                                                    <span>{{item.failureReason}}</span>
+                                                    <span class="width1">{{item.failureReason}}</span>
                                                     <label for="">结果反馈</label>
-                                                    <span style="width: 567px;">{{item.operExplain}}</span>
+                                                    <span class="width3">{{item.operExplain}}</span>
                                                 </div>
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
-                                                    <span class="file-name">
+                                                    <span class="file-name width5">
                                                         <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
                                                             <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
                                                             <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
@@ -286,7 +286,7 @@
                                         <template v-if="item.operTypeCode=='ORDEROPERTYPE03'">
                                             <div class="content">
                                                 <label for="">催办原因</label>
-                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                                <span class="width5">{{item.operExplain}}</span>
                                             </div>
                                         </template>
 
@@ -297,7 +297,7 @@
                                                 <label for="">反馈时间</label>
                                                 <span>{{item.operDate}}</span> -->
                                                 <label for="">确认意见</label>
-                                                <span style="width: 996px;">{{item.operExplain}}</span>
+                                                <span class="width5">{{item.operExplain}}</span>
                                             </div>
                                         </template>
                                     </li>
@@ -621,465 +621,7 @@
     @import "../../assets/less/list.less";
     @import "../../assets/less/dialog.less";
 
-    .ej-main {
-        .ej-content-title {
-            .title-box {
-                display: flex;
-
-                .pos-step {
-                    height: 40px;
-                    display: flex;
-                    align-items: center;
-                    font-size: 13px;
-                    margin-left: 20px;
-
-                    li {
-                        cursor: pointer;
-                        border: 1px solid #C0C4CC;
-                        padding: 1px 3px;
-                        border-radius: 3px;
-                        color: #C0C4CC;
-                        margin-right: 10px;
-                        position: relative;
-                        background: #fff;
-                        z-index: 2;
-
-                        &::before {
-                            content: '';
-                            display: block;
-                            position: absolute;
-                            width: 10px;
-                            height: 1px;
-                            background: #C0C4CC;
-                            z-index: 1;
-                            top: 50%;
-                            right: -11px;
-                        }
-
-                        &:last-child {
-                            &::before {
-                                display: none;
-                            }
-                        }
-
-                        &.active,
-                        &:hover {
-                            color: #00c187;
-                            border-color: #00c187;
-                        }
-                    }
-                }
-            }
-        }
-
-        .ej-content-title-btn {
-            background: rgba(255, 255, 255, 0.09);
-            border: 1px solid;
-            border-radius: 2px;
-            width: 44px;
-            height: 20px;
-            text-align: center;
-            margin-top: 10px;
-            margin-right: 14px;
-            line-height: 18px;
-            cursor: pointer;
-            display: inline-block;
-
-            &.ej-content-green {
-                background: #00c187;
-                border-color: #00c187;
-            }
-
-            &.ej-content-yellow {
-                background: #d89d00;
-                border-color: #d89d00;
-            }
-
-            &.ej-content-black {
-                background: rgba(255, 255, 255, 0.09);
-                border-color: #4f5a64;
-
-                p {
-                    font-size: 12px;
-                    color: #4f5a64;
-                }
-            }
-
-            p {
-                font-size: 12px;
-                color: #ffffff;
-            }
-        }
-    }
-
-    .base-info {
-        border-radius: 2px;
-        margin-bottom: 0;
-
-        .content {
-            padding-left: 36px;
-            padding-right: 36px;
-            padding-bottom: 0;
-            background: #f7fcfb;
-            border: 1px solid #c3e6d9;
-            border-radius: 2px;
-
-            label {
-                color: #737e84;
-                width: 72px;
-            }
-
-            span {
-                color: #4f5a64;
-            }
-        }
-    }
-
-    .step-scroll {
-        display: flex;
-        padding-top: 10px;
-
-        .step-left {
-            // width: 70px;
-            width: 0;
-            box-sizing: border-box;
-            // padding-left: 10px;
-            overflow: hidden;
-
-            .pos-step {
-                &.fixed {
-                    position: fixed;
-                    top: 98px;
-                    display: none;
-                }
-            }
-
-            /deep/ .el-step {
-                cursor: pointer;
-
-                &.active,
-                &:hover {
-                    .el-step__icon {
-                        &.is-text {
-                            border-color: #00c187;
-                        }
-
-                        color: #00c187;
-                    }
-
-                    .el-step__title {
-                        color: #00c187;
-                    }
-                }
-
-                .el-step__icon {
-                    &.is-text {
-                        border-width: 1px;
-                    }
-
-                    font-size: 12px;
-                    width: 20px;
-                    height: 20px;
-                }
-
-                .el-step__title {
-                    font-size: 14px;
-                }
-
-                &.is-vertical .el-step__line {
-                    left: 9px;
-                    top: 2px;
-                    bottom: -2px;
-                }
-
-                .el-step__main {
-                    padding-left: 4px;
-                }
-            }
-        }
-
-        .step-right {
-            flex: 1;
-            overflow: hidden;
-        }
-    }
-
-    .depiction-info {
-        margin: 0 14px 0 32px;
-        background: transparent;
-        border: none;
-        border-left: 1px solid #00c187;
-
-        ul {
-            position: relative;
-            margin-left: 29px;
-            margin-bottom: 10px;
-            background: #ffffff;
-            border: 1px solid #e6ecea;
-            border-radius: 1px;
-            padding-bottom: 20px;
-
-            &::before {
-                content: "";
-                position: absolute;
-                display: inline-block;
-                width: 36px;
-                height: 28px;
-                line-height: 28px;
-                text-align: center;
-                background: #00c187;
-                border-radius: 5px;
-                font-size: 12px;
-                color: #ffffff;
-                left: -48px;
-                top: 50%;
-                transform: translateY(-50%);
-            }
-
-            &.iss-info {
-                &::before {
-                    content: "\4e0b\53d1";
-                    // 文字的Unicode编码，去掉\u开头的u，不区分大小写
-                }
-            }
-
-            &.asgn-info {
-                &::before {
-                    content: "\6307\6d3e";
-                }
-            }
-
-            &.urge-info {
-                &::before {
-                    content: "\50AC\529E";
-                }
-
-                // .content .urge-reason {
-                //     width: 996px;
-                // }
-            }
-
-            &.feedback-info {
-                &::before {
-                    content: "\53CD\9988";
-                }
-
-                &.postpone-info {
-                    &::before {
-                        content: "\5ef6\671f";
-                    }
-                }
-
-                &.transfer-info {
-                    &::before {
-                        content: "\8f6c\5355";
-                    }
-                }
-
-                &.material-info {
-                    &::before {
-                        content: "\6750\6599";
-                    }
-                }
-
-                // .content .feedback-result {
-                //     width: 351px;
-                // }
-
-                .content.file-info {
-                    border-top: 0;
-
-                    .file-name {
-                        width: 996px;
-                        display: flex;
-                        align-items: center;
-
-                        .file-single {
-                            margin-right: 10px;
-
-                            /deep/ .el-image {
-                                width: 20px;
-                                height: 20px;
-                                display: block;
-                            }
-
-                            .icon-file {
-                                width: 20px;
-                                height: 20px;
-
-                                &.file-doc {
-                                    background: url('../../assets/images/file-word.png') no-repeat center/24px;
-                                }
-
-                                &.file-xls {
-                                    background: url('../../assets/images/file-execl.png') no-repeat center/24px;
-                                }
-
-                                &.file-other {
-                                    background: url('../../assets/images/file-file.png') no-repeat center/24px;
-                                }
-                            }
-                        }
-                    }
-
-                    a {
-                        float: left;
-                        color: #4f5a64;
-                    }
-                }
-
-                // .feedback-defer .defer-date {
-                //     width: 567px;
-                // }
-            }
-
-            &.confirm-info {
-                &::before {
-                    content: "\786E\8BA4";
-                }
-            }
-
-            &.assess-info {
-                &::before {
-                    content: "\8BC4\4EF7";
-                }
-            }
-
-            &.revoke-info {
-                &::before {
-                    content: "\5173\95ed";
-                }
-
-                // .content .revoke-record {
-                //     width: 996px;
-                // }
-            }
-
-            &.examine-info {
-                &::before {
-                    content: "\5BA1\6838";
-                }
-            }
-
-            &.apply-info {
-                &::before {
-                    content: "\7533\8bf7";
-                }
-            }
-
-            &.press-info {
-                &::before {
-                    content: "\50ac\529e";
-                }
-            }
-
-
-            li {
-                width: 100%;
-                overflow: hidden;
-
-                .title {
-                    margin: 10px 34px 11px 26px;
-                    height: auto;
-                    border: none;
-
-                    &::before {
-                        content: "";
-                        position: relative;
-                        left: -26px;
-                        top: 2px;
-                        border-left: 2px solid #00c187;
-                        display: inline-block;
-                        height: 15px;
-                    }
-
-                    .title-name {
-                        font-size: 12px;
-                        color: #1a2023;
-                    }
-
-                    span {
-                        font-size: 12px;
-                        color: #b9bfc2;
-                    }
-                }
-
-                .content {
-                    // height: 25px;
-                    margin-left: 26px;
-                    padding: 0;
-                    display: flex;
-                    min-width: 1100px;
-
-                    label {
-                        background: #f4f8f7;
-                        border: 1px solid #e4ebe9;
-                        border-right: none;
-                        font-size: 12px;
-                        width: 80px;
-                        // height: 27px;
-                        display: block;
-                        line-height: 25px;
-                        text-align: center;
-                        color: #737e84;
-                        margin: 0;
-                        box-sizing: border-box;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                    }
-
-                    span {
-                        background: #ffffff;
-                        border: 1px solid #e4ebe9;
-                        border-right: none;
-                        font-size: 12px;
-                        width: 135px;
-                        // height: 27px;
-                        display: block;
-                        line-height: 25px;
-                        text-align: left;
-                        color: #4f5a64;
-                        padding-left: 7px;
-                        // overflow: hidden;
-                        // white-space: nowrap;
-                        // text-overflow: ellipsis;
-                        line-height: 16px;
-                        padding: 5px 0 5px 7px;
-                        box-sizing: border-box;
-                        display: flex;
-                        align-items: center;
-
-                        &:last-child {
-                            border-right: 1px solid #e4ebe9;
-                        }
-                    }
-
-                    &+.content {
-
-                        label,
-                        span {
-                            border-top: none;
-                        }
-                    }
-                }
-            }
-        }
-
-        // .confirm-info {
-        //     .confirm-normal .normal-suggest {
-        //         width: 567px;
-        //     }
-
-        //     .confirm-other .other-suggest {
-        //         width: 773px;
-        //     }
-        // }
-
-        // .examine-info .content .examine-suggest {
-        //     width: 558px;
-        // }
-    }
+    @import "../../assets/less/workOrderDet.less";
 </style>
 <style lang="less">
     .ej-content-scrollbar {

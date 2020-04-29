@@ -6,7 +6,7 @@
                 <label for>下发操作</label>
                 <i class="close" @click="close">X</i>
             </div>
-            <div class="operation-content">
+            <div class="operation-content" style="height:200px;">
                 <div class="complete-content">
                     <el-row class="content-row-select">
                         <el-col :span="20">
@@ -19,6 +19,12 @@
                         <el-col :span="20">
                             <label style="width: 72px;"><span style="left: 17px;">*</span>维护单位</label>
                             <mInput :list="opDeptList" :code.sync="opDeptCode" :name.sync="opDeptName" showAttr="opsDeptName" getAttr="opsDeptId"></mInput>
+                        </el-col>
+                    </el-row>
+                    <el-row class="content-row-select">
+                        <el-col :span="20">
+                            <label style="width: 72px;float: left;margin-right: 17px;">下发意见</label>
+                            <el-input type="textarea" :rows="2" placeholder="请输入内容" class="content-textarea-fix" v-model="operExplain" resize="none"></el-input>
                         </el-col>
                     </el-row>
                     <div class="ej-content-operation">
@@ -54,7 +60,8 @@
                 opDeptCode: '',
                 opDeptName: '',
                 opDeptList: [],
-                isAjaxing: false
+                isAjaxing: false,
+                operExplain: ''
             };
         },
         mounted() {
@@ -64,7 +71,7 @@
             // this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
             this.getDeadlineTime();
             //维护单位
-            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {}).then(res => {
+            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, { "deptOppmType": "OPSDEPTOPPM04" }).then(res => {
                 this.opDeptList = res.resultList || [];
             });
         },
@@ -89,7 +96,8 @@
                         workOtherId: this.workordersInfo.workOtherId,
                         deadlineDate: this.deadlineDate,
                         opDeptId: this.opDeptCode,
-                        opDeptName: this.opDeptName
+                        opDeptName: this.opDeptName,
+                        operExplain: this.operExplain
                     }, { token: this.token })
                     .then(res => {
                         this.isAjaxing = false;
@@ -110,29 +118,29 @@
             getDeadlineTime() {
                 // let time = new Date(this.workordersInfo.repDate).getTime() + 24 * 60 * 60 * 1000;
                 let time = new Date().getTime() + 24 * 60 * 60 * 1000;
-                this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
-                // this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfList`, {
-                //         devTypeCode: this.workordersInfo.devTypeCode,
-                //         typeCode: this.workordersInfo.typeCode,
-                //         isUse: 1
-                //     }, { token: this.token })
-                //     .then(res => {
-                //         if (res.appCode == 0) {
-                //             let num = 24;
-                //             if (res.resultList && res.resultList.length > 0) {
-                //                 num = res.resultList[0].deadlineTime || 24;
-                //             }
-                //             // time = new Date(this.workordersInfo.repDate).getTime() + num * 60 * 60 * 1000;
-                //             time = new Date().getTime() + num * 60 * 60 * 1000;
-                //         } else {
-                //             Common.printErrorLog(res);
-                //         }
-                //         this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
-                //     })
-                //     .catch(err => {
-                //         this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
-                //         Common.printErrorLog(err);
-                //     });
+                this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfList`, {
+                        devTypeCode: this.workordersInfo.systemCode,
+                        typeCode: this.workordersInfo.typeCode,
+                        isUse: 1,
+                        workType: 4, // 工单类型：1、设备；2、设施；3、系统、4其他
+                    }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            let num = 24;
+                            if (res.resultList && res.resultList.length > 0) {
+                                num = res.resultList[0].deadlineTime || 24;
+                            }
+                            // time = new Date(this.workordersInfo.repDate).getTime() + num * 60 * 60 * 1000;
+                            time = new Date().getTime() + num * 60 * 60 * 1000;
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                        this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
+                    })
+                    .catch(err => {
+                        this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
+                        Common.printErrorLog(err);
+                    });
             },
             // 字典类型接口
             getDicInfo(url, obj) {

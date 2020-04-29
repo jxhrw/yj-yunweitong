@@ -11,10 +11,10 @@
         <div v-if="(title=='秩序处审核'&&scope.row.workordersStatusCode == 'FACILITYSTATUS04')" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
         <!-- 工单下发页面，并且状态为待下发FACILITYSTATUS06时出现，下发已拒绝，审核通过FACILITYSTATUS25 -->
         <div v-if="title=='工单下发'&&(scope.row.workordersStatusCode == 'FACILITYSTATUS06'||scope.row.workordersStatusCode == 'FACILITYSTATUS25')" class="tab-operation" @click="dataDetail(scope.row,'edit')">下发</div>
-        <!-- 工单指派页面，并且状态为待指派FACILITYSTATUS07时出现,指派已拒绝FACILITYSTATUS08 -->
-        <div v-if="title=='工单指派'&&(scope.row.workordersStatusCode == 'FACILITYSTATUS07'||scope.row.workordersStatusCode == 'FACILITYSTATUS08')" class="tab-operation" @click="dataDetail(scope.row,'edit')">指派</div>
-        <!-- 维修处置页面，并且状态为待维修（FACILITYSTATUS09），维修驳回（FACILITYSTATUS10），已到达（FACILITYSTATUS11），时出现 -->
-        <div v-if="title=='维修处置'&&(scope.row.workordersStatusCode == 'FACILITYSTATUS09'||scope.row.workordersStatusCode == 'FACILITYSTATUS10'||scope.row.workordersStatusCode == 'FACILITYSTATUS11')" class="tab-operation" @click="dataDetail(scope.row,'edit')">反馈</div>
+        <!-- 工单指派页面，并且状态为待指派FACILITYSTATUS07时出现,指派已拒绝FACILITYSTATUS08，维修驳回（FACILITYSTATUS10） -->
+        <div v-if="title=='工单指派'&&(scope.row.workordersStatusCode == 'FACILITYSTATUS07'||scope.row.workordersStatusCode == 'FACILITYSTATUS08'||scope.row.workordersStatusCode == 'FACILITYSTATUS10')" class="tab-operation" @click="dataDetail(scope.row,'edit')">指派</div>
+        <!-- 维修处置页面，并且状态为待维修（FACILITYSTATUS09），已到达（FACILITYSTATUS11），时出现 -->
+        <div v-if="title=='维修处置'&&(scope.row.workordersStatusCode == 'FACILITYSTATUS09'||scope.row.workordersStatusCode == 'FACILITYSTATUS11')" class="tab-operation" @click="dataDetail(scope.row,'edit')">反馈</div>
         <!-- 工程量提报页面，并且状态为工程量提报（FACILITYSTATUS12），工程量驳回（FACILITYSTATUS13）时出现 -->
         <div v-if="title=='工程量提报'&&(scope.row.workordersStatusCode == 'FACILITYSTATUS12'||scope.row.workordersStatusCode == 'FACILITYSTATUS13')" class="tab-operation" @click="dataDetail(scope.row,'edit')">材料提交</div>
         <!-- 经理审核页面，并且状态为待确认,驳回，验证不通过 FACILITYSTATUS22 时出现 -->

@@ -1,6 +1,6 @@
 <template>
     <div class="d-select">
-        <el-select v-model="showCode" filterable multiple collapse-tags placeholder="请选择" size='mini' class="content-select" clearable :reserve-keyword="true">
+        <el-select v-model="showCode" filterable multiple collapse-tags placeholder="请选择" size='mini' class="content-select" :popper-class="popperClass" clearable :reserve-keyword="true">
             <el-option v-if="codeAll && showAll && multList.length==list.length" label="全部" :value="codeAll"></el-option>
             <el-option v-for="item in multList" :key="item[getAttr]" :label="item[showAttr]" :value="item[getAttr]">
             </el-option>
@@ -40,7 +40,11 @@
                 // 是否有全部选项
                 type: Boolean,
                 default: false
-            }
+            },
+            popperClass: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {

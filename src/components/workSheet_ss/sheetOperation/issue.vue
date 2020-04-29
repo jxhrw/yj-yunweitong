@@ -6,7 +6,7 @@
                 <label for>下发操作</label>
                 <i class="close" @click="close">X</i>
             </div>
-            <div class="operation-content">
+            <div class="operation-content" style="height:200px;">
                 <div class="complete-content">
                     <el-row class="content-row-select">
                         <el-col :span="20">
@@ -19,6 +19,12 @@
                         <el-col :span="20">
                             <label style="width: 72px;"><span style="left: 17px;">*</span>维护单位</label>
                             <mInput :list="opDeptList" :code.sync="opDeptCode" :name.sync="opDeptName" showAttr="opsDeptName" getAttr="opsDeptId"></mInput>
+                        </el-col>
+                    </el-row>
+                    <el-row class="content-row-select">
+                        <el-col :span="20">
+                            <label style="width: 72px;float: left;margin-right: 17px;">下发意见</label>
+                            <el-input type="textarea" :rows="2" placeholder="请输入内容" class="content-textarea-fix" v-model="operExplain" resize="none"></el-input>
                         </el-col>
                     </el-row>
                     <div class="ej-content-operation">
@@ -54,7 +60,8 @@
                 opDeptCode: '',
                 opDeptName: '',
                 opDeptList: [],
-                isAjaxing: false
+                isAjaxing: false,
+                operExplain: ''
             };
         },
         mounted() {
@@ -64,7 +71,7 @@
             // this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
             this.getDeadlineTime();
             //维护单位
-            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {}).then(res => {
+            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, { "deptOppmType": "OPSDEPTOPPM02" }).then(res => {
                 this.opDeptList = res.resultList || [];
             });
         },
@@ -90,7 +97,7 @@
                         deadlineDate: this.deadlineDate,
                         opDeptId: this.opDeptCode,
                         opDeptName: this.opDeptName,
-                        operExplain: undefined
+                        operExplain: this.operExplain
                     }, { token: this.token })
                     .then(res => {
                         this.isAjaxing = false;
@@ -112,9 +119,10 @@
                 // let time = new Date(this.workordersInfo.repDate).getTime() + 24 * 60 * 60 * 1000;
                 let time = new Date().getTime() + 24 * 60 * 60 * 1000;
                 this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfList`, {
-                        devTypeCode: this.workordersInfo.devTypeCode,
+                        devTypeCode: this.workordersInfo.devTypeCode.indexOf('REPDEVTYPE24') > -1 ? '1' : '2', // REPDEVTYPE24电子类，设施的devTypeCode区分两种，1电子类，2非电子类
                         typeCode: this.workordersInfo.typeCode,
-                        isUse: 1
+                        isUse: 1,
+                        workType: 2, // 工单类型：1、设备；2、设施；3、系统、4其他
                     }, { token: this.token })
                     .then(res => {
                         if (res.appCode == 0) {

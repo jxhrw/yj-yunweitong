@@ -11,7 +11,7 @@
                     <el-row class="content-row-select">
                         <el-col :span="20">
                             <label style="float: left;margin-right: 17px;">审核意见</label>
-                            <el-input type="textarea" :rows="3" placeholder="请输入内容" class="content-textarea-fix" v-model="operExplain "></el-input>
+                            <el-input type="textarea" :rows="3" placeholder="请输入内容" class="content-textarea-fix" v-model="operExplain" resize="none"></el-input>
                         </el-col>
                     </el-row>
                     <div class="ej-content-operation">

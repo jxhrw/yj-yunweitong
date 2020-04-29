@@ -33,14 +33,14 @@
                 </el-col>
                 <el-col :span="7" v-show="title=='停用查询'">
                     <label>工单编号</label>
-                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
+                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
             </template>
 
             <template slot="condSecond">
                 <el-col :span="7" v-show="title!='停用查询'">
                     <label>工单编号</label>
-                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
+                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
                 <el-col :span="7" v-if="title!='维修申报'">
                     <label>申报人员</label>
@@ -62,10 +62,10 @@
                     <label>所属系统</label>
                     <mSelectMult :list="systemList" :code.sync="systemCode" :name.sync="systemName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
-                <!-- <el-col :span="7">
+                <el-col :span="7" v-show="title=='工单查询'">
                     <label>维修类型</label>
                     <mInput :list="reptypeList" :code.sync="reptypeCode" :name.sync="reptypeName"></mInput>
-                </el-col> -->
+                </el-col>
                 <el-col :span="7">
                     <label>维护单位</label>
                     <mInput :list="oppmDeptList" :code.sync="oppmDeptId" showAttr="opsDeptName" getAttr="opsDeptId" @keyup.enter.native="searchTableInfo"></mInput>
@@ -106,6 +106,39 @@
                     <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column> -->
+                    <!-- <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column> -->
+                    <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
+                    <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="操作" min-width="100">
+                        <!-- 操作4个表格都一样 -->
+                        <template slot-scope="scope">
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions" @onOtherEvent="materialDetail"></TableOpertion>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+            <template slot="table">
+                <el-table v-show="tableShowType==11" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
+                    <el-table-column type="index" label="序号"></el-table-column>
+                    <el-table-column prop="workordersId" label="工单编号" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{scope.row.workordersId||scope.row.repairsId}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="repSourceName" label="申报来源" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDeptName" label="申报部门" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="failureDescrible" label="情况描述" show-overflow-tooltip></el-table-column> -->
                     <!-- <el-table-column prop="devAreaName" label="管理辖区" show-overflow-tooltip v-if="JSON.stringify(multipleSelection).indexOf('管理辖区')>-1"></el-table-column> -->
                     <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
@@ -474,13 +507,14 @@
                         repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
                         workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode.join(","),
                         repPersonName: this.person,
-                        workordersId: this.declareId,
+                        workordersIdKey: this.declareId,
                         // devDeptId: this.departCode.join(","),
                         repDeptIds: this.departCode.join(","),
                         repSourceCode: this.sourceCode.join(","),
                         devAreaCode: this.regionCode.join(","),
                         devTypeCode: this.systemCode.join(","),
                         oppmDeptId: this.oppmDeptId,
+                        typeCode: this.reptypeCode,
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
                 } else if (this.title == '转单审核' || this.title == '转单查询') {
@@ -494,7 +528,7 @@
                         repSourceCode: this.sourceCode.join(","),
                         deviceArea: this.regionCode.join(","),
                         deviceType: this.systemCode.join(","),
-                        applyId: this.declareId,
+                        workordersIdKey: this.declareId,
                         oppmDeptId: this.oppmDeptId,
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
@@ -520,7 +554,7 @@
                         deviceType: this.systemCode.join(","),
 
                         // devTypeCode: this.systemCode.join(","),
-                        workorderId: this.declareId,
+                        workordersIdKey: this.declareId,
                         workordersStatusCode: this.stateCode.join(","),
                         oppmDeptId: this.oppmDeptId,
                     };
@@ -1003,7 +1037,7 @@
                         this.typeName = this.typeList[0].dicName;
                         break;
                     case '7':
-                        this.tableShowType = 1;
+                        this.tableShowType = 11;
                         this.title = '工单查询';
                         this.listUrl.table = `${this.$config.efoms_HOST}/workorders/getWorkordersInfoPage`;
                         this.listUrl.download = `${this.$config.efoms_HOST}/export/exportGDSSCX`;
@@ -1089,11 +1123,7 @@
                 }
 
                 //维修类型
-                // if (pageType == '0') {
-                //     this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }];
-                // } else {
-                //     this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }];
-                // }
+                this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }];
 
                 if (this.source) {
                     this.source.cancel('主动取消'); //这里你可以输出一些信息，可以在catch中拿到

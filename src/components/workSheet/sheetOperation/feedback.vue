@@ -12,7 +12,6 @@
                         <el-col :span="9">
                             <label><span>*</span>故障类型</label>
                             <mInput :list="failureTypeList" :code.sync="failureTypeCode" :name.sync="failureTypeName"></mInput>
-
                         </el-col>
                         <el-col :span="9">
                             <label><span>*</span>维修结果</label>

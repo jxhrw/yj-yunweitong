@@ -1,6 +1,7 @@
 {
     "efoms_HOST": "http://192.168.91.158:10005/efoms-rest",
     "ubms_HOST": "http://192.168.91.158:8080/ubms-server",
+    "uums_HOST": "http://192.168.91.158:10002/uums3-rest",
     "serverPushUrl": "http://192.168.91.142:6201/serverpush.js",
     "loginUrl": "http://192.168.91.158:10006/efoms-web/hz/index.html",
     "systemUrl": "",

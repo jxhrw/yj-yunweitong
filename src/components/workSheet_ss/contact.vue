@@ -198,7 +198,7 @@
                     contactStatus: this.$route.query.type, //联系单状态(1待处理、2已修复、3已验收)
                     repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
                     repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
-                    signsWorkordersId: this.declareId,
+                    workordersIdKey: this.declareId,
                     roadName: this.roadName,
                     devDeptId: this.battalionCode,
                     squadron: this.squadronCode,

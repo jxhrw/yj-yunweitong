@@ -138,7 +138,7 @@
                         <div class="content" style="padding-bottom:20px;">
                             <el-row class="content-row-explain content-row-first">
                                 <el-col :span="24" class="content-row-img">
-                                    <i class="redStar" style="margin-top: 5px;">*</i>
+                                    <!-- <i class="redStar" style="margin-top: 5px;">*</i> -->
                                     <label>上传照片</label>
                                     <template v-for="(item,index) in imgSceneUrl">
                                         <div class="img-preview" :key="index">
@@ -155,14 +155,14 @@
                                     </div>
                                 </el-col>
                             </el-row>
-                            <el-row class="content-row-select">
+                            <!-- <el-row class="content-row-select">
                                 <el-col :span="12">
                                     <i class="redStar">*</i>
                                     <label>故障类型</label>
                                     <mInput :list="gzList" :code.sync="gzCode" :name.sync="gzName" :disabled="isOnlyRead" style="width:300px;">
                                     </mInput>
                                 </el-col>
-                            </el-row>
+                            </el-row> -->
                             <el-row class="content-row-select">
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
@@ -338,11 +338,11 @@
                     this.devList = res.resultList.result || [];
                 });
                 //故障类型
-                this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
-                    parentCode: val
-                }).then(res => {
-                    this.gzList = res.resultList || [];
-                });
+                // this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
+                //     parentCode: val
+                // }).then(res => {
+                //     this.gzList = res.resultList || [];
+                // });
 
                 this.devRepeatCheck();
             },
@@ -466,14 +466,14 @@
                     Common.ejMessage("warning", "该设备已经报修过了，请勿重复提交");
                     return;
                 }
-                if (this.imgSceneList.length < 1) {
-                    Common.ejMessage("warning", "请上传图片");
-                    return;
-                }
-                if (this.gzList.length > 0 && this.gzCode == "") {
-                    Common.ejMessage("warning", "填写故障类型");
-                    return;
-                }
+                // if (this.imgSceneList.length < 1) {
+                //     Common.ejMessage("warning", "请上传图片");
+                //     return;
+                // }
+                // if (this.gzList.length > 0 && this.gzCode == "") {
+                //     Common.ejMessage("warning", "填写故障类型");
+                //     return;
+                // }
                 if (this.gzdesc == "") {
                     Common.ejMessage("warning", "填写故障描述");
                     return;

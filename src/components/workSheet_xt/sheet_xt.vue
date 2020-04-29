@@ -25,7 +25,7 @@
                 </el-col>
                 <el-col :span="7">
                     <label>工单编号</label>
-                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
+                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
                 <!-- <el-col :span="7" v-show="title!='工单查询'&&title!='维修申报'">
                     <label>查询类型</label>
@@ -188,7 +188,7 @@
                     key: this.key,
                     repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
                     repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
-                    workSystemId: this.declareId,
+                    workordersIdKey: this.declareId,
                     systemCodes: this.systemCode.join(","),
                     platformCodes: this.platformCode.join(","),
                     levelCodes: this.urgentCode.join(","),

@@ -17,6 +17,10 @@
                             <label><span>*</span>维修结果</label>
                             <mInput :list="devStatusList" :code.sync="devStatusCode" :name.sync="devStatusName"></mInput>
                         </el-col>
+                        <el-col :span="9">
+                            <label>所属中队</label>
+                            <mInput :list="squadronList" :code.sync="squadron" :name.sync="squadronName" showAttr="deptName" getAttr="deptId"></mInput>
+                        </el-col>
                     </el-row>
                     <el-row class="content-row-select">
                         <el-col :span="9">
@@ -80,6 +84,9 @@
                 devStatusName: '',
                 devStatusCode: '',
                 devStatusList: [],
+                squadron: '',
+                squadronName: '',
+                squadronList: [],
                 failureReason: "",
                 operExplain: "",
                 imgSceneUrl: [], //图片地址集合,用于显示
@@ -102,6 +109,14 @@
             // this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, { parentCode: "DEVICEALLSTATUS" }).then(res => {
             //     this.devStatusList = res.resultList || [];
             // });
+
+            // 所属中队
+            this.$api.get(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { parentId: this.workordersInfo.devDeptId, deptRank: 'DEPTRANK05' }, { token: this.token }).then(res => {
+                this.squadronList = res.resultList || [];
+
+                this.squadron = this.workordersInfo.squadron;
+                this.squadronName = this.workordersInfo.squadronName;
+            });
         },
         watch: {},
         methods: {
@@ -137,6 +152,8 @@
                     '&failureTypeName=' + this.failureTypeName +
                     '&failureReason=' + this.failureReason +
                     '&operExplain=' + this.operExplain +
+                    '&squadron=' + this.squadron +
+                    '&squadronName=' + this.squadronName +
                     '&isOver=' + (this.devStatusCode == '1' ? '1' : '0');
 
                 this.isAjaxing = true;
@@ -150,6 +167,8 @@
                             // 反馈完置空
                             this.failureTypeCode = '';
                             this.failureTypeName = '';
+                            this.squadron = this.workordersInfo.squadron;
+                            this.squadronName = this.workordersInfo.squadronName;
                             this.devStatusName = '';
                             this.devStatusCode = '';
                             this.failureReason = '';

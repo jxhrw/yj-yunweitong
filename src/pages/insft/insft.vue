@@ -49,9 +49,15 @@
         mounted() {
             if (this.isHeadMenuVisible) {
                 this.tipsPush('EFOMS_OPERATION');
-                this.tipsPush('efoms_heartbeat');
             }
             window.myVue = this;
+
+            // 心跳,统计在线人数
+            let token = Common.getQueryString("token");
+            this.$api.post(`${this.$config.uums_HOST}/user/heartbeat?token=${token}&systemKey=${this.$config.systemKeyOther}`, {}, { token: token });
+            setInterval(() => {
+                this.$api.post(`${this.$config.uums_HOST}/user/heartbeat?token=${token}&systemKey=${this.$config.systemKeyOther}`, {}, { token: token });
+            }, 5 * 60 * 1000);
         },
         methods: {
             // 获取用户信息
@@ -158,7 +164,7 @@
                             position: 'bottom-right',
                             dangerouslyUseHTMLString: true,
                             duration: 0,
-                            message: `<a style="cursor: pointer;" onclick="myVue.onclickNotification('${encodeURIComponent(JSON.stringify(res))}')">${res.content}</a>`,
+                            message: `<a style="cursor: pointer;position: absolute;top: 14px;right: 49px;" onclick="myVue.closeAllNotice()">一键关闭</a><a style="cursor: pointer;" onclick="myVue.onclickNotification('${encodeURIComponent(JSON.stringify(res))}')">${res.content||'点击查看'}</a>`,
                             customClass: 'serverpushNotice'
                         });
                     }
@@ -190,6 +196,12 @@
                         query: { pre: entrance, id: obj.wokrorderIds, isread: obj.type == '待办' ? 'edit' : undefined }
                     });
                 }
+            },
+            closeAllNotice() {
+                let _this = this;
+                Object.keys(this.DOMS).forEach(function(key) {
+                    _this.DOMS[key].close();
+                });
             },
             getType(className) {
                 //   //================待办子类==================//

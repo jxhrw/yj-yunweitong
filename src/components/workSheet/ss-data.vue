@@ -26,6 +26,10 @@
                     <mSelectMult :list="stateList" :code.sync="stateCode" :name.sync="stateName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
                 <el-col :span="7">
+                    <label>维修类型</label>
+                    <mInput :list="reptypeList" :code.sync="reptypeCode" :name.sync="reptypeName" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
+                <el-col :span="7">
                     <label>时间类型</label>
                     <mInput :list="timeTypeList" :code.sync="timeTypeCode" :name.sync="timeTypeName" :clearable="false" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
@@ -56,6 +60,7 @@
                     <el-table-column prop="DEV_TYPE_NAME" label="所属系统" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="WORKORDERS_STATUS_NAME" label="当前状态" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="REP_SOURCE_NAME" label="来源" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="TYPE_NAME" label="维修类型" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="CREATE_DATE" label="创建时间" show-overflow-tooltip min-width="120">
                         <template slot-scope="scope">
                             {{scope.row.CREATE_DATE|dateTime}}
@@ -115,6 +120,9 @@
                 timeTypeCode: '',
                 timeTypeName: '',
                 timeTypeList: [],
+                reptypeCode: "",
+                reptypeName: "",
+                reptypeList: [],
                 isTableLoading: false,
                 tableData: [],
                 totalCount: 10,
@@ -134,6 +142,7 @@
                     devTypeCode: this.systemCode.join(","),
                     sourceCode: this.sourceCode.join(","),
                     statusCode: this.stateCode.join(","),
+                    typeCode: this.reptypeCode,
                     dataType: this.timeTypeCode,
                     beginTime: this.times ? `${this.times[0]} 00:00:00` : '',
                     endTime: this.times ? `${this.times[1]} 23:59:59` : '',
@@ -223,6 +232,9 @@
             this.timeTypeList = [{ dicCode: 'CREATE', dicName: '创建时间' }, { dicCode: 'FINISH', dicName: '完结时间' }];
             this.timeTypeCode = this.timeTypeList[0].dicCode;
             this.timeTypeName = this.timeTypeList[0].dicName;
+
+            //维修类型
+            this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }];
 
             this.initPage();
         }

@@ -21,7 +21,7 @@
                 </el-col>
                 <el-col :span="7">
                     <label>工单编号</label>
-                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable></el-input>
+                    <el-input v-model="declareId" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
                 <el-col :span="7" v-show="title!='工单查询'&&title!='维修申报'&&title!='优化申报'">
                     <label>查询类型</label>
@@ -40,11 +40,11 @@
                 </el-col>
                 <el-col :span="7">
                     <label>所属处室</label>
-                    <mInput :list="battalionList" :code.sync="battalionCode" :name.sync="battalionName" showAttr="deptName" getAttr="deptId"></mInput>
+                    <mInput :list="battalionList" :code.sync="battalionCode" :name.sync="battalionName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
                 <el-col :span="7">
                     <label>所属部门</label>
-                    <mInput :list="squadronList" :code.sync="squadronCode" :name.sync="squadronName" showAttr="deptName" getAttr="deptId"></mInput>
+                    <mInput :list="squadronList" :code.sync="squadronCode" :name.sync="squadronName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
                 <el-col :span="7">
                     <label>所属系统</label>
@@ -214,7 +214,7 @@
                     let obj = {
                         repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
                         repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
-                        workOtherId: this.declareId,
+                        workordersIdKey: this.declareId,
                         workStatusCode: this.stateCode.join(","),
                         systemCode: this.systemCode,
                         devSpaceId: this.battalionCode,
@@ -227,7 +227,7 @@
                     let obj = {
                         repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
                         repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
-                        workOtherId: this.declareId,
+                        workordersIdKey: this.declareId,
                         type: this.typeCode,
                         systemCode: this.systemCode,
                         devSpaceId: this.battalionCode,

@@ -482,14 +482,14 @@
                     pageSize: pageSize,
                     currentPage: 1,
                 };
-                if (this.title == '维修申报') {
+                if (this.title == '维修申报' || this.title == '抢修申报' || this.title == '优化申报' || this.title == '数字城管') {
                     let obj = {
                         key: this.key,
                         repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
                         repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
                         repDeptId: this.departCode,
                         type: this.typeCode,
-                        signsWorkordersId: this.declareId,
+                        workordersIdKey: this.declareId,
                         repairType: this.reptypeCode, // 维修类型
                         devTypeCode: this.facTypeCode, //设施类别
                         squadron: this.battalionCode.slice(-1).join(','), // 所属大队,取数组最后一位
@@ -506,7 +506,7 @@
                         repairEndTime: this.repairTimes ? `${this.repairTimes[1]} 23:59:59` : "",
                         repDeptId: this.departCode,
                         workordersStatusCode: this.stateCode.join(','),
-                        signsWorkordersId: this.declareId,
+                        workordersIdKey: this.declareId,
                         repairType: this.reptypeCode, // 维修类型
                         devTypeCode: this.facTypeCode, //设施类别
                         squadron: this.battalionCode.slice(-1).join(','), // 所属大队
@@ -520,7 +520,7 @@
                         repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
                         repDeptId: this.departCode,
                         type: this.typeCode,
-                        signsWorkordersId: this.declareId,
+                        workordersIdKey: this.declareId,
                         repairType: this.reptypeCode, // 维修类型
                         devTypeCode: this.facTypeCode, //设施类别
                     };
@@ -554,7 +554,7 @@
                         repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
                         repDeptId: this.departCode,
                         type: this.typeCode,
-                        signsWorkordersId: this.declareId,
+                        workordersIdKey: this.declareId,
                         repairType: this.reptypeCode, // 维修类型
                         devTypeCode: this.facTypeCode, //设施类别
                     };
@@ -916,10 +916,10 @@
                 //维修类型
                 let arrRpType = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }];
                 let arrRpTypeAl = [{ dicCode: 'REPAIRTYPE04', dicName: '数字城管' }];
-                if(this.$route.query.type=='4'){
+                if (this.$route.query.type == '4') {
                     this.reptypeList = [...arrRpType];
-                }else{
-                    this.reptypeList = [...arrRpType,...arrRpTypeAl];
+                } else {
+                    this.reptypeList = [...arrRpType, ...arrRpTypeAl];
                 }
 
                 this.listUrl.download = '';
@@ -1022,6 +1022,7 @@
                         break;
                     case '7':
                         this.tableShowType = 11;
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportSignsWorkordersInfo`;
                         this.title = '工单查询';
                         if (this.$route.query.devId) {
                             this.key = this.$route.query.devId;
@@ -1059,7 +1060,7 @@
                     case 's6':
                         this.tableShowType = 4;
                         this.title = '经理审核';
-                        this.typeList = [{ dicCode: 'MJ002', dicName: '待审核' }, { dicCode: 'MJ003', dicName: '审核通过' }, { dicCode: 'MJ004', dicName: '审核不通过' }];
+                        this.typeList = [{ dicCode: 'MJ002', dicName: '待审核' }, { dicCode: 'MJ005', dicName: '审核通过' }, { dicCode: 'MJ006', dicName: '审核不通过' }];
                         // this.typeList = [{ dicCode: 'MJ001', dicName: '全部' }, { dicCode: 'MJ002', dicName: '待审核' }, { dicCode: 'MJ003', dicName: '审核通过' }, { dicCode: 'MJ004', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
                         break;

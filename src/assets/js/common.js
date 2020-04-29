@@ -1,4 +1,5 @@
 import Vue from 'vue';
+var isAlert = false; // 是否存在过403alert提示
 var Common = {
     groupByKey(data, key, keyArray) {
         /**
@@ -195,20 +196,22 @@ var Common = {
         console.log(JSON.stringify(err))
         let errorTp = '处理异常';
         if (err) {
-            // if (err.dataBuffer) {
-            //     errorTp = err.dataBuffer;
-            // } else 
             if (err.message) {
                 errorTp = err.message;
             } else if (err.resultList) {
                 errorTp = err.resultList;
+            } else if (err.dataBuffer) {
+                errorTp = err.dataBuffer;
             }
         }
         errorTp = errorTp || '';
 
         if (err && err.response && err.response.status == 403 && process.env.NODE_ENV != 'development') {
-            alert('登录失效，请重新登录！');
-            location.reload();
+            if (!isAlert) {
+                isAlert = true;
+                alert('登录失效，请重新登录！');
+                location.reload();
+            }
         } else {
             Vue.prototype.$message({
                 message: errorTp.length > 50 ? errorTp.substr(0, 50) : errorTp,

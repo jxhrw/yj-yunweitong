@@ -6,7 +6,7 @@
                 <label for>指派操作</label>
                 <i class="close" @click="close">X</i>
             </div>
-            <div class="operation-content">
+            <div class="operation-content" style="height:200px;">
                 <div class="complete-content">
                     <el-row class="content-row-select">
                         <el-col :span="10">
@@ -26,6 +26,12 @@
                         <el-col :span="10">
                             <label style="width: 72px;"><span style="left: 17px;">*</span>维护人员</label>
                             <mSelectMult :list="personList" :code.sync="personCode" :name.sync="personName" showAttr="opsPersonName" getAttr="opsPersonId" :showAll="true"></mSelectMult>
+                        </el-col>
+                    </el-row>
+                    <el-row class="content-row-select">
+                        <el-col :span="20">
+                            <label style="float: left;margin-right: 17px;">指派意见</label>
+                            <el-input style="width: 300px;" type="textarea" :rows="2" placeholder="请输入内容" class="content-textarea-fix" v-model="operExplain" resize="none"></el-input>
                         </el-col>
                     </el-row>
                     <div class="ej-content-operation">
@@ -68,7 +74,8 @@
                 personName: [],
                 personList: [],
                 isAjaxing: false,
-                personNameAll: ''
+                personNameAll: '',
+                operExplain: ''
             };
         },
         watch: {
@@ -142,7 +149,8 @@
                         opDeptId: this.groupCode,
                         opDeptName: this.groupName,
                         opPersonId: this.personCode.join(","),
-                        opPersonName: this.personName.join(",")
+                        opPersonName: this.personName.join(","),
+                        operExplain: this.operExplain
                     }, { token: this.token })
                     .then(res => {
                         this.isAjaxing = false;
