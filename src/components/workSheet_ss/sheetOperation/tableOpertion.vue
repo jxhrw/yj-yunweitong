@@ -41,9 +41,11 @@
         <div v-if="title=='超期工单'&&queryConditions.type=='0'" class="tab-operation" @click="dataDetail(scope.row,'edit')">操作</div>
 
         <div class="tab-operation" @click="dataDetail(scope.row)">详情</div>
+        <div v-if="title=='标注工单管理'" class="tab-operation" @click="handleTag(scope.row)">{{!scope.row.isTag?'标注':'取消标注'}}</div>
     </div>
 </template>
 <script>
+    import Common from "@/assets/js/common.js";
     export default {
         props: ['title', 'scope', 'queryConditions'],
         methods: {
@@ -61,6 +63,29 @@
                     path: "/detsheetss",
                     query: { pre: this.title, id: item.signsWorkordersId, isread: type }
                 });
+            },
+            //标注和取消标注
+            handleTag(item) {
+                let type = !item.isTag ? '标注' : '取消标注';
+                let murl = `${this.$config.efoms_HOST}/workordersTag/insertWorkordersInfoTag`; // 默认是标注
+                if (item.isTag) murl = `${this.$config.efoms_HOST}/workordersTag/cancelWorkordersInfoTag`;
+                this.$confirm(`确认${type}吗？`, '操作提示', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    this.$api.putByQs(murl, { workordersId: item.signsWorkordersId }, { token: Common.getQueryString("token") })
+                        .then(res => {
+                            if (res.appCode == 0) {
+                                Common.ejMessage("success", `${type}成功！`);
+                                item.isTag = !item.isTag;
+                            } else {
+                                Common.printErrorLog(res);
+                            }
+                        })
+                        .catch(err => {
+                            Common.printErrorLog(err);
+                        });
+                }).catch(() => {});
             },
         }
     }

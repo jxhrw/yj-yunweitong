@@ -132,25 +132,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
                 ignore: ['.*']
             },
             {
-                from: path.resolve(__dirname, '../static/js/jquery-2.1.4.min.js'), // 外部配置js:out-config.js文件：不参与编译打包的，直接从static文件夹下复制一份到dist目录下
-                to: config.build.assetsPublicPath + '/static/js', // 复制到dist目录下/static/js
+                from: path.resolve(__dirname, '../static'),
+                to: config.dev.assetsSubDirectory,
                 ignore: ['.*']
             },
-            {
-                from: path.resolve(__dirname, '../static/img/'),
-                to: config.dev.assetsSubDirectory + '/img',
-                ignore: ['.*']
-            },
-            {
-                from: path.resolve(__dirname, '../static/js/'),
-                to: config.dev.assetsSubDirectory + '/js',
-                ignore: ['.*']
-            },
-            {
-                from: path.resolve(__dirname, '../static/UEditor/'),
-                to: config.dev.assetsSubDirectory + '/UEditor',
-                ignore: ['.*']
-            }
+            // 以下两种写法等同
+            // {
+            //     from: path.resolve(__dirname, '../static/js/'),
+            //     to: config.build.assetsPublicPath + '/static/js',
+            //     ignore: ['.*']
+            // },
+            // {
+            //     from: path.resolve(__dirname, '../static/js/'),
+            //     to: config.dev.assetsSubDirectory + '/js',
+            //     ignore: ['.*']
+            // },
         ])
     ].concat(utils.htmlPlugin())
 });

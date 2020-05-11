@@ -709,8 +709,8 @@
                                         <!-- <el-input v-model="item.materialName" size='mini' class="content-select mtl1" clearable></el-input> -->
                                         <mInput :list="materialDic" :code.sync="item.materialCode" :name.sync="item.materialName" class="content-select mtl1"></mInput>
                                         <el-input v-model="item.materialNum" size='mini' class="content-select mtl2" clearable></el-input>
-                                        <!-- <el-input v-model="item.materialUnit" size='mini' class="content-select mtl3" clearable></el-input> -->
-                                        <mInput :list="materialDUnit" :code.sync="item.materialUnit" :name.sync="item.materialUnit" class="content-select mtl3"></mInput>
+                                        <el-input v-model="item.materialUnit" size='mini' class="content-select mtl3" clearable></el-input>
+                                        <!-- <mInput :list="materialDUnit" :code.sync="item.materialUnit" :name.sync="item.materialUnit" class="content-select mtl3"></mInput> -->
 
                                         <div class="mtl5" v-if="item.fileInfoList && item.fileInfoList.length>0">
                                             <template v-for="(res,ix) in item.fileInfoList">

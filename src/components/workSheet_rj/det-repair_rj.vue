@@ -42,7 +42,7 @@
                                     </mInput>
                                 </el-col>
                                 <el-col :span="9">
-                                    <i class="redStar">*</i>
+                                    <!--<i class="redStar">*</i>-->
                                     <label>所属部门</label>
                                     <mInput :list="squadronList" :code.sync="squadronCode" :name.sync="squadronName" showAttr="deptName" getAttr="deptId" :disabled="isOnlyRead"></mInput>
                                 </el-col>
@@ -238,7 +238,7 @@
                 Common.printErrorLog(err);
             });
             //所属大队
-            this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptRank: 'DEPTRANK04' }).then(res => {
+            this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { parentId: this.$config.deptId }).then(res => {
                 this.battalionList = res.resultList || [];
             });
             // 紧急程度
@@ -256,7 +256,7 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                if (this.devTypeCode == "" || this.tainCode == "" || this.battalionCode == "" || this.squadronCode == "" || this.address == "") {
+                if (this.devTypeCode == "" || this.tainCode == "" || this.battalionCode == "" || this.address == "") {
                     Common.ejMessage("warning", "请选择设备基本信息");
                     return;
                 }

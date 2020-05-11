@@ -46,10 +46,10 @@ export default new Router({
         path: '/material',
         name: 'material',
         component: material,
-        meta: {
-            isUseCache: false,
-            keepAlive: true
-        }
+        // meta: {
+        //     isUseCache: false,
+        //     keepAlive: true
+        // }
     }, {
         path: '/contractss',
         name: 'contractss',

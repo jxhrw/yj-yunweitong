@@ -61,6 +61,7 @@
                                     </mInput>
                                 </el-col>
                                 <el-col :span="9">
+                                    <i class="redStar">*</i>
                                     <label>详细地址</label>
                                     <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
                                         <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="handleIconClick" style="font-size:16px;">
@@ -452,12 +453,12 @@
                     return;
                 }
                 if (this.devTypeCode != 'REPDEVTYPE17') {
-                    if (this.devTypeCode == "" || this.tainCode == "" || this.devName == "" || this.sourceCode == "") {
+                    if (this.devTypeCode == "" || this.tainCode == "" || this.devName == "" || this.sourceCode == "" || this.address == "") {
                         Common.ejMessage("warning", "请选择设备基本信息");
                         return;
                     }
                 } else {
-                    if (this.departCode == "" || this.tainCode == "" || this.devName == "" || this.sourceCode == "") {
+                    if (this.departCode == "" || this.tainCode == "" || this.devName == "" || this.sourceCode == "" || this.address == "") {
                         Common.ejMessage("warning", "请选择设备基本信息");
                         return;
                     }

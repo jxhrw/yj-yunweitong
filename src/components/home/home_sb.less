@@ -1,7 +1,7 @@
 // 正常公用home.less，因为多次改版不影响其他页面功能新件该样式文件
 @font-face {
     font-family: 'Futura-Medium';
-    src: url('../../assets/images/home_sb/Futura.ttf');
+    src: url('../../assets/images/home_sb/Futura.ttf') format('truetype');
 }
 
 .txt-futura {
@@ -36,19 +36,34 @@
                     position: relative;
 
                     &+.l1-box .li-cont {
-                        background-image: url('../../assets/images/home_sb/icon-gznum.png');
+                        // background-image: url('../../assets/images/home_sb/icon-gznum.png');
+                        background-image: url('../../assets/images/home_sb/icon_gznum_new.png');
+
+                        .num {
+                            color: #FF4400;
+                        }
+
+                        .txt {
+                            color: #FF4400;
+                            opacity: 0.7;
+                        }
                     }
 
                     .li-cont {
                         padding-left: 34%;
                         font-size: 14px;
-                        background: url('../../assets/images/home_sb/icon-sbnum.png') no-repeat left 30px center/55px;
+                        background: url('../../assets/images/home_sb/icon_sbnum_new.png') no-repeat left 15px center/120px;
 
                         .num {
                             .txt-futura;
                             font-size: 34px;
                             color: #16F7FB;
                             letter-spacing: 0.49px;
+                        }
+
+                        .txt {
+                            color: #16F7FB;
+                            opacity: 0.8;
                         }
                     }
 
@@ -74,15 +89,22 @@
                     flex-flow: column;
                     position: relative;
 
+                    .h-title {
+                        padding-bottom: 6px;
+                    }
+
                     .l2-sg {
                         flex: 1;
                         display: flex;
                         align-items: center;
+                        margin-top: -5px;
 
                         .l2-sg-left {
                             width: 48%;
+                            margin-top: -10px;
 
-                            .speed-box {
+                            .speed-box,
+                            .dash-box {
                                 margin: auto;
                             }
                         }
@@ -94,7 +116,7 @@
 
                             .l2-sg-pillar {
                                 position: relative;
-                                top: -8px;
+                                top: 0;
 
                                 li {
                                     display: flex;
@@ -102,43 +124,63 @@
                                     position: relative;
 
                                     &+li {
-                                        margin-top: 20px;
+                                        margin-top: 8px;
                                     }
 
                                     .name {
                                         width: 70px;
+
+                                        i {
+                                            .txt-futura;
+                                            font-style: normal;
+                                            margin-top: 2px;
+                                            white-space: nowrap;
+                                        }
                                     }
 
                                     .line {
                                         flex: 1;
                                         overflow: hidden;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: space-between;
 
                                         .ln {
                                             display: block;
                                             height: 12px;
-                                            position: relative;
-                                            top: 2px;
-                                            float: left;
+                                            // position: relative;
+                                            // top: 2px;
+                                            // float: left;
+                                            flex: 1;
+                                            overflow: hidden;
+                                            border-radius: 20px;
+                                            background: rgba(70, 122, 249, 0.2);
 
-                                            &.pill-color1 {
-                                                background: #2266FE;
-                                            }
+                                            span {
+                                                display: block;
+                                                height: 100%;
+                                                border-radius: 20px;
 
-                                            &.pill-color2 {
-                                                background: #26EAFF;
-                                            }
+                                                &.pill-color1 {
+                                                    background-image: linear-gradient(270deg, #9149FF 0%, #2411E8 100%);
+                                                }
 
-                                            &.pill-color3 {
-                                                background: #21477F;
+                                                &.pill-color2 {
+                                                    background-image: linear-gradient(270deg, #0DDFEA 0%, #0045BA 100%);
+                                                }
+
+                                                &.pill-color3 {
+                                                    background-image: linear-gradient(270deg, #3497FA 0%, #004DC1 100%);
+                                                }
                                             }
                                         }
 
                                         .wd {
                                             .txt-futura;
-                                            width: 50px;
+                                            width: 54px;
                                             // text-align: center;
                                             display: block;
-                                            float: left;
+                                            // float: left;
                                             white-space: nowrap;
                                             padding-left: 5px;
                                             box-sizing: border-box;
@@ -189,6 +231,16 @@
 
                             &+li {
                                 margin-left: 10px;
+                            }
+
+                            &.orange {
+                                background: #24171C;
+                                border: 1px solid #59382B;
+
+                                .l3-p1 {
+                                    background: #FF4400;
+                                    color: #060F1C;
+                                }
                             }
 
                             .l3-p1 {
@@ -613,7 +665,8 @@
                         li {
                             flex: 1;
 
-                            .speed-box {
+                            .speed-box,
+                            .dash-box {
                                 margin: auto;
                             }
 
@@ -851,6 +904,10 @@
                         position: relative;
                         top: 1px;
                     }
+
+                    span {
+                        font-size: 12px;
+                    }
                 }
 
                 .info-box-scroll {
@@ -1019,7 +1076,7 @@
                 }
 
                 .table-box {
-                    margin-top: 30px;
+                    margin-top: 0;
                     height: 499px;
 
                     .dialog-table {
@@ -1278,6 +1335,98 @@
     }
 }
 
+// 仪表图
+.dash-box {
+    position: relative;
+    margin-bottom: 20px !important;
+    width: 208px;
+    height: 116px;
+    background: url('../../assets/images/home_sb/panel/big-98+.png') no-repeat center/100% 100%;
+    color: #FFFFFF;
+
+    .pointer {
+        position: absolute;
+        bottom: -92px;
+        left: 50%;
+        margin-left: -15px;
+        width: 30px;
+        height: 210px;
+        // height: 122px;
+        // padding-bottom: 88px;
+        background: url('../../assets/images/home_sb/panel/z-98+.png') no-repeat center top/100%;
+        transform: rotate(90deg) scale(0.8);
+    }
+
+    span {
+        .txt-futura;
+        position: absolute;
+        bottom: -25px;
+        left: 0;
+        right: 0;
+        font-size: 22px;
+        margin: auto;
+        text-align: center;
+    }
+
+    &.color1 {
+        background-image: url('../../assets/images/home_sb/panel/big-98+.png');
+
+        .pointer {
+            background-image: url('../../assets/images/home_sb/panel/z-98+.png');
+        }
+    }
+
+    &.color2 {
+        background-image: url('../../assets/images/home_sb/panel/big-95+.png');
+
+        .pointer {
+            background-image: url('../../assets/images/home_sb/panel/z-95+.png');
+        }
+    }
+
+    &.color3 {
+        background-image: url('../../assets/images/home_sb/panel/big-80+.png');
+
+        .pointer {
+            background-image: url('../../assets/images/home_sb/panel/z-80+.png');
+        }
+    }
+
+    &.color4 {
+        background-image: url('../../assets/images/home_sb/panel/big-60+.png');
+
+        .pointer {
+            background-image: url('../../assets/images/home_sb/panel/z-60+.png');
+        }
+    }
+
+    &.color5 {
+        background-image: url('../../assets/images/home_sb/panel/big-60-.png');
+
+        .pointer {
+            background-image: url('../../assets/images/home_sb/panel/z-60-.png');
+        }
+    }
+
+    &.small-size {
+        margin-bottom: 20px !important;
+        width: 130px;
+        height: 72.5px;
+
+        .pointer {
+            bottom: -55px;
+            margin-left: -9px;
+            width: 18px;
+            height: 126px;
+        }
+
+        span {
+            bottom: -17px;
+            font-size: 14px;
+        }
+    }
+}
+
 // 边角
 .cor-left {
 
@@ -1429,6 +1578,46 @@
         }
     }
 
+    @dsBigWidth: 170px;
+    @dsSmallWidth: 208px;
+    @dsBigMrBottom: 20px;
+
+    .dash-box {
+        margin-bottom: @dsBigMrBottom  !important;
+        width: @dsBigWidth;
+        height: @dsBigWidth/208*116;
+
+        .pointer {
+            bottom: -@dsBigWidth/208*92;
+            margin-left: -@dsBigWidth/208*15;
+            width: @dsBigWidth/208*30;
+            height: @dsBigWidth/208*210;
+        }
+
+        span {
+            bottom: -@dsBigWidth/208*25;
+            font-size: @dsBigWidth/208*20;
+        }
+
+        &.small-size {
+            margin-bottom: @dsBigMrBottom  !important;
+            width: @dsSmallWidth/208*130;
+            height: @dsSmallWidth/208*72.5;
+
+            .pointer {
+                bottom: -@dsSmallWidth/208*55;
+                margin-left: -@dsSmallWidth/208*9;
+                width: @dsSmallWidth/208*18;
+                height: @dsSmallWidth/208*126;
+            }
+
+            span {
+                bottom: -@dsSmallWidth/208*17;
+                font-size: @dsSmallWidth/208*14;
+            }
+        }
+    }
+
     .layout {
         .h-content.h-currency {
             .h-title {
@@ -1437,19 +1626,23 @@
 
             .h-left {
                 .h-left-1 .l1-box .li-cont {
-                    background-position-x: 26px;
-                    background-size: 44px;
+                    background-position-x: 14px;
+                    background-size: 96px;
 
                     .num {
                         font-size: 32px;
                     }
                 }
 
+                .h-left-2 .l2-box .l2-sg .l2-sg-left {
+                    margin-top: -10px;
+                }
+
                 .h-left-2 .l2-box .l2-sg .l2-sg-right .l2-sg-pillar {
-                    top: -8px;
+                    top: -4px;
 
                     li+li {
-                        margin-top: 20px;
+                        margin-top: 8px;
                     }
                 }
 
@@ -1498,9 +1691,9 @@
                     margin-top: -5px;
                 }
 
-                .table-box {
-                    margin-top: 15px;
-                }
+                // .table-box {
+                //     margin-top: 15px;
+                // }
             }
         }
     }
@@ -1589,6 +1782,46 @@
         }
     }
 
+    @dsBigWidth: 170px;
+    @dsSmallWidth: 190px;
+    @dsBigMrBottom: 20px;
+
+    .dash-box {
+        margin-bottom: @dsBigMrBottom  !important;
+        width: @dsBigWidth;
+        height: @dsBigWidth/208*116;
+
+        .pointer {
+            bottom: -@dsBigWidth/208*92;
+            margin-left: -@dsBigWidth/208*15;
+            width: @dsBigWidth/208*30;
+            height: @dsBigWidth/208*210;
+        }
+
+        span {
+            bottom: -@dsBigWidth/208*25;
+            font-size: @dsBigWidth/208*20;
+        }
+
+        &.small-size {
+            margin-bottom: @dsBigMrBottom  !important;
+            width: @dsSmallWidth/208*130;
+            height: @dsSmallWidth/208*72.5;
+
+            .pointer {
+                bottom: -@dsSmallWidth/208*55;
+                margin-left: -@dsSmallWidth/208*9;
+                width: @dsSmallWidth/208*18;
+                height: @dsSmallWidth/208*126;
+            }
+
+            span {
+                bottom: -@dsSmallWidth/208*17;
+                font-size: @dsSmallWidth/208*14;
+            }
+        }
+    }
+
     .layout {
         .h-content.h-currency {
             .h-title {
@@ -1597,19 +1830,23 @@
 
             .h-left {
                 .h-left-1 .l1-box .li-cont {
-                    background-position-x: 22px;
-                    background-size: 44px;
+                    background-position-x: 9px;
+                    background-size: 92px;
 
                     .num {
                         font-size: 32px;
                     }
                 }
 
+                .h-left-2 .l2-box .l2-sg .l2-sg-left {
+                    margin-top: -8px;
+                }
+
                 .h-left-2 .l2-box .l2-sg .l2-sg-right .l2-sg-pillar {
-                    top: -8px;
+                    top: -2px;
 
                     li+li {
-                        margin-top: 20px;
+                        margin-top: 6px;
                     }
                 }
 
@@ -1657,9 +1894,9 @@
                     margin-top: -5px;
                 }
 
-                .table-box {
-                    margin-top: 15px;
-                }
+                // .table-box {
+                //     margin-top: 15px;
+                // }
             }
         }
     }
@@ -1748,6 +1985,46 @@
         }
     }
 
+    @dsBigWidth: 150px;
+    @dsSmallWidth: 180px;
+    @dsBigMrBottom: 20px;
+
+    .dash-box {
+        margin-bottom: @dsBigMrBottom  !important;
+        width: @dsBigWidth;
+        height: @dsBigWidth/208*116;
+
+        .pointer {
+            bottom: -@dsBigWidth/208*92;
+            margin-left: -@dsBigWidth/208*15;
+            width: @dsBigWidth/208*30;
+            height: @dsBigWidth/208*210;
+        }
+
+        span {
+            bottom: -@dsBigWidth/208*25;
+            font-size: @dsBigWidth/208*20;
+        }
+
+        &.small-size {
+            margin-bottom: @dsBigMrBottom  !important;
+            width: @dsSmallWidth/208*130;
+            height: @dsSmallWidth/208*72.5;
+
+            .pointer {
+                bottom: -@dsSmallWidth/208*55;
+                margin-left: -@dsSmallWidth/208*9;
+                width: @dsSmallWidth/208*18;
+                height: @dsSmallWidth/208*126;
+            }
+
+            span {
+                bottom: -@dsSmallWidth/208*17;
+                font-size: @dsSmallWidth/208*14;
+            }
+        }
+    }
+
     .layout {
         /deep/ .header {
             height: 50px;
@@ -1762,19 +2039,23 @@
 
             .h-left {
                 .h-left-1 .l1-box .li-cont {
-                    background-position-x: 20px;
-                    background-size: 36px;
+                    background-position-x: 15px;
+                    background-size: 78px;
 
                     .num {
                         font-size: 28px;
                     }
                 }
 
+                .h-left-2 .l2-box .l2-sg .l2-sg-left {
+                    margin-top: -6px;
+                }
+
                 .h-left-2 .l2-box .l2-sg .l2-sg-right .l2-sg-pillar {
-                    top: -12px;
+                    top: -5px;
 
                     li+li {
-                        margin-top: 18px;
+                        margin-top: 2px;
                     }
                 }
 
@@ -1868,7 +2149,7 @@
                 }
 
                 .table-box {
-                    margin-top: 15px;
+                    // margin-top: 15px;
                     height: 401px;
 
                     .dialog-table {

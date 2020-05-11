@@ -56,6 +56,9 @@
                                 </el-scrollbar>
                             </div>
                         </el-col>
+                        <el-col :span="6" v-if="workordersInfo.listMaterialRlt&&workordersInfo.listMaterialRlt.length>0">
+                            <p style="float:right;background: #F9FAFC;border: 1px solid #E1E7ED;border-radius: 1px;font-size: 14px;color: #6C7883;padding:2px 5px;cursor: pointer;" @click="getLastMaterial">显示前次提交材料</p>
+                        </el-col>
                     </el-row>
                     <el-row class="content-row-select">
                         <el-col :span="18">
@@ -71,7 +74,7 @@
                             <label>维修照片</label>
                             <template v-for="(item,index) in imgSceneUrl">
                                 <div class="img-preview" :key="index">
-                                    <el-image style="width: 100%; height: 100%" :src="item" :preview-src-list="imgSceneUrl">
+                                    <el-image style="width: 100%; height: 100%" :src="item" :preview-src-list="imgSceneUrl.slice(index).concat(imgSceneUrl.slice(0,index))">
                                     </el-image>
                                     <div class="img-del" @click="delImg(index,'imgScene')">
                                         <p>删除</p>
@@ -231,6 +234,7 @@
             _THIS = this;
             this.token = Common.getQueryString("token");
             this.workordersInfo = this.data || {};
+            this.getImgScene();
         },
         methods: {
             // 提交材料接口
@@ -265,6 +269,55 @@
                         this.isAjaxing = false;
                         Common.printErrorLog(err);
                     });
+            },
+            getImgScene() {
+                let sb1 = [];
+                let sb2 = [];
+                let sb3 = [];
+                let arr = this.workordersInfo.workordersRecordMap.fackbackList || [];
+                let imgs = [];
+                arr.map(item => {
+                    // 取反馈（FACILITYOPERTYPE14）操作的所有图片
+                    if (item.operTypeCode == 'FACILITYOPERTYPE14') imgs = [...imgs, ...item.fileInfoList];
+                });
+                imgs.map(item => {
+                    sb1.push(item.fileUrl);
+                    sb2.push({
+                        fileMode: item.fileMode,
+                        fileName: item.fileName,
+                        fileURL: item.fileUrl
+                    });
+                    sb3.push({
+                        downloadPath: item.fileUrl,
+                        fileName: item.fileName,
+                        fileOldName: item.fileName,
+                        mappingAddress: item.fileUrl,
+                        secondDir: '',
+                    });
+                });
+                this.imgSceneUrl = sb1;
+                this.imgSceneList = sb2;
+                this.imgSceneHide = sb3;
+            },
+            getLastMaterial() {
+                let arr = this.workordersInfo.listMaterialRlt || [];
+                let sb = [];
+                arr.map(item => {
+                    let obj = item.materialInfo && item.materialInfo.length > 0 ? item.materialInfo[0] : {};
+                    sb.push({
+                        fileInfoList: [],
+                        materialCode: item.materialCode,
+                        materialId: item.materialId,
+                        materialName: item.materialName,
+                        materialNum: item.materialNum,
+                        materialSpecification: obj.materialSpecification,
+                        materialUnit: item.materialUnit,
+                        materialUnitPrice: obj.materialUnitPrice,
+                        memo: item.memo,
+                        workRecordId: item.workRecordId
+                    });
+                });
+                this.materialDtoList = sb;
             },
             currentSelect() {
 

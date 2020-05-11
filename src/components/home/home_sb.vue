@@ -39,24 +39,33 @@
                                 </span><i class="left-arrow el-icon-arrow-right" @click="openDetail('well')"></i></h6>
                             <div class="l2-sg">
                                 <div class="l2-sg-left">
-                                    <div class="speed-box">
+                                    <!-- <div class="speed-box">
                                         <div class="speed">
                                             <i class="big"></i>
                                             <i class="small" :style="'transform:rotate('+(devFaultTotal.GOOD_RATE*180/100-135)+'deg)'"></i>
                                             <span>{{devFaultTotal.GOOD_RATE|twoDecimal}}%</span>
                                         </div>
+                                    </div> -->
+                                    <div class="dash-box" :class="getColor(devFaultTotal.GOOD_RATE)">
+                                        <div class="pointer" :style="{'transform':'rotate('+(devFaultTotal.GOOD_RATE*180/100-90)+'deg) scale(0.8)'}"></div>
+                                        <span>{{devFaultTotal.GOOD_RATE|twoDecimal}}%</span>
                                     </div>
                                 </div>
 
                                 <div class="l2-sg-right">
                                     <ul class="l2-sg-pillar">
                                         <li v-for="(item,index) in goodRateOppmTypeList" :key="index">
-                                            <span class="name">{{item.OPPM_TYPE_NAME}}</span>
+                                            <span class="name">{{item.OPPM_TYPE_NAME}}
+                                                <br>
+                                                <i>{{item.FAULT_SUM||0}} / {{item.TOTAL_SUM||0}}</i>
+                                            </span>
                                             <div class="line">
-                                                <span class="ln" :class="'pill-color'+(index+1)" :style="'width:calc('+item.GOOD_RATE+'% - 50px);min-width: '+ item.GOOD_RATE +'px;'"></span>
+                                                <div class="ln">
+                                                    <span :class="'pill-color'+(index+1)" :style="'width:'+item.GOOD_RATE+'%;'"></span>
+                                                </div>
                                                 <span class="wd">{{item.GOOD_RATE|twoDecimal}}%</span>
                                             </div>
-                                            <span class="fault">{{item.FAULT_SUM||0}} | {{item.TOTAL_SUM||0}}</span>
+                                            <!-- <span class="fault">{{item.FAULT_SUM||0}} / {{item.TOTAL_SUM||0}}</span> -->
                                         </li>
                                     </ul>
                                 </div>
@@ -66,24 +75,26 @@
                             <h6 class="h-title"><span>及时修复率</span><i class="left-arrow el-icon-arrow-right" @click="openDetail('table')"></i></h6>
                             <div class="l2-sg">
                                 <div class="l2-sg-left">
-                                    <div class="speed-box">
-                                        <div class="speed">
-                                            <i class="big"></i>
-                                            <i class="small" :style="'transform:rotate('+(timelyRepairAll*180/100-135)+'deg)'"></i>
-                                            <span>{{timelyRepairAll|twoDecimal}}%</span>
-                                        </div>
+                                    <div class="dash-box" :class="getColor(timelyRepairAll)">
+                                        <div class="pointer" :style="{'transform':'rotate('+(timelyRepairAll*180/100-90)+'deg) scale(0.8)'}"></div>
+                                        <span>{{timelyRepairAll|twoDecimal}}%</span>
                                     </div>
                                 </div>
 
                                 <div class="l2-sg-right">
                                     <ul class="l2-sg-pillar">
                                         <li v-for="(item,index) in timelyRepairList" :key="index">
-                                            <span class="name">{{item.OPPM_TYPE_NAME}}</span>
+                                            <span class="name">{{item.OPPM_TYPE_NAME}}
+                                                <br>
+                                                <i>{{item.FAULT_SUM||0}} / {{item.TOTAL_SUM||0}}</i>
+                                            </span>
                                             <div class="line">
-                                                <span class="ln" :class="'pill-color'+(index+1)" :style="'width:calc('+item.GOOD_RATE+'% - 50px);min-width: '+ item.GOOD_RATE +'px;'"></span>
+                                                <div class="ln">
+                                                    <span :class="'pill-color'+(index+1)" :style="'width:'+item.GOOD_RATE+'%;'"></span>
+                                                </div>
                                                 <span class="wd">{{item.GOOD_RATE|twoDecimal}}%</span>
                                             </div>
-                                            <span class="fault">{{item.FAULT_SUM||0}} | {{item.TOTAL_SUM||0}}</span>
+                                            <!-- <span class="fault">{{item.FAULT_SUM||0}} / {{item.TOTAL_SUM||0}}</span> -->
                                         </li>
                                     </ul>
                                 </div>
@@ -104,7 +115,7 @@
                                     <p class="l3-p1">已修复</p>
                                     <p class="l3-p2">{{workordersInfo.GOOD_SUM||0}}</p>
                                 </li>
-                                <li>
+                                <li class="orange">
                                     <p class="l3-p1">超时</p>
                                     <p class="l3-p2">{{workordersInfo.TIMEOUT_SUM||0}}</p>
                                 </li>
@@ -135,7 +146,7 @@
                 </div>
                 <div class="h-right">
                     <div class="h-right-1">
-                        <div class="h-rt-map">
+                        <div class="h-rt-map" style="left:60px;">
                             <span :class="{'active':mapMode=='GPS'}" @click="mapMode='GPS'">GPS模式</span>
                             <span :class="{'active':mapMode!='GPS'}" @click="mapMode='NOTGPS'">统计模式</span>
                         </div>
@@ -192,7 +203,9 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="m-map-url" v-show="mapMode=='GPS'"></div>
+                        <div class="m-map-url" v-show="mapMode=='GPS'">
+                            <iframe src="http://122.224.172.41:8088/GDDT/" id="iframe_or" name="right" width="100%" height="100%" frameborder="0" scrolling="auto"></iframe>
+                        </div>
                     </div>
                     <div class="h-right-2">
                         <div class="cor-left"></div>
@@ -203,12 +216,16 @@
                                 <ul class="r2-ul">
                                     <li v-for="(item,index) in 6" :key="item+'a'">
                                         <template v-if="(6*indexNun+index)<devRepDevType.length">
-                                            <div class="speed-box small-size" :class="getColor(devRepDevType[6*indexNun+index].GOOD_RATE)">
+                                            <!-- <div class="speed-box small-size" :class="getColor(devRepDevType[6*indexNun+index].GOOD_RATE)">
                                                 <div class="speed">
-                                                    <i class="big"></i>
-                                                    <i class="small" :style="'transform:rotate('+(devRepDevType[6*indexNun+index].GOOD_RATE*180/100-135)+'deg)'"></i>
-                                                    <span>{{devRepDevType[6*indexNun+index].GOOD_RATE|twoDecimal}}%</span>
+                                                <i class="big"></i>
+                                                <i class="small" :style="'transform:rotate('+(devRepDevType[6*indexNun+index].GOOD_RATE*180/100-135)+'deg)'"></i>
+                                                <span>{{devRepDevType[6*indexNun+index].GOOD_RATE|twoDecimal}}%</span>
                                                 </div>
+                                            </div> -->
+                                            <div class="dash-box small-size" :class="getColor(devRepDevType[6*indexNun+index].GOOD_RATE)">
+                                                <div class="pointer" :style="{'transform':'rotate('+(devRepDevType[6*indexNun+index].GOOD_RATE*180/100-90)+'deg) scale(0.8)'}"></div>
+                                                <span>{{devRepDevType[6*indexNun+index].GOOD_RATE|twoDecimal}}%</span>
                                             </div>
                                             <p class="r2-p1">{{devRepDevType[6*indexNun+index].DEV_TYPE_NAME}}</p>
                                             <p class="r2-p2">{{devRepDevType[6*indexNun+index].TOTAL_SUM}}</p>
@@ -269,7 +286,7 @@
                         </li>
                     </ul>
                     <div class="info">
-                        <h3 v-show="detailType=='well'">完好率</h3>
+                        <h3 v-show="detailType=='well'">完好率 <span style="margin-left: 15px;">日期： {{dialogTime.start==dialogTime.end?dialogTime.start:(dialogTime.start+' -- '+dialogTime.end)}}</span> </h3>
                         <el-scrollbar v-show="detailType=='well'" class="info-box-scroll">
                             <div class="info-dept" :style="{'width':statHomeList.length*10+'%'}">
                                 <template v-for="(item, index) in statHomeList">
@@ -286,7 +303,7 @@
                                         </div>
 
                                         <el-scrollbar class="pover-box">
-                                            <ul class="pover-ul">
+                                            <ul class="pover-ul" style="width:250px;">
                                                 <li v-for="(line,idx) in item.detail" :key="idx">
                                                     <span v-if="line.DAY">{{line.DAY.substring(5)}}</span>
                                                     <span v-if="line.HOUR">{{line.HOUR}} 点</span>
@@ -316,7 +333,7 @@
                                                     </div>
 
                                                     <el-scrollbar class="pover-box">
-                                                        <ul class="pover-ul">
+                                                        <ul class="pover-ul" style="width:250px;">
                                                             <li v-for="(line,idx) in statDevTypeList[(item1-1)*5+(item2-1)].detail" :key="idx">
                                                                 <span v-if="line.DAY">{{line.DAY.substring(5)}}</span>
                                                                 <span v-if="line.HOUR">{{line.HOUR}} 点</span>
@@ -332,6 +349,7 @@
                                 </template>
                             </div>
                         </div>
+                        <h3 v-show="detailType=='table'"><span>日期： {{dialogTime.start==dialogTime.end?dialogTime.start:(dialogTime.start+' -- '+dialogTime.end)}}</span> </h3>
                         <div v-show="detailType=='table'" class="table-box">
                             <el-table :data="tableShowData" class="dialog-table" border>
                                 <el-table-column prop="OP_DEPT_NAME" label="建设单位" min-width="120" show-overflow-tooltip>
@@ -414,7 +432,7 @@
                 devRepDevType: [],
                 devFaultAreaObj: {},
                 areaPillarMaxHeight: 100, //区域柱形图的最高高度（单位像素）
-                mapMode: 'NOTGPS',
+                mapMode: 'GPS',
                 timelyRepairAll: 0,
                 timelyRepairList: [],
                 workordersInfo: {},
@@ -469,7 +487,7 @@
                     this.dialogTimeDay = '';
                     setTimeout(() => {
                         // 默认前一天，因为当天是没数据的，24点才会生成数据
-                        let a = new Date().getTime() - 1 * 24 * 60 * 60 * 1000;
+                        let a = new Date().getTime() - 0 * 24 * 60 * 60 * 1000;
                         this.dialogTimeDay = Common.dateFormat('yyyy-MM-dd', new Date(a));
                     });
                 } else if (val == 'week') {
@@ -695,7 +713,7 @@
             // 根据完好率的值给颜色
             getColor(num) {
                 num = parseFloat(num);
-                let arr = [100, 98, 95, 90]; //颜色层次
+                let arr = [98, 95, 80, 60]; //颜色层次
                 let txt = '';
                 if (num >= arr[0]) {
                     txt = 'color1';
@@ -804,30 +822,30 @@
             },
             // 消息--查询最近N条通知
             getNotice() {
-                this.$api.get(`${this.$config.efoms_HOST}/homeDevice/getNoticeHisCollect`, {}, { token: this.token })
-                    .then(res => {
-                        if (res.appCode == 0) {
-                            let arr = [];
-                            let list = res.resultList || [];
-                            let forLt = list.slice(0, 100); //最多取100条
-                            res.resultList.map(item => {
-                                arr.push(`${item.noticeContent}`);
-                            });
-                            this.notice = arr.join(' ');
+                // this.$api.get(`${this.$config.efoms_HOST}/homeDevice/getNoticeHisCollect`, {}, { token: this.token })
+                //     .then(res => {
+                //         if (res.appCode == 0) {
+                //             let arr = [];
+                //             let list = res.resultList || [];
+                //             let forLt = list.slice(0, 100); //最多取100条
+                //             res.resultList.map(item => {
+                //                 arr.push(`${item.noticeContent}`);
+                //             });
+                //             this.notice = arr.join(' ');
 
-                            this.$nextTick(() => {
-                                let sudu = 6; // 代表速度，速度越大动画越慢
-                                let all = document.getElementById('animateBox').getBoundingClientRect().width / sudu;
-                                let width2 = document.getElementById('animate2').getBoundingClientRect().width;
-                                this.mtimeTwo = width2 / all;
-                            });
-                        } else {
-                            Common.printErrorLog(res);
-                        }
-                    })
-                    .catch(err => {
-                        Common.printErrorLog(err);
-                    });
+                //             this.$nextTick(() => {
+                //                 let sudu = 6; // 代表速度，速度越大动画越慢
+                //                 let all = document.getElementById('animateBox').getBoundingClientRect().width / sudu;
+                //                 let width2 = document.getElementById('animate2').getBoundingClientRect().width;
+                //                 this.mtimeTwo = width2 / all;
+                //             });
+                //         } else {
+                //             Common.printErrorLog(res);
+                //         }
+                //     })
+                //     .catch(err => {
+                //         Common.printErrorLog(err);
+                //     });
             },
 
             // 获取用户信息
@@ -854,6 +872,7 @@
                 this.getStatFZJ();
                 this.getLatelyFault();
                 this.getNotice();
+                // document.getElementById('iframe_or').src = document.getElementById('iframe_or').src;
             },
             // 字典类型接口
             getDicInfo(url, obj) {
@@ -1216,30 +1235,30 @@
     /* 浮窗样式 */
 
     /* popover样式 */
-    .el-pover.el-popper[x-placement^=right],
-    .el-pover.el-popper[x-placement^=left] {
+    .el-pover.el-popper[x-placement^="right"],
+    .el-pover.el-popper[x-placement^="left"] {
         padding: 6px 0;
-        background: rgba(2, 33, 66, 0.90);
-        border-color: #3A5CA2;
-        box-shadow: 0 2px 4px 0 rgba(7, 6, 51, 0.50);
+        background: rgba(2, 33, 66, 0.9);
+        border-color: #3a5ca2;
+        box-shadow: 0 2px 4px 0 rgba(7, 6, 51, 0.5);
         margin-left: 10px;
         margin-right: 10px;
     }
 
-    .el-pover.el-popper[x-placement^=left] .popper__arrow {
-        border-left-color: #3A5CA2;
+    .el-pover.el-popper[x-placement^="left"] .popper__arrow {
+        border-left-color: #3a5ca2;
     }
 
-    .el-pover.el-popper[x-placement^=left] .popper__arrow::after {
-        border-left-color: rgba(2, 33, 66, 0.90);
+    .el-pover.el-popper[x-placement^="left"] .popper__arrow::after {
+        border-left-color: rgba(2, 33, 66, 0.9);
     }
 
-    .el-pover.el-popper[x-placement^=right] .popper__arrow {
-        border-right-color: #3A5CA2;
+    .el-pover.el-popper[x-placement^="right"] .popper__arrow {
+        border-right-color: #3a5ca2;
     }
 
-    .el-pover.el-popper[x-placement^=right] .popper__arrow::after {
-        border-right-color: rgba(2, 33, 66, 0.90);
+    .el-pover.el-popper[x-placement^="right"] .popper__arrow::after {
+        border-right-color: rgba(2, 33, 66, 0.9);
     }
 
     .pover-box {
@@ -1249,7 +1268,7 @@
     .pover-box .el-scrollbar__wrap {
         overflow-x: hidden;
         overflow-y: auto;
-        max-height: 400px;
+        max-height: 435px;
         margin-bottom: 0 !important;
     }
 
@@ -1262,7 +1281,7 @@
         justify-content: space-between;
         align-items: center;
         padding: 0 10px;
-        color: #C5DAFF;
+        color: #c5daff;
         height: 18px;
         overflow: hidden;
     }
@@ -1282,11 +1301,11 @@
 
     .pover-ul .el-progress__text {
         font-size: 12px !important;
-        color: #C5DAFF;
+        color: #c5daff;
     }
 
     .pover-ul .el-progress-bar__outer {
-        background-color: #2A4363;
+        background-color: #2a4363;
         border-radius: 0;
     }
 
@@ -1294,10 +1313,7 @@
         border-radius: 0;
     }
 
-
     /* popover样式 */
-
-
 
     .multSlt .content-select,
     .dialog-select {
@@ -1308,8 +1324,8 @@
     .dialog-select .el-input__inner {
         line-height: 30px;
         height: 30px;
-        background: #0F2E59;
-        border-color: #3068B7;
+        background: #0f2e59;
+        border-color: #3068b7;
         border-radius: 0;
         color: #fff;
         font-size: 12px;
@@ -1318,6 +1334,6 @@
     .multSlt .content-select .el-input__icon,
     .dialog-select .el-input__icon {
         line-height: 30px;
-        color: #A4CAFF;
+        color: #a4caff;
     }
 </style>

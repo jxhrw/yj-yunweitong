@@ -26,17 +26,17 @@
         },
         methods: {
             getOnline() {
-                this.$api.get(`${this.$config.efoms_HOST}/userCheck/countOnlineUsers`, {}, { token: this.token })
-                    .then(res => {
-                        if (res.appCode == 0) {
-                            this.onlineCount = res.resultList || {};
-                        } else {
-                            Common.printErrorLog(res);
-                        }
-                    })
-                    .catch(err => {
-                        Common.printErrorLog(err);
-                    });
+                // this.$api.get(`${this.$config.efoms_HOST}/userCheck/countOnlineUsers`, {}, { token: this.token })
+                //     .then(res => {
+                //         if (res.appCode == 0) {
+                //             this.onlineCount = res.resultList || {};
+                //         } else {
+                //             Common.printErrorLog(res);
+                //         }
+                //     })
+                //     .catch(err => {
+                //         Common.printErrorLog(err);
+                //     });
 
                 this.$api.get(`${this.$config.efoms_HOST}/uums/countUserBySystem`, {}, { token: this.token })
                     .then(res => {

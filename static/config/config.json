@@ -16,7 +16,9 @@
 
     "appAndroidUrl": "http://59.52.254.218:6090/proxy/file/proxyFile.htm?path=ftp://kkeq:kkeq@jxjt.com.cn/plugin/efoms-app.apk",
     "appAndroidCode": "",
-    "cityName": "hangzhou",
+    "appIosUrl": "http://59.52.254.218:6090/proxy/file/proxyFile.htm?path=ftp://kkeq:kkeq@jxjt.com.cn/plugin/efoms-app.apk",
+    "appIosCode": "",
+    "cityName": "nanchang",
     "ueditorUrl": "",
     "systemKeyDev": "f5c3deec-584c-49a3-a672-6ecd47b7ea2a",
     "systemKeyFac": "3d707bab-ae88-45ff-ae6f-2d3a319acd7b",
@@ -29,5 +31,6 @@
     "mapPattonData": "http://192.168.103.100:8090/geoserver/cite/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=cite%3AV_GIS_CROSS&maxFeatures=50000&outputFormat=application%2Fjson",
 
     "?Gaode_Map_Center": "高德地图初始化定位中心(精度纬度 , 分割)",
-    "Gaode_Map_Center": "120.159756,30.279806"
+    "Gaode_Map_Center": "120.159756,30.279806",
+    "deptId": "330100000000"
 }

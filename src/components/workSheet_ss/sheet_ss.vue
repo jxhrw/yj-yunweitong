@@ -27,12 +27,12 @@
                     <label>申报单位</label>
                     <mInput :list="departList" :code.sync="departCode" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
-                <el-col :span="7" v-show="title=='工单查询'||title==''">
+                <el-col :span="7" v-show="title=='工单查询'||title=='标注工单管理'||title==''">
                     <label>状态</label>
                     <!-- <mInput :list="stateList" :code.sync="stateCode" @keyup.enter.native="searchTableInfo"></mInput> -->
                     <mSelectMult :list="stateList" :code.sync="stateCode" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
-                <el-col :span="7" v-show="title!='工单查询'&&title!=''">
+                <el-col :span="7" v-show="title!='工单查询'&&title!='标注工单管理'&&title!=''">
                     <label>状态</label>
                     <mInput :list="typeList" :code.sync="typeCode" :clearable="false" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
@@ -51,7 +51,7 @@
                     <label>设施类别</label>
                     <mInput :list="facTypeList" :code.sync="facTypeCode" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
-                <el-col :span="7" v-show="title=='工单查询'">
+                <el-col :span="7" v-show="title=='工单查询'||title=='标注工单管理'">
                     <label>所属中队</label>
                     <!-- <mInput :list="battalionList" :code.sync="battalionCode" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mInput> -->
                     <mTree :tree="battalionList" :code.sync="battalionCode" showAttr="text" getAttr="id" :clearable="true"></mTree>
@@ -60,7 +60,7 @@
                     <label>申报来源</label>
                     <mInput :list="sourceList" :code.sync="sourceCode" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col> -->
-                <el-col :span="7" v-show="title=='工单查询'">
+                <el-col :span="7" v-show="title=='工单查询'||title=='标注工单管理'">
                     <label>修复时间</label>
                     <el-date-picker v-model="repairTimes" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd" @keyup.enter.native="searchTableInfo">
                     </el-date-picker>
@@ -70,6 +70,9 @@
             <template slot="tableBtn">
                 <div v-if="listUrl.download" class="operation export" @click="exportExcel">
                     <p>导出</p>
+                </div>
+                <div v-if="title=='标注工单管理'" class="operation export" @click="handleAllTag" style="width:60px;">
+                    <p>取消标注</p>
                 </div>
             </template>
 
@@ -231,7 +234,7 @@
                     <el-table-column prop="repairTime" label="修复时间" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip></el-table-column>
                     <!-- <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column> -->
-                    <el-table-column label="操作" min-width="100">
+                    <el-table-column label="操作" min-width="110">
                         <!-- 操作4个表格都一样 -->
                         <template slot-scope="scope">
                             <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions"></TableOpertion>
@@ -396,6 +399,7 @@
         filters: {
             roadShow(list) {
                 let arr = [];
+                list = list || [];
                 list.map(item => {
                     arr.push(`${item.roadName}(${item.beginCrossName}-${item.endCrossName})`);
                 });
@@ -497,7 +501,7 @@
                         // workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode,
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
-                } else if (this.title == '工单查询' || this.title == '停用查询') {
+                } else if (this.title == '工单查询' || this.title == '标注工单管理' || this.title == '停用查询') {
                     let obj = {
                         key: this.key,
                         repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
@@ -595,6 +599,25 @@
                     path: "/detrepss",
                     query: { pre: this.title }
                 });
+            },
+            handleAllTag() {
+                this.$confirm(`确认取消所有标注吗？`, '操作提示', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    this.$api.putByQs(`${this.$config.efoms_HOST}/workordersTag/cancelAllWorkordersInfoTag`, {}, { token: this.token })
+                        .then(res => {
+                            if (res.appCode == 0) {
+                                Common.ejMessage("success", `取消标注成功！`);
+                                this.searchTableInfo();
+                            } else {
+                                Common.printErrorLog(res);
+                            }
+                        })
+                        .catch(err => {
+                            Common.printErrorLog(err);
+                        });
+                }).catch(() => {});
             },
             exportExcel() {
                 let method = this.listUrl.download;
@@ -1024,6 +1047,19 @@
                         this.tableShowType = 11;
                         this.listUrl.download = `${this.$config.efoms_HOST}/export/exportSignsWorkordersInfo`;
                         this.title = '工单查询';
+                        if (this.$route.query.devId) {
+                            this.key = this.$route.query.devId;
+                        }
+                        break;
+                    case '17':
+                        this.tableShowType = 11;
+                        this.listUrl.table = `${this.$config.efoms_HOST}/SignsWorkordersInfo/getSignsWorkordersTagPage`;
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportSignsWorkordersInfo`;
+                        this.title = '标注工单管理';
+                        let now = new Date().getTime();
+                        let start = Common.dateFormat('yyyy-MM-dd', new Date(now - 90 * 24 * 60 * 60 * 1000));
+                        let end = Common.dateFormat('yyyy-MM-dd', new Date());
+                        this.times = [start, end];
                         if (this.$route.query.devId) {
                             this.key = this.$route.query.devId;
                         }

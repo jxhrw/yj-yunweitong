@@ -22,12 +22,16 @@
                 <div class="operation export" @click="conchange({})">
                     <p>添加</p>
                 </div>
-                <!-- <div class="operation export" @click="exportExcel">
+                <div class="operation export" @click="exportExcel">
                     <p>导出</p>
                 </div>
-                <div class="operation export" @click="exportExcel">
+                <div class="operation export" @click="$refs.templateImp.click()">
                     <p>导入</p>
-                </div> -->
+                    <input type="file" name="" id="templateImp" style="display:none" ref="templateImp" @change="importExcel">
+                </div>
+                <div class="operation export" @click="downloadTemplate" style="width:60px;">
+                    <p>下载模板</p>
+                </div>
             </template>
 
             <template slot="table">
@@ -52,6 +56,11 @@
                             <label class="dialog-label"><span>*</span>所属标段</label>
                             <mInput :list="contractList" :code.sync="detailInfo.contractId" :name.sync="contractName" getAttr="contractId" showAttr="contractName" class="dialog-select"></mInput>
                         </div>
+                        <!-- <div class="revoke-reason">
+                            <label class="dialog-label">年份</label>
+                            <el-date-picker v-model="detailInfo.contractYear" type="year" value-format="yyyy" placeholder="选择年" size='mini' class="dialog-select">
+                            </el-date-picker>
+                        </div> -->
                         <div class="revoke-reason">
                             <label class="dialog-label"><span>*</span>材料名称</label>
                             <el-input v-model="detailInfo.materialName" size='mini' class="dialog-select"></el-input>
@@ -152,16 +161,42 @@
             },
             exportExcel() {
                 let host = this.$config.efoms_HOST;
-                let method = "/export/exportGDCX";
+                let method = "/MaterialInfo/export";
                 let obj = JSON.parse(JSON.stringify(this.queryConditions));
                 this.$api
                     .getMethod(host, method, obj, this.token)
                     .then(res => {
-                        window.open(res.path + '&token=' + this.token);
+                        window.open(res.resultList.path);
                     })
                     .catch(err => {
                         Common.printErrorLog(err);
                     });
+            },
+            importExcel() {
+                var formData = new FormData();
+                var file = document.getElementById('templateImp').files[0];
+                formData.append("file", file);
+                document.getElementById('templateImp').value = '';
+                this.$api.postMethod(
+                        this.$config.efoms_HOST,
+                        "/MaterialInfo/import",
+                        formData,
+                        this.token
+                    )
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            Common.ejMessage("success");
+                            this.searchTableInfo();
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+            },
+            downloadTemplate() {
+                window.open(`./static/材料导入模板.xlsx`);
             },
             currentSelect(e) {},
             conchange(item, type) {

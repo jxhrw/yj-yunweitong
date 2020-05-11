@@ -163,6 +163,17 @@
                                             <label>优化方案</label>
                                             <span>{{workordersInfo.optimeScheme}}</span>
                                         </el-col>
+                                        <el-col :span="9">
+                                            <label :style="voiceList.length>0?'line-height:36px;':''">语音描述</label>
+                                            <span class="voice-box">
+                                                <template v-if="voiceList.length<=0">
+                                                    无
+                                                </template>
+                                                <i v-for="(item,index) in voiceList" :key="index">
+                                                    <audio :src="item.fileUrl" controls="controls"></audio>
+                                                </i>
+                                            </span>
+                                        </el-col>
 
                                         <el-col :span="24" class="content-row-img">
                                             <label>上传照片</label>
@@ -824,6 +835,7 @@
                 dispatchInfoLast: {},
                 appointInfoLast: {},
 
+                voiceList: [],
                 imgFileList: [],
                 cancelReasonCode: "",
                 backoutReasonCode: "",
@@ -1307,9 +1319,12 @@
                             this.appointInfoLast = arr2.length > 0 ? arr2[arr2.length - 1] : {};
 
                             let fileInfoList = this.workordersInfo.fileInfoList;
+                            this.voiceList = [];
                             this.imgFileList = [];
                             fileInfoList.forEach(item => {
-                                if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)) {
+                                if (/\.(mp3|wav|MP3|WAV)$/.test(item.fileName)) {
+                                    this.voiceList.push(item);
+                                } else if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)) {
                                     let fileUrl = item.fileUrl.replace('file/downloadFile?secondDir=', 'fileResource/');
                                     fileUrl = fileUrl.replace('&fileName=', '/');
                                     item.mappingAddress = fileUrl;
