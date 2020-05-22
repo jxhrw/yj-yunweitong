@@ -1,6 +1,6 @@
 <template>
     <div class="header">
-        <div class="title">杭州交警运维通态势屏</div>
+        <div class="title">杭州交警智能设备运维态势</div>
         <div class="time">
             <a v-popover:tpll>当前在线人数： <i class="txt-futura-hd">{{onlineCount.onlineTotal||0}}</i></a>
             <span class="name" v-popover:out>{{userName}}</span>

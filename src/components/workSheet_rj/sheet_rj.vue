@@ -378,7 +378,7 @@
                         this.tableShowType = 1;
                         this.title = '工单指派';
                         this.listUrl.table = `${this.$config.efoms_HOST}/workordersOther/pageWorkordersOtherModual`;
-                        this.typeList = [{ dicCode: 'DZP001', dicName: '待指派' }, { dicCode: 'DZP002', dicName: '被退回' }, { dicCode: 'DZP003', dicName: '已指派' }, { dicCode: 'DZP004', dicName: '已催办' }, { dicCode: 'DZP005', dicName: '超时' }];
+                        this.typeList = [{ dicCode: 'DZP001', dicName: '待响应' }, { dicCode: 'DZP002', dicName: '被退回' }, { dicCode: 'DZP003', dicName: '已指派' }, { dicCode: 'DZP004', dicName: '已催办' }, { dicCode: 'DZP005', dicName: '超时' }];
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;
                         break;

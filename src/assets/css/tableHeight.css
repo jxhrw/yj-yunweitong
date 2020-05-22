@@ -11,3 +11,19 @@
 .content-table .el-loading-spinner .el-loading-text {
     color: #00C187;
 }
+
+.content-table .device-status {
+    height: 16px;
+    background: no-repeat center left/16px;
+    line-height: 16px;
+    display: inline-block;
+    padding-left: 20px;
+}
+
+.content-table .icon-normal {
+    background-image: url("../images/icon-normal.png");
+}
+
+.content-table .icon-abnormal {
+    background-image: url("../images/icon-error.png");
+}

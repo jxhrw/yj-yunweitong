@@ -7,7 +7,7 @@
                 <div class="h-left">
                     <div class="h-left-1">
                         <div class="l1-box">
-                            <el-select v-model="deptId" placeholder="辖区选择" class="absolute" popper-class="selectClass">
+                            <el-select v-model="deptId" placeholder="辖区选择" class="absolute" popper-class="selectClass" v-show="!isBrigade">
                                 <el-option v-for="item in deptList" :key="item.deptId" :label="item.deptName" :value="item.deptId">
                                 </el-option>
                             </el-select>
@@ -18,11 +18,11 @@
                         </div>
                         <div class="l1-box">
                             <h6 class="h-title"><span>&nbsp;</span>
-                                <!-- <i class="left-arrow el-icon-arrow-right" @click="openDetail"></i> -->
+                                <i class="left-arrow el-icon-arrow-right" @click="wkodsVisible=true"></i>
                             </h6>
                             <div class="li-cont">
                                 <p class="num">{{devFaultTotal.FAULT_SUM||0}}</p>
-                                <p class="txt">故障数</p>
+                                <p class="txt">总故障数</p>
                             </div>
                         </div>
                     </div>
@@ -63,7 +63,7 @@
                                                 <div class="ln">
                                                     <span :class="'pill-color'+(index+1)" :style="'width:'+item.GOOD_RATE+'%;'"></span>
                                                 </div>
-                                                <span class="wd">{{item.GOOD_RATE|twoDecimal}}%</span>
+                                                <span class="wd">{{item.GOOD_RATE|decimalShow(item.TOTAL_SUM||0)}}</span>
                                             </div>
                                             <!-- <span class="fault">{{item.FAULT_SUM||0}} / {{item.TOTAL_SUM||0}}</span> -->
                                         </li>
@@ -72,7 +72,7 @@
                             </div>
                         </div>
                         <div class="l2-box">
-                            <h6 class="h-title"><span>及时修复率</span><i class="left-arrow el-icon-arrow-right" @click="openDetail('table')"></i></h6>
+                            <h6 class="h-title"><span>及时修复率</span><i class="left-arrow el-icon-arrow-right" @click="openDetail('bad')"></i></h6>
                             <div class="l2-sg">
                                 <div class="l2-sg-left">
                                     <div class="dash-box" :class="getColor(timelyRepairAll)">
@@ -92,7 +92,7 @@
                                                 <div class="ln">
                                                     <span :class="'pill-color'+(index+1)" :style="'width:'+item.GOOD_RATE+'%;'"></span>
                                                 </div>
-                                                <span class="wd">{{item.GOOD_RATE|twoDecimal}}%</span>
+                                                <span class="wd">{{item.GOOD_RATE|decimalShow(item.TOTAL_SUM||0)}}</span>
                                             </div>
                                             <!-- <span class="fault">{{item.FAULT_SUM||0}} / {{item.TOTAL_SUM||0}}</span> -->
                                         </li>
@@ -112,21 +112,23 @@
                                     <p class="l3-p2">{{workordersInfo.TOTAL_SUM||0}}</p>
                                 </li>
                                 <li>
-                                    <p class="l3-p1">已修复</p>
+                                    <p class="l3-p1">今日修复</p>
                                     <p class="l3-p2">{{workordersInfo.GOOD_SUM||0}}</p>
                                 </li>
                                 <li class="orange">
-                                    <p class="l3-p1">超时</p>
+                                    <p class="l3-p1">今日超时</p>
                                     <p class="l3-p2">{{workordersInfo.TIMEOUT_SUM||0}}</p>
                                 </li>
                                 <li>
-                                    <p class="l3-p1">所有未修复</p>
-                                    <p class="l3-p2">{{workordersInfo.FAULT_SUM||0}}</p>
+                                    <p class="l3-p1">优化未完成</p>
+                                    <p class="l3-p2">{{workordersInfo.FAULT_YOU_SUM||0}}</p>
                                 </li>
                             </ul>
                         </div>
                         <div class="l3-box">
-                            <h6 class="h-title"><span>维护资源</span><i class="left-arrow el-icon-arrow-right" @click="openDetail('table')"></i></h6>
+                            <h6 class="h-title"><span>维护资源</span>
+                                <!-- <i class="left-arrow el-icon-arrow-right" @click="openDetail('table')"></i> -->
+                            </h6>
                             <ul class="l3-ul">
                                 <li>
                                     <p class="l3-p1">维护人员</p>
@@ -146,10 +148,10 @@
                 </div>
                 <div class="h-right">
                     <div class="h-right-1">
-                        <div class="h-rt-map" style="left:60px;">
+                        <!-- <div class="h-rt-map">
                             <span :class="{'active':mapMode=='GPS'}" @click="mapMode='GPS'">GPS模式</span>
                             <span :class="{'active':mapMode!='GPS'}" @click="mapMode='NOTGPS'">统计模式</span>
-                        </div>
+                        </div> -->
                         <div class="h-rt-tips">
                             <div class="cor-left small"></div>
                             <div class="cor-right small"></div>
@@ -204,7 +206,292 @@
                             </ul>
                         </div>
                         <div class="m-map-url" v-show="mapMode=='GPS'">
-                            <iframe src="http://122.224.172.41:8088/GDDT/" id="iframe_or" name="right" width="100%" height="100%" frameborder="0" scrolling="auto"></iframe>
+                            <iframe src="http://47.114.155.254:8088/dzwl/" id="iframe_or" name="right" width="100%" height="100%" frameborder="0" scrolling="auto"></iframe>
+                        </div>
+                        <div class="m-fault-list" :class="{'active':wkodsVisible}">
+                            <div class="fl-list" v-show="wkodsVisible">
+                                <div class="list-box" v-show="!wkodsDetail">
+                                    <div class="list-line list-title">
+                                        <p class="line-left">系统</p>
+                                        <p class="line-right">故障点位</p>
+                                    </div>
+                                    <el-scrollbar class="fl-scroll">
+                                        <div class="list-line" v-for="(item, index) in faultDevList" :key="index" @click="getWkodsDetail(item)">
+                                            <p class="line-left">{{item.devTypeName}}</p>
+                                            <p class="line-right">{{item.devName}}</p>
+                                        </div>
+                                    </el-scrollbar>
+                                </div>
+                                <div class="detail-box" v-if="wkodsDetail">
+                                    <div class="detail-title">
+                                        <i @click="wkodsDetail=false">&#8249;</i>
+                                        <p :class="{'active':wkodsTab=='tb1'}" @click="scrollIntoView('tb1')">工单信息</p>
+                                        <p :class="{'active':wkodsTab=='tb2'}" @click="scrollIntoView('tb2')">工单状态</p>
+                                    </div>
+                                    <el-scrollbar class="fl-scroll">
+                                        <ul class="detail-work" id="tb1">
+                                            <li>
+                                                <p>申报编号</p>
+                                                <p>{{workodsDetailInfo.workordersId || workodsDetailInfo.repairsId}}</p>
+                                            </li>
+                                            <li>
+                                                <p>申报单位</p>
+                                                <p>{{workodsDetailInfo.repDeptName}}</p>
+                                            </li>
+                                            <li>
+                                                <p>申报人</p>
+                                                <p>{{workodsDetailInfo.repPersonName}}</p>
+                                            </li>
+                                            <li>
+                                                <p>当前状态</p>
+                                                <p>{{workodsDetailInfo.workordersStatusName || workodsDetailInfo.repStatusName}}</p>
+                                            </li>
+                                            <li>
+                                                <p>路口点位</p>
+                                                <p>{{workodsDetailInfo.devName}}</p>
+                                            </li>
+                                            <li>
+                                                <p>管理辖区</p>
+                                                <p>{{workodsDetailInfo.devAreaName}}</p>
+                                            </li>
+                                            <li>
+                                                <p>详细地址</p>
+                                                <p>{{workodsDetailInfo.detailAddr}}</p>
+                                            </li>
+                                            <li>
+                                                <p>所属系统</p>
+                                                <p>{{workodsDetailInfo.devTypeName}}</p>
+                                            </li>
+                                            <li>
+                                                <p>维修类型</p>
+                                                <p>{{workodsDetailInfo.typeName}}</p>
+                                            </li>
+                                            <li>
+                                                <p>申报来源</p>
+                                                <p>{{workodsDetailInfo.repSourceName}}</p>
+                                            </li>
+                                            <li>
+                                                <p>申报时间</p>
+                                                <p>{{workodsDetailInfo.repDate}}</p>
+                                            </li>
+                                            <li>
+                                                <p>期限完成时间</p>
+                                                <p>{{workodsDetailInfo.deadlineTime}}</p>
+                                            </li>
+                                            <li>
+                                                <p>维护单位</p>
+                                                <p>{{workodsDetailInfo.oppmDeptName}}</p>
+                                            </li>
+                                            <li>
+                                                <p>维修组</p>
+                                                <p>{{appointInfoLast.opDeptName}}</p>
+                                            </li>
+                                            <li>
+                                                <p>维修人员</p>
+                                                <p>{{appointInfoLast.workordersPersonRltList|opPersonNameShow}}</p>
+                                            </li>
+                                            <li v-show="workodsDetailInfo.countdownTime">
+                                                <p>维修倒计时</p>
+                                                <p>{{workodsDetailInfo.countdownTime}}</p>
+                                            </li>
+                                            <li v-show="workodsDetailInfo.overTime">
+                                                <p>超时时间</p>
+                                                <p>{{workodsDetailInfo.overTime}}</p>
+                                            </li>
+                                            <li v-show="workodsDetailInfo.consumingTime">
+                                                <p>维修耗时</p>
+                                                <p>{{workodsDetailInfo.consumingTime}}</p>
+                                            </li>
+                                            <li>
+                                                <p>情况描述</p>
+                                                <p>{{workodsDetailInfo.failureDescrible}}</p>
+                                            </li>
+                                            <li v-show="workodsDetailInfo.optimeScheme">
+                                                <p>优化方案</p>
+                                                <p>{{workodsDetailInfo.optimeScheme}}</p>
+                                            </li>
+                                        </ul>
+                                        <div class="detail-process" id="tb2">
+                                            <el-timeline>
+                                                <el-timeline-item v-for="(item, index) in processList" :key="index" hide-timestamp>
+                                                    <div class="detail-tip" slot="dot">{{item.operTypeName.substring(item.operTypeName.length - 2)}}</div>
+                                                    <div class="detail-ctent">
+                                                        <div class="title">
+                                                            <label class="title-name">{{item.operTypeName}}</label>
+                                                            <span class="title-other">{{item.operDate}}</span>
+                                                            <span class="title-other">{{item.operPerson}}</span>
+                                                        </div>
+                                                        <ul class="ct-list" v-if="item.operTypeCode=='ORDEROPERTYPE03'">
+                                                            <li>
+                                                                <p>催办原因</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE07'||item.operTypeCode=='ORDEROPERTYPE08'">
+                                                            <li>
+                                                                <p>审核结果</p>
+                                                                <p>{{item.operResult}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>审核意见</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE04'">
+                                                            <li>
+                                                                <p>运维单位</p>
+                                                                <p>{{item.opDeptName}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>维修期限</p>
+                                                                <p>{{item.deadlineDate}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>下发意见</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE15'">
+                                                            <li>
+                                                                <p>运维组</p>
+                                                                <p>{{item.opDeptName}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>维修人员</p>
+                                                                <p>{{item.workordersPersonRltList|opPersonNameShow}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>指派意见</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE05'">
+                                                            <li>
+                                                                <p>申请天数</p>
+                                                                <p>{{item.score}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>延期原因</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE06'">
+                                                            <li>
+                                                                <p>审核结果</p>
+                                                                <p>{{item.operResult}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>期限时间</p>
+                                                                <p>{{item.deadlineDate}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>审核意见</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE23'">
+                                                            <li>
+                                                                <p>记录编号</p>
+                                                                <p>{{item.workordersRecordId}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE24'||item.operTypeCode=='ORDEROPERTYPE25'">
+                                                            <li>
+                                                                <p>审核结果</p>
+                                                                <p>{{item.operResult}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>审核意见</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE26'||item.operTypeCode=='ORDEROPERTYPE21'||item.operTypeCode=='ORDEROPERTYPE22'">
+                                                            <li>
+                                                                <p>申请材料</p>
+                                                                <p>{{item.materialRltList|materialShow}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>备注</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='OPERRESULT10'">
+                                                            <li>
+                                                                <p>操作类型</p>
+                                                                <p>{{item.operResult}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>故障类型</p>
+                                                                <p>{{item.failureTypeName}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>故障描述</p>
+                                                                <p>{{item.failureReason}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>结果反馈</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE08'">
+                                                            <li>
+                                                                <p>确认结果</p>
+                                                                <p>{{item.operResult}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>反馈时间</p>
+                                                                <p>{{item.operDate}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>确认意见</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE10'">
+                                                            <li v-for="(res,ids) in item.evalGradeList" :key="ids">
+                                                                <p>{{res.evalItemName||res.evalExplain}}</p>
+                                                                <p>{{item.evalGrades}}星</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>意见</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE02'">
+                                                            <li>
+                                                                <p>关闭原因</p>
+                                                                <p>{{item.operReasonName}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>意见</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else-if="item.operTypeCode=='ORDEROPERTYPE27'">
+                                                            <li>
+                                                                <p>撤销原因</p>
+                                                                <p>{{item.operReasonName}}</p>
+                                                            </li>
+                                                            <li>
+                                                                <p>意见</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul class="ct-list" v-else>
+                                                            <li>
+                                                                <p>备注</p>
+                                                                <p>{{item.operExplain}}</p>
+                                                            </li>
+                                                        </ul>
+
+                                                    </div>
+                                                </el-timeline-item>
+                                            </el-timeline>
+                                        </div>
+                                    </el-scrollbar>
+                                </div>
+                            </div>
+                            <div class="fl-btn" @click="wkodsVisible=!wkodsVisible"></div>
                         </div>
                     </div>
                     <div class="h-right-2">
@@ -228,7 +515,7 @@
                                                 <span>{{devRepDevType[6*indexNun+index].GOOD_RATE|twoDecimal}}%</span>
                                             </div>
                                             <p class="r2-p1">{{devRepDevType[6*indexNun+index].DEV_TYPE_NAME}}</p>
-                                            <p class="r2-p2">{{devRepDevType[6*indexNun+index].TOTAL_SUM}}</p>
+                                            <p class="r2-p2"><span>{{devRepDevType[6*indexNun+index].FAULT_SUM||0}}</span> / {{devRepDevType[6*indexNun+index].TOTAL_SUM}}</p>
                                         </template>
                                     </li>
                                 </ul>
@@ -262,13 +549,14 @@
 
                             <TimeQuarter class="hide special" :value.sync="dialogTimeQuarter" v-show="dateTypeCode=='season'"></TimeQuarter>
                         </li>
-                        <li class="screen-li">
+                        <!-- <li class="screen-li">
                             <label>辖区：</label>
-                            <el-select v-model="detDeptId" placeholder="请选择" class="dialog-select" popper-class="selectClass noMrTop" clearable>
+                            <el-select v-show="detailType!='table'" v-model="detDeptId" placeholder="请选择" class="dialog-select" popper-class="selectClass noMrTop" clearable>
                                 <el-option v-for="item in detDeptList" :key="item.deptId" :label="item.deptName" :value="item.deptId">
                                 </el-option>
                             </el-select>
-                        </li>
+                            <mSelectMult v-show="detailType=='table'" :list="detDeptList" :code.sync="detDeptsId" getAttr="deptId" showAttr="deptName" class="multSlt" popper-class="selectClass noMrTop"></mSelectMult>
+                        </li> -->
                         <li class="screen-li">
                             <label>维护类型：</label>
                             <el-select v-model="detOppmCode" placeholder="请选择" class="dialog-select" popper-class="selectClass noMrTop" clearable>
@@ -278,27 +566,23 @@
                         </li>
                         <li class="screen-li">
                             <label>系统：</label>
-                            <!-- <el-select v-model="detDevTypeCode" placeholder="请选择" class="dialog-select" popper-class="selectClass noMrTop" clearable>
-                                <el-option v-for="item in devTypeList" :key="item.dicCode" :label="item.dicName" :value="item.dicCode">
-                                </el-option>
-                            </el-select> -->
                             <mSelectMult :list="devTypeList" :code.sync="detDevTypeCode" class="multSlt" popper-class="selectClass noMrTop"></mSelectMult>
                         </li>
                     </ul>
                     <div class="info">
-                        <h3 v-show="detailType=='well'">完好率 <span style="margin-left: 15px;">日期： {{dialogTime.start==dialogTime.end?dialogTime.start:(dialogTime.start+' -- '+dialogTime.end)}}</span> </h3>
-                        <el-scrollbar v-show="detailType=='well'" class="info-box-scroll">
+                        <h3 v-show="detailType=='well'||detailType=='bad'">{{detailType=='well'?'完好率':'修复率'}} <span style="margin-left: 15px;">日期： {{dialogTime.start==dialogTime.end?dialogTime.start:(dialogTime.start+' -- '+dialogTime.end)}}</span> </h3>
+                        <el-scrollbar v-show="detailType=='well'||detailType=='bad'" class="info-box-scroll">
                             <div class="info-dept" :style="{'width':statHomeList.length*10+'%'}">
                                 <template v-for="(item, index) in statHomeList">
                                     <div class="dept" :key="index" v-if="!(item.detail&&item.detail.length>0)">
                                         <p class="p1">{{item.DEV_DEPT_ID|| ''}}</p>
-                                        <p class="p2">{{item.GOOD_RATE|oneDecimal}}%</p>
+                                        <p class="p2">{{item.GOOD_RATE|oneDecimal}}</p>
                                         <!-- <p class="p3"><span><i>&#8721;</i> {{item.TOTAL_NUM}}</span><span>{{item.BAD_NUM}}</span></p> -->
                                     </div>
                                     <el-popover v-else ref="popover" placement="right" width="250" trigger="click" :key="index" popper-class="el-pover">
                                         <div class="dept" :key="index" slot="reference">
                                             <p class="p1">{{item.DEV_DEPT_ID|| ''}}</p>
-                                            <p class="p2">{{item.GOOD_RATE|oneDecimal}}%</p>
+                                            <p class="p2">{{item.GOOD_RATE|oneDecimal}}</p>
                                             <!-- <p class="p3"><span><i>&#8721;</i> {{item.TOTAL_NUM}}</span><span>{{item.BAD_NUM}}</span></p> -->
                                         </div>
 
@@ -308,7 +592,8 @@
                                                     <span v-if="line.DAY">{{line.DAY.substring(5)}}</span>
                                                     <span v-if="line.HOUR">{{line.HOUR}} 点</span>
                                                     <span v-if="line.MONTH">{{line.MONTH}}</span>
-                                                    <el-progress :percentage="parseInt((line.GOOD_RATE||0)*10)/10" color="#26EAFF"></el-progress>
+                                                    <el-progress :percentage="parseInt((line.GOOD_RATE||0)*10)/10" color="#26EAFF" :show-text="false"></el-progress>
+                                                    <span style="margin:0">{{line.GOOD_RATE|oneDecimal}}</span>
                                                 </li>
                                             </ul>
                                         </el-scrollbar>
@@ -316,19 +601,19 @@
                                 </template>
                             </div>
                         </el-scrollbar>
-                        <div v-show="detailType=='well'" class="info-dev-box">
+                        <div v-show="detailType=='well'||detailType=='bad'" class="info-dev-box">
                             <div class="info-devtype">
                                 <template v-for="item1 in Math.ceil(statDevTypeList.length/5)">
                                     <template v-for="item2 in 5">
                                         <div class="devtype" :class="{'transparent':((item1-1)*5+(item2-1)>=statDevTypeList.length)}" :key="item1+''+item2">
                                             <template v-if="(item1-1)*5+(item2-1)<statDevTypeList.length">
                                                 <div class="slotdiv" v-if="!(statDevTypeList[(item1-1)*5+(item2-1)].detail&&statDevTypeList[(item1-1)*5+(item2-1)].detail.length>0)">
-                                                    <p class="p1"><span>{{statDevTypeList[(item1-1)*5+(item2-1)].DEV_TYPE_NAME}}</span> &nbsp; <span>{{statDevTypeList[(item1-1)*5+(item2-1)].GOOD_RATE|oneDecimal}}%</span></p>
+                                                    <p class="p1"><span>{{statDevTypeList[(item1-1)*5+(item2-1)].DEV_TYPE_NAME}}</span> &nbsp; <span>{{statDevTypeList[(item1-1)*5+(item2-1)].GOOD_RATE|oneDecimal}}</span></p>
                                                     <!-- <p class="p2"><span class="s1">{{statDevTypeList[(item1-1)*5+(item2-1)].TOTAL_NUM||0}}</span><span class="s2">{{statDevTypeList[(item1-1)*5+(item2-1)].BAD_NUM||0}}</span></p> -->
                                                 </div>
                                                 <el-popover v-else ref="popover" placement="right" width="250" trigger="click" popper-class="el-pover">
                                                     <div class="slotdiv" slot="reference">
-                                                        <p class="p1"><span>{{statDevTypeList[(item1-1)*5+(item2-1)].DEV_TYPE_NAME}}</span> &nbsp; <span>{{statDevTypeList[(item1-1)*5+(item2-1)].GOOD_RATE|oneDecimal}}%</span></p>
+                                                        <p class="p1"><span>{{statDevTypeList[(item1-1)*5+(item2-1)].DEV_TYPE_NAME}}</span> &nbsp; <span>{{statDevTypeList[(item1-1)*5+(item2-1)].GOOD_RATE|oneDecimal}}</span></p>
                                                         <!-- <p class="p2"><span class="s1">{{statDevTypeList[(item1-1)*5+(item2-1)].TOTAL_NUM||0}}</span><span class="s2">{{statDevTypeList[(item1-1)*5+(item2-1)].BAD_NUM||0}}</span></p> -->
                                                     </div>
 
@@ -338,7 +623,8 @@
                                                                 <span v-if="line.DAY">{{line.DAY.substring(5)}}</span>
                                                                 <span v-if="line.HOUR">{{line.HOUR}} 点</span>
                                                                 <span v-if="line.MONTH">{{line.MONTH}}</span>
-                                                                <el-progress :percentage="parseInt((line.GOOD_RATE||0)*10)/10" color="#26EAFF"></el-progress>
+                                                                <el-progress :percentage="parseInt((line.GOOD_RATE||0)*10)/10" color="#26EAFF" :show-text="false"></el-progress>
+                                                                <span style="margin:0">{{line.GOOD_RATE|oneDecimal}}</span>
                                                             </li>
                                                         </ul>
                                                     </el-scrollbar>
@@ -351,6 +637,26 @@
                         </div>
                         <h3 v-show="detailType=='table'"><span>日期： {{dialogTime.start==dialogTime.end?dialogTime.start:(dialogTime.start+' -- '+dialogTime.end)}}</span> </h3>
                         <div v-show="detailType=='table'" class="table-box">
+                            <el-table :data="tableShowData" class="dialog-table" border>
+                                <el-table-column prop="NAME" label="辖区" min-width="120" show-overflow-tooltip>
+                                </el-table-column>
+                                <el-table-column prop="TOTAL_SUM" label="申报工单总数" align="right">
+                                </el-table-column>
+                                <el-table-column prop="FINISH_SUM" label="修复工单总数" align="right">
+                                </el-table-column>
+                                <el-table-column prop="TIMEOUT_SUM" label="超时工单总数" align="right">
+                                </el-table-column>
+                                <el-table-column prop="ONTIME_SUM" label="优化工单总数" align="right">
+                                </el-table-column>
+                                <el-table-column prop="OPTIMIZE_UNFINISH" label="优化未完成总数" align="right">
+                                </el-table-column>
+                            </el-table>
+                            <div class="page-box">
+                                <el-pagination layout="prev, pager, next" :total="tableData.length" :page-size="10" :current-page.sync="currentPage">
+                                </el-pagination>
+                            </div>
+                        </div>
+                        <div v-show="detailType=='table-old'" class="table-box">
                             <el-table :data="tableShowData" class="dialog-table" border>
                                 <el-table-column prop="OP_DEPT_NAME" label="建设单位" min-width="120" show-overflow-tooltip>
                                 </el-table-column>
@@ -419,9 +725,37 @@
             twoDecimal(val) {
                 return Math.round((val || 0) * 100) / 100;
             },
+            decimalShow(val, total) {
+                //   console.log(val, total)
+                if (total == '0') {
+                    return '— —';
+                } else {
+                    return Math.round((val || 0) * 100) / 100 + '%';
+                }
+            },
             oneDecimal(val) {
-                return Math.floor((val || 0) * 10) / 10;
-            }
+                if (String(val) == "undefined") {
+                    return '— —';
+                } else {
+                    return Math.round((val || 0) * 10) / 10 + '%';
+                }
+            },
+            opPersonNameShow(val) {
+                let arr = [];
+                if (val && val.length > 0) {
+                    val.map(res => {
+                        arr.push(res.personName);
+                    });
+                }
+                return arr.join(",");
+            },
+            materialShow(val) {
+                let arr = [];
+                val.map(res => {
+                    arr.push(`${res.materialName||''}${res.materialNum||''}${res.materialUnit||''}`);
+                });
+                return arr.join(",");
+            },
         },
         data() {
             return {
@@ -468,11 +802,22 @@
                 dialogTimeQuarter: '',
                 dialogTimeYear: '',
                 detDeptId: '',
+                detDeptsId: [],
                 detDeptList: [],
                 detOppmCode: '',
                 oppmList: [],
                 detDevTypeCode: [],
                 devTypeList: [],
+                deptPTObj: {}, // 平通的id数据
+                isBrigade: false, // 是否大队
+                isIframeOnload: false, // iframe是否加载完成
+                faultDevList: [],
+                workodsDetailInfo: {},
+                appointInfoLast: {},
+                processList: [],
+                wkodsVisible: false,
+                wkodsDetail: false,
+                wkodsTab: '',
             };
         },
         watch: {
@@ -494,7 +839,7 @@
                     this.dialogTimeWeek = '';
                     setTimeout(() => {
                         // 默认返回周二的日期
-                        let n = 2; //n:想要返回周几，例如：周一：1，周二：2，周三：3
+                        let n = 2; // n:想要返回周几，例如：周一：1，周二：2，周三：3
                         let today = new Date();
                         today.setDate(today.getDate() + n - (today.getDay() || 7));
                         this.dialogTimeWeek = Common.dateFormat('yyyy-MM-dd', new Date(today));
@@ -596,6 +941,9 @@
             },
             detDeptId(val) {
                 this.detailGet(this.detailVisible);
+            },
+            detDeptsId(val, old) {
+                if (val.join(',') != old.join(',')) this.detailGet(this.detailVisible);
             },
             detOppmCode(val) {
                 this.detailGet(this.detailVisible);
@@ -713,7 +1061,7 @@
             // 根据完好率的值给颜色
             getColor(num) {
                 num = parseFloat(num);
-                let arr = [98, 95, 80, 60]; //颜色层次
+                let arr = [98, 95, 80, 60]; // 颜色层次
                 let txt = '';
                 if (num >= arr[0]) {
                     txt = 'color1';
@@ -795,6 +1143,48 @@
                         Common.printErrorLog(err);
                     });
             },
+            // 故障点位信息
+            getGzList() {
+                let _this = this;
+                this.$api.get(`${this.$config.efoms_HOST}/deviceDetail/selectDeviceDetailInfoList`, { devDeptId: this.deptId, deviceStatus: 'DEVICESTATUS06' }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            this.faultDevList = res.resultList || [];
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+            },
+            // 获取故障点位的工单详情
+            getWkodsDetail(obj) {
+                this.$api.get(`${this.$config.efoms_HOST}/workorders/detailByDevId`, { devId: obj.devId, devTypeCode: obj.devTypeCode }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            this.workodsDetailInfo = res.resultList || {};
+                            this.processList = this.workodsDetailInfo.workordersRecordList || [];
+                            let arr2 = this.workodsDetailInfo.workordersRecordMap.appointList || [];
+                            arr2 = arr2.filter(res => res.operResultCode === 'OPERRESULT07');
+                            this.appointInfoLast = arr2.length > 0 ? arr2[arr2.length - 1] : {};
+
+                            this.wkodsDetail = true;
+                            this.wkodsTab = 'tb1';
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+            },
+            scrollIntoView(id) {
+                document.getElementById(id).scrollIntoView();
+                setTimeout(() => {
+                    this.wkodsTab = id;
+                })
+            },
             // 消息--查询最近N条故障工单
             getLatelyFault() {
                 this.$api.get(`${this.$config.efoms_HOST}/homeDevice/getDeviceLatelyFault`, {}, { token: this.token })
@@ -856,12 +1246,16 @@
                 this.$api.getMethod(host, method, { token: token, systemKey: this.$config.systemKeyDev }, token).then(res => {
                     if (res.appCode == 0) {
                         this.userInfo = res.resultList || {};
+                        this.isBrigade = this.userInfo.userType == '0' && this.userInfo.orgId && this.userInfo.orgId.substr(0, 6) != '330100';
+                        if (this.isBrigade) this.deptId = this.userInfo.orgId ? (this.userInfo.orgId.substr(0, 6) + '000000') : '';
+
+                        this.initGet();
                     }
                 }).catch(err => {
                     Common.printErrorLog(err);
                 });
             },
-            initGet() {
+            initGet(kind) {
                 this.getFaultTotal();
                 this.getFaultOppmType();
                 this.getRepDevType();
@@ -872,8 +1266,45 @@
                 this.getStatFZJ();
                 this.getLatelyFault();
                 this.getNotice();
-                // document.getElementById('iframe_or').src = document.getElementById('iframe_or').src;
+
+                if (kind != 'update') {
+                    this.getGzList();
+                    let ifrm = document.getElementById("iframe_or");
+                    if (this.isIframeOnload) {
+                        console.log(1);
+                        this.handleIframe();
+                    } else {
+                        // ifrm.onload = function() {
+                        setTimeout(() => {
+                            console.log(2);
+                            this.isIframeOnload = true;
+                            this.handleIframe();
+                        });
+                        // };
+                    }
+                }
             },
+            handleIframe() {
+                console.log('向地图传输了数据');
+                if (document.getElementById("iframe_or").contentWindow) {
+                    // iframe传参
+                    // zoom:'' // 默认地图大小值
+                    // id:''//大队支队id
+                    // type:''//等级 1，2，3，4 分别代表支队 大队 中队 **
+                    let type = '1';
+                    let obj = { type: '1', token: this.token };
+                    if (this.deptId) {
+                        obj.type = '2';
+                        obj.id = this.deptId;
+                    }
+                    // if (this.deptPTObj[this.deptId]) {
+                    //     obj.type = '2';
+                    //     obj.id = this.deptPTObj[this.deptId];
+                    // }
+                    document.getElementById("iframe_or").contentWindow.postMessage(obj, "http://47.114.155.254:8088");
+                }
+            },
+
             // 字典类型接口
             getDicInfo(url, obj) {
                 return this.$api.get(
@@ -887,11 +1318,12 @@
                 );
             },
 
-            //详情数据
-            // 大队/中队完好率
-            getStatHomeDetail() {
+            // 详情数据
+            // 大队/中队完好率、修复率
+            getStatHomeDetail(type) {
                 return new Promise((resolve, reject) => {
-                    this.$api.get(`${this.$config.efoms_HOST}/workordersRecord/statHomeDetail`, { parentDeptId: this.deptId, subDeptId: this.detDeptId, devTypeCode: this.detDevTypeCode.join(','), oppmType: this.detOppmCode, startTime: this.dialogTime.start, endTime: this.dialogTime.end, type: this.dateTypeCode }, { token: this.token })
+                    let url = type == 'well' ? '/workordersRecord/statHomeDetail' : '/homeDevice/worksTimelyDetailByDept';
+                    this.$api.get(`${this.$config.efoms_HOST}${url}`, { parentDeptId: this.deptId, subDeptId: this.detDeptId, devTypeCode: this.detDevTypeCode.join(','), oppmType: this.detOppmCode, startTime: this.dialogTime.start, endTime: this.dialogTime.end, type: this.dateTypeCode }, { token: this.token })
                         .then(res => {
                             if (res.appCode == 0) {
                                 this.statHomeList = res.resultList || [];
@@ -905,12 +1337,12 @@
                             resolve(true);
                         });
                 });
-
             },
-            //设备完好率
-            getStatDevTypeDetail() {
+            // 设备完好率、修复率
+            getStatDevTypeDetail(type) {
                 return new Promise((resolve, reject) => {
-                    this.$api.get(`${this.$config.efoms_HOST}/workordersRecord/statHomeDetailByDevType`, { parentDeptId: this.detDeptId || this.deptId, devTypeCode: this.detDevTypeCode.join(','), oppmType: this.detOppmCode, startTime: this.dialogTime.start, endTime: this.dialogTime.end, type: this.dateTypeCode }, { token: this.token })
+                    let url = type == 'well' ? '/workordersRecord/statHomeDetailByDevType' : '/homeDevice/worksTimelyDetailByDevType';
+                    this.$api.get(`${this.$config.efoms_HOST}${url}`, { parentDeptId: this.detDeptId || this.deptId, devTypeCode: this.detDevTypeCode.join(','), oppmType: this.detOppmCode, startTime: this.dialogTime.start, endTime: this.dialogTime.end, type: this.dateTypeCode }, { token: this.token })
                         .then(res => {
                             if (res.appCode == 0) {
                                 this.statDevTypeList = res.resultList || [];
@@ -928,7 +1360,7 @@
             // 建设单位数据
             getOppmTable() {
                 return new Promise((resolve, reject) => {
-                    this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairCollectByOppmDept`, { deptId: this.detDeptId || this.deptId, devTypeCode: this.detDevTypeCode.join(','), oppmTypeCode: this.detOppmCode, startTime: `${this.dialogTime.start ? (this.dialogTime.start + ' 00:00:00') : ''}`, endTime: `${this.dialogTime.end ? (this.dialogTime.end + ' 23:59:59') : ''}` }, { token: this.token })
+                    this.$api.get(`${this.$config.efoms_HOST}/homeDevice/deviceRepairCollectBySelType`, { deptId: this.detDeptsId.join(',') || this.deptId, devTypeCode: this.detDevTypeCode.join(','), oppmTypeCode: this.detOppmCode, startTime: `${this.dialogTime.start ? (this.dialogTime.start + ' 00:00:00') : ''}`, endTime: `${this.dialogTime.end ? (this.dialogTime.end + ' 23:59:59') : ''}`, type: 'devDept' }, { token: this.token })
                         .then(res => {
                             if (res.appCode == 0) {
                                 this.tableData = res.resultList || [];
@@ -948,29 +1380,38 @@
             async detailGet(request) {
                 if (request) {
                     this.dialogLoading = true;
+                    let arr = this.$refs.popover;
+                    if (arr && arr.length > 0) {
+                        arr.map(e => {
+                            e.doClose();
+                        });
+                    }
                     if (this.detailType == 'well') {
-                        await this.getStatHomeDetail();
-                        await this.getStatDevTypeDetail();
+                        await this.getStatHomeDetail(this.detailType);
+                        await this.getStatDevTypeDetail(this.detailType);
+                        this.dialogLoading = false;
+                    } else if (this.detailType == 'bad') {
+                        await this.getStatHomeDetail(this.detailType);
+                        await this.getStatDevTypeDetail(this.detailType);
                         this.dialogLoading = false;
                     } else {
                         await this.getOppmTable();
                         this.dialogLoading = false;
                     }
                 }
-
             },
             openDetail(type) {
                 this.detailType = type;
-                //弹窗的辖区
+                // 弹窗的辖区
                 if (this.deptId) {
-                    this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { parentId: this.deptId, deptRank: 'DEPTRANK05' }).then(res => {
+                    this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { parentId: this.deptId, deptRank: 'DEPTRANK05', orderSeq: "sortNo asc" }).then(res => {
                         this.detDeptList = res.resultList || [];
                     });
                 } else {
                     this.detDeptList = this.deptList.filter(item => item.deptId != '');
                 }
 
-                this.dateTypeCode = 'week';
+                this.dateTypeCode = 'day';
                 //   this.detailGet(true);
                 this.detailVisible = true;
             },
@@ -978,6 +1419,7 @@
                 this.detailVisible = false;
                 this.dateTypeCode = '';
                 this.detDeptId = '';
+                this.detDeptsId = [];
                 this.detOppmCode = '';
                 // this.detDevTypeCode = [];
                 let str = 'REPDEVTYPE01,REPDEVTYPE02,REPDEVTYPE03,REPDEVTYPE04,REPDEVTYPE08,REPDEVTYPE16';
@@ -987,15 +1429,23 @@
         created() {
             this.isHeadVisible = Common.getQueryString("head") != 'hide';
             this.isHeadMenuVisible = Common.getQueryString("headMenu") != 'hide';
-            // if (this.isHeadMenuVisible) {
-            //     this.getUserInfo();
-            // }
+
+            this.deptPTObj = {
+                "330103000000": "48fa5b0908bb4fd088bf7c5d509cb464", // 下城大队
+                "330102000000": "ec8e6173d9fd44309f3177336ae9cbef", // 上城大队
+                "330105000000": "5f35893d0f8949d79e63196ac92da2c4", // 拱墅大队
+                "330197000000": "a2b8cbcb1c5f406e904188f6da0e54e9", // 景区大队
+                "330104000000": "5c24847b88b9456caaa2cda7f44c1366", // 江干大队
+                "330108000000": "8dfe16585a03468e9033e35b141992a0", // 滨江大队
+                "330106000000": "4b5ca26a23be4a878ae08670efced25e", // 西湖大队
+            };
         },
         mounted() {
             let _this = this;
             this.token = Common.getQueryString("token");
+            document.title = this.$config.cityName == 'hangzhou' ? '杭州交警智能设备运维态势' : document.title;
             // 大队
-            this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptProperCode: 'DEPTPROPER01', deptRank: 'DEPTRANK04' }).then(res => {
+            this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptProperCode: 'DEPTPROPER01', deptRank: 'DEPTRANK04', orderSeq: "sortNo asc" }).then(res => {
                 let arr = res.resultList || [];
                 this.deptList = [{ deptId: '', deptName: '全部辖区' }, ...arr];
             });
@@ -1003,13 +1453,13 @@
             // 完好率类型
             this.wellTypeList = [{ dicCode: '1', dicName: '系统完好率' }, { dicCode: '0', dicName: '点位完好率' }];
 
-            //维护类型
+            // 维护类型
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
                 parentCode: "DEVICEOPPMTYPE"
             }).then(res => {
                 this.oppmList = res.resultList || [];
             });
-            //系统
+            // 系统
             this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
                 parentCode: "REPDEVCATEGORY01"
             }).then(res => {
@@ -1026,10 +1476,11 @@
                 this.$api.post(`${this.$config.uums_HOST}/user/heartbeat?token=${token}&systemKey=${this.$config.systemKeyDev}`, {}, { token: token });
             }, 5 * 60 * 1000);
 
-            this.initGet();
+            this.getUserInfo();
+            // this.initGet();
             // // 一定时间后刷新页面数据
             setInterval(() => {
-                this.initGet();
+                this.initGet('update');
             }, 1 * 60 * 1000);
 
             // 监听窗口的变化
@@ -1055,7 +1506,7 @@
                 } else {
                     this.areaPillarMaxHeight = 100;
                 }
-            }
+            };
         }
     };
 </script>

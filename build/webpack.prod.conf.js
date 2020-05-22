@@ -109,6 +109,11 @@ const webpackConfig = merge(baseWebpackConfig, {
                 to: config.build.assetsPublicPath,
                 ignore: ['.*']
             },
+            {
+                from: path.resolve(__dirname, '../static/lxds.html'),
+                to: config.build.assetsPublicPath,
+                ignore: ['.*']
+            },
             // {
             //     from: path.resolve(__dirname, '../static/config/config.js'), // 外部配置js:out-config.js文件：不参与编译打包的，直接从static文件夹下复制一份到dist目录下
             //     to: config.build.assetsPublicPath, // 复制到dist目录下

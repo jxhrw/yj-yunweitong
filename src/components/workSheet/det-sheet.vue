@@ -28,7 +28,7 @@
                             <p>材料申请</p>
                         </div>
                         <!-- 可申请延期：ORDEROPERTYPE05 -->
-                        <!-- 可申请延期：待指派ORDERSSTATUS11，指派已拒绝ORDERSSTATUS13,待维修ORDERSSTATUS02,已驳回ORDERSSTATUS05 -->
+                        <!-- 可申请延期：待响应ORDERSSTATUS11，指派已拒绝ORDERSSTATUS13,待维修ORDERSSTATUS02,已驳回ORDERSSTATUS05 -->
                         <div v-if="((prePage=='工单指派')&&(workordersStatusCode=='ORDERSSTATUS11'||workordersStatusCode=='ORDERSSTATUS13'))||((prePage=='维修处置')&&(workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05'))" class="ej-content-title-btn ej-content-green" @click="showDelay" style="width:56px;">
                             <p>申请延期</p>
                         </div>
@@ -147,9 +147,9 @@
                                             <label>维修人员</label>
                                             <span>{{appointInfoLast.workordersPersonRltList|opPersonNameShow}}</span>
                                         </el-col>
-                                        <el-col :span="9" v-show="workordersInfo. countdownTime">
+                                        <el-col :span="9" v-show="workordersInfo.countdownTime">
                                             <label>维修倒计时</label>
-                                            <span>{{workordersInfo. countdownTime}}</span>
+                                            <span>{{workordersInfo.countdownTime}}</span>
                                         </el-col>
                                         <el-col :span="9" v-show="workordersInfo.overTime">
                                             <label>超时时间</label>
@@ -1061,7 +1061,7 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                // 下发拒绝  状态待指派 ORDERSSTATUS11，指派已拒绝 ORDERSSTATUS13
+                // 下发拒绝  状态待响应 ORDERSSTATUS11，指派已拒绝 ORDERSSTATUS13
                 // 指派拒绝  状态待维修 ORDERSSTATUS02
                 let mturl = '';
                 switch (this.workordersStatusCode) {

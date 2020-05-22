@@ -27,10 +27,15 @@ const contractss = resolve => require(['components/workSheet_ss/contract'], reso
 const material = resolve => require(['components/workSheet_ss/material'], resolve);
 const detmaterial = resolve => require(['components/workSheet_ss/det-material'], resolve);
 const contact = resolve => require(['components/workSheet_ss/contact'], resolve);
+const money = resolve => require(['components/workSheet_ss/amountSt'], resolve);
 
 export default new Router({
     mode: 'hash',
     routes: [{
+        path: '/money',
+        name: 'money',
+        component: money
+    }, {
         path: '/contact',
         name: 'contact',
         component: contact,

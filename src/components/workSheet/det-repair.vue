@@ -60,8 +60,15 @@
                                     <mInput :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName" :disabled="isOnlyRead">
                                     </mInput>
                                 </el-col>
-                                <el-col :span="9">
+                                <el-col :span="9" v-if="$config.cityName == 'hangzhou'">
                                     <i class="redStar">*</i>
+                                    <label>详细地址</label>
+                                    <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
+                                        <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="handleIconClick" style="font-size:16px;">
+                                        </i>
+                                    </el-input>
+                                </el-col>
+                                <el-col :span="9" v-else>
                                     <label>详细地址</label>
                                     <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
                                         <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="handleIconClick" style="font-size:16px;">
@@ -453,15 +460,19 @@
                     return;
                 }
                 if (this.devTypeCode != 'REPDEVTYPE17') {
-                    if (this.devTypeCode == "" || this.tainCode == "" || this.devName == "" || this.sourceCode == "" || this.address == "") {
+                    if (this.devTypeCode == "" || this.tainCode == "" || this.devName == "" || this.sourceCode == "") {
                         Common.ejMessage("warning", "请选择设备基本信息");
                         return;
                     }
                 } else {
-                    if (this.departCode == "" || this.tainCode == "" || this.devName == "" || this.sourceCode == "" || this.address == "") {
+                    if (this.departCode == "" || this.tainCode == "" || this.devName == "" || this.sourceCode == "") {
                         Common.ejMessage("warning", "请选择设备基本信息");
                         return;
                     }
+                }
+                if (this.$config.cityName == "hangzhou" && this.address == "") {
+                    Common.ejMessage("warning", "请选择设备基本信息");
+                    return;
                 }
                 if (this.isWarning) {
                     Common.ejMessage("warning", "该设备已经报修过了，请勿重复提交");

@@ -12,7 +12,6 @@
                 </div>
             </template>
 
-
             <template slot="condFirst">
                 <el-col :span="7">
                     <label>模糊查询</label>
@@ -46,11 +45,11 @@
                     <label>申报人员</label>
                     <el-input v-model="person" placeholder="" size='mini' class="content-select" clearable @keyup.enter.native="searchTableInfo"></el-input>
                 </el-col>
-                <el-col :span="7">
+                <el-col :span="7" v-if="!($config.cityName=='jiujiang'&&(title=='工单指派'||title=='工单下发'))">
                     <label>申报部门</label>
                     <mSelectMult class="spc-height" :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
-                <el-col :span="7">
+                <el-col :span="7" v-if="!($config.cityName=='jiujiang'&&(title=='工单指派'||title=='工单下发'))">
                     <label>申报来源</label>
                     <mSelectMult :list="sourceList" :code.sync="sourceCode" :name.sync="sourceName" @keyup.enter.native="searchTableInfo"></mSelectMult>
                 </el-col>
@@ -80,17 +79,96 @@
                 <!-- <div v-if="title=='工单下发'&&typeCode=='0'" class="operation revoke" @click="showRevoke">
                     <p>撤销</p>
                 </div> -->
-                <!-- 拒绝： 指派列表待指派+维修处置新工单 -->
+                <!-- 拒绝： 指派列表待响应+维修处置新工单 -->
                 <!-- <div v-if="(title=='工单指派'&&typeCode=='0')||(title=='维修处置'&&typeCode=='0')" class="operation revoke" @click="showRefuse">
                     <p>拒绝</p>
                 </div>
                 <div v-if="(title=='工单下发')||(title=='工单指派')" class="operation urge" @click="showUrge">
                     <p>催办</p>
                 </div> -->
+                <div v-if="($config.cityName=='jiujiang'&&title=='工单下发'&&queryConditions.type<='1')" class="operation export" @click="showDispatch" style="width:60px;">
+                    <p>批量下发</p>
+                </div>
+                <div v-if="($config.cityName=='jiujiang'&&title=='工单指派'&&queryConditions.type<='1')" class="operation export" @click="showAppoint" style="width:60px;">
+                    <p>批量指派</p>
+                </div>
+
             </template>
 
             <template slot="table">
-                <el-table v-show="tableShowType==1" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
+                <el-table v-show="tableShowType==1&&($config.cityName=='jiujiang'&&(title=='工单指派'||title=='工单下发')&&queryConditions.type<='1')" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)" @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="50"></el-table-column>
+                    <el-table-column prop="workordersId" label="工单编号" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{scope.row.workordersId||scope.row.repairsId}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="devIp" label="设备IP" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="网络状态" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            <p v-if="scope.row.deviceStatus&&String(scope.row.deviceStatus.isPingConnect)=='true'" class="device-status icon-normal">在线</p>
+                            <p v-else-if="scope.row.deviceStatus&&String(scope.row.deviceStatus.isPingConnect)=='false'" class="device-status icon-abnormal">离线</p>
+                            <p v-else>-</p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="workordersStatusName" label="工单状态" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="操作" min-width="100">
+                        <!-- 操作4个表格都一样 -->
+                        <template slot-scope="scope">
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions" @onOtherEvent="materialDetail"></TableOpertion>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+            <template slot="table">
+                <el-table v-show="tableShowType==1&&($config.cityName=='jiujiang'&&(title=='工单指派'||title=='工单下发')&&queryConditions.type>'1')" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)" @selection-change="handleSelectionChange">
+                    <el-table-column type="index" label="序号"></el-table-column>
+                    <el-table-column prop="workordersId" label="工单编号" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{scope.row.workordersId||scope.row.repairsId}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="devName" label="设备名称" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devAreaName" label="所属区域" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="devTypeName" label="所属系统" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="repDate" label="申报时间" show-overflow-tooltip min-width="120"></el-table-column>
+                    <el-table-column prop="devIp" label="设备IP" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="网络状态" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            <p v-if="scope.row.deviceStatus&&String(scope.row.deviceStatus.isPingConnect)=='true'" class="device-status icon-normal">在线</p>
+                            <p v-else-if="scope.row.deviceStatus&&String(scope.row.deviceStatus.isPingConnect)=='false'" class="device-status icon-abnormal">离线</p>
+                            <p v-else>-</p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="repPersonName" label="申报人员" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="oppmDeptName" label="维护单位" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="workordersStatusName" label="工单状态" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="操作" min-width="100">
+                        <!-- 操作4个表格都一样 -->
+                        <template slot-scope="scope">
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions" @onOtherEvent="materialDetail"></TableOpertion>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+            <template slot="table">
+                <el-table v-show="tableShowType==1&&!($config.cityName=='jiujiang'&&(title=='工单指派'||title=='工单下发'))" :highlight-current-row="true" :data="tableData" border @current-change='currentSelect' class="content-table" v-loading="isTableLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.7)">
                     <el-table-column type="index" label="序号"></el-table-column>
                     <el-table-column prop="workordersId" label="工单编号" show-overflow-tooltip>
                         <template slot-scope="scope">
@@ -256,6 +334,53 @@
             </template>
 
             <template slot="dialog">
+                <el-dialog title="工单下发" :visible.sync="dialogDispatchVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
+                    <div class="dialog-main">
+                        <div class="revoke-reason">
+                            <label class="dialog-label"><span>*</span>期限时间</label>
+                            <el-date-picker style="margin-left: 0px;width: 290px;" v-model="deadlineDate" type="datetime" size='mini' value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期">
+                            </el-date-picker>
+                        </div>
+                        <div class="revoke-reason">
+                            <label class="dialog-label"><span>*</span>维护单位</label>
+                            <mInput :list="opDeptList" :code.sync="opDeptCode" :name.sync="opDeptName" showAttr="opsDeptName" getAttr="opsDeptId" style="width: 290px;"></mInput>
+                        </div>
+                        <div class="revoke-reason">
+                            <label class="dialog-label">下发意见</label>
+                            <el-input rows="4" style="width:290px;" type="textarea" placeholder="请输入" v-model="dispatchExplain" class="dialog-textarea">
+                            </el-input>
+                        </div>
+                    </div>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button type="primary" @click="checkDispatch" size='mini' class="submit">提 交</el-button>
+                        <el-button @click="dialogDispatchVisible = false" size='mini' class="cancel">取 消</el-button>
+                    </div>
+                </el-dialog>
+                <el-dialog title="工单指派" :visible.sync="dialogAppointVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
+                    <div class="dialog-main">
+                        <div class="revoke-reason">
+                            <label class="dialog-label">维护单位</label>
+                            <span style="line-height: 28px;font-size: 12px;">{{this.multipleRow.length>0 ? this.multipleRow[0].oppmDeptName : ''}}</span>
+                        </div>
+                        <div class="revoke-reason">
+                            <label class="dialog-label"><span>*</span>维护组</label>
+                            <mInput :list="groupList" :code.sync="groupCode" :name.sync="groupName" showAttr="opsDeptName" getAttr="opsDeptId" style="width:290px;"></mInput>
+                        </div>
+                        <div class="revoke-reason">
+                            <label class="dialog-label"><span>*</span>维护人员</label>
+                            <mSelectMult :list="personList" :code.sync="personCode" :name.sync="personName" showAttr="opsPersonName" getAttr="opsPersonId" :showAll="true" style="width:290px;"></mSelectMult>
+                        </div>
+                        <div class="revoke-reason">
+                            <label class="dialog-label">指派意见</label>
+                            <el-input rows="4" style="width:290px;" type="textarea" placeholder="请输入" v-model="appointExplain" class="dialog-textarea">
+                            </el-input>
+                        </div>
+                    </div>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button type="primary" @click="checkAppoint" size='mini' class="submit">提 交</el-button>
+                        <el-button @click="dialogAppointVisible = false" size='mini' class="cancel">取 消</el-button>
+                    </div>
+                </el-dialog>
                 <el-dialog title="工单催办" :visible.sync="dialogUrgeVisible" width='400px' class="dialog-urge" :modal="$store.getters.getIsHeadMenuVisible">
                     <div class="dialog-main">
                         <label class="dialog-label">催办原因</label>
@@ -424,6 +549,30 @@
                     // }
                     sessionStorage.setItem('sheetPageType', newVal.query.type);
                 }
+            },
+            groupCode(val) {
+                this.personCode = [];
+                this.personName = [];
+
+                //维护人员
+                if (val == '' || val == null) {
+                    this.personList = [];
+                } else {
+                    this.getDicInfo(`${this.$config.ubms_HOST}/OpsPerson/getOpsPersonInfo.htm`, { opsDeptId: val }).then(res => {
+                        this.personList = res.resultList || [];
+                        // 默认全选
+                        let arr1 = [],
+                            arr2 = [];
+                        this.personList.map(data => {
+                            arr1.push(data.opsPersonId);
+                            arr2.push(data.opsPersonName);
+                        });
+                        this.$nextTick(() => {
+                            this.personCode = arr1;
+                            this.personName = arr2;
+                        });
+                    });
+                }
             }
         },
         data() {
@@ -490,7 +639,23 @@
                 materialFiles: [], // 新增的附件
                 materialOldFiles: [], // 申请传来的附件
                 isAjaxing: false,
-                source: null
+                source: null,
+
+                multipleRow: [], // 选中的多行id
+                dialogDispatchVisible: false,
+                deadlineDate: '',
+                opDeptCode: '',
+                opDeptName: '',
+                opDeptList: [],
+                dispatchExplain: '',
+                dialogAppointVisible: false,
+                groupCode: '',
+                groupName: '',
+                groupList: [],
+                personCode: [],
+                personName: [],
+                personList: [],
+                appointExplain: ''
             };
         },
         methods: {
@@ -597,6 +762,181 @@
                     query: {}
                 });
             },
+            handleSelectionChange(val) {
+                // this.multipleRow = val.map(ele => ({ 'workordersId': ele.workordersId, 'devTypeCode': ele.devTypeCode, 'typeCode': ele.typeCode }));
+                this.multipleRow = val;
+            },
+            // 获取默认完成时间
+            getDeadlineTime() {
+                // let time = new Date(this.workordersInfo.repDate).getTime() + 24 * 60 * 60 * 1000;
+                let time = new Date().getTime() + 24 * 60 * 60 * 1000;
+                this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfList`, {
+                        devTypeCode: this.multipleRow[0].devTypeCode,
+                        typeCode: 'REPAIRTYPE01', // 默认维修类型
+                        isUse: 1,
+                        workType: 1, // 工单类型：1、设备；2、设施；3、系统、4其他
+                    }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            let num = 24;
+                            if (res.resultList && res.resultList.length > 0) {
+                                num = res.resultList[0].deadlineTime || 24;
+                            }
+                            time = new Date().getTime() + num * 60 * 60 * 1000;
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                        this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
+                    })
+                    .catch(err => {
+                        this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
+                        Common.printErrorLog(err);
+                    });
+            },
+            // 验证工单的所属设备系统是否相同
+            verifyWorkordersDevType() {
+                let arr = this.multipleRow.map(e => e.workordersId);
+                this.$api.get(`${this.$config.efoms_HOST}/workordersRecord/verifyWorkordersDevType`, { workordersIds: arr.join(',') }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == '0') {
+                            this.deadlineDate = '';
+                            this.opDeptCode = '';
+                            this.opDeptName = '';
+                            this.dispatchExplain = '';
+                            this.dialogDispatchVisible = true;
+                            this.getDeadlineTime();
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+            },
+            showDispatch() {
+                if (this.multipleRow.length < 1) {
+                    return Common.ejMessage("warning", "请选择至少一条数据");
+                }
+                this.verifyWorkordersDevType();
+            },
+            // 确认下发
+            checkDispatch() {
+                if (this.isAjaxing) {
+                    alert('数据请求中，请稍等！');
+                    return;
+                }
+                if (this.deadlineDate == null || this.deadlineDate == '') {
+                    Common.ejMessage("warning", "期限完成时间必填");
+                    return;
+                }
+                if (this.opDeptCode == '') {
+                    Common.ejMessage("warning", "维护单位必填");
+                    return;
+                }
+                let arr = this.multipleRow.map(e => e.workordersId);
+
+                this.isAjaxing = true;
+                this.$api.putByQs(`${this.$config.efoms_HOST}/workordersRecord/dispatchWorkordersBatch`, {
+                        workordersIds: arr.join(','),
+                        deadlineDate: this.deadlineDate,
+                        opDeptId: this.opDeptCode,
+                        opDeptName: this.opDeptName,
+                        operExplain: this.dispatchExplain
+                    }, { token: this.token })
+                    .then(res => {
+                        this.isAjaxing = false;
+                        if (res.appCode == 0) {
+                            Common.ejMessage("success", "操作成功");
+                            this.dialogDispatchVisible = false;
+                            this.searchPageInfo();
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        this.isAjaxing = false;
+                        Common.printErrorLog(err);
+                    });
+            },
+            // 验证工单的维修单位是否相同
+            verifyWorkordersOppmDept() {
+                let arr = this.multipleRow.map(e => e.workordersId);
+                this.$api.get(`${this.$config.efoms_HOST}/workordersRecord/verifyWorkordersOppmDept`, { workordersIds: arr.join(',') }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == '0') {
+                            this.groupCode = '';
+                            this.groupName = '';
+                            this.personCode = [];
+                            this.personName = [];
+                            this.appointExplain = '';
+                            this.dialogAppointVisible = true;
+
+                            // 维护组--运维单位的子部门
+                            let opDeptId = this.multipleRow[0].oppmDeptId || '';
+                            let opDeptName = this.multipleRow[0].oppmDeptName || '';
+
+                            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptInfo.htm`, { parentId: opDeptId }).then(res => {
+                                let arr1 = [{ opsDeptId: opDeptId, opsDeptName: opDeptName }];
+                                let arr2 = res.resultList || [];
+
+                                this.groupList = [...arr1, ...arr2];
+                                this.groupCode = opDeptId;
+                                this.groupName = opDeptName;
+                            });
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+            },
+            showAppoint() {
+                if (this.multipleRow.length < 1) {
+                    return Common.ejMessage("warning", "请选择至少一条数据");
+                }
+                this.verifyWorkordersOppmDept();
+            },
+            // 确认接口
+            checkAppoint() {
+                if (this.isAjaxing) {
+                    alert('数据请求中，请稍等！');
+                    return;
+                }
+                if (this.groupCode == '') {
+                    Common.ejMessage("warning", "维护组必填");
+                    return;
+                }
+                if (this.personCode.length == 0) {
+                    Common.ejMessage("warning", "维护人员必填");
+                    return;
+                }
+                let arr = this.multipleRow.map(e => e.workordersId);
+
+                this.isAjaxing = true;
+                this.$api.putByQs(`${this.$config.efoms_HOST}/workordersRecord/appointWorkordersBatch`, {
+                        workordersIds: arr.join(','),
+                        opDeptId: this.groupCode,
+                        opDeptName: this.groupName,
+                        opPersonId: this.personCode.join(","),
+                        opPersonName: this.personName.join(","),
+                        operExplain: this.appointExplain
+                    }, { token: this.token })
+                    .then(res => {
+                        this.isAjaxing = false;
+                        if (res.appCode == 0) {
+                            Common.ejMessage("success", "操作成功");
+                            this.dialogAppointVisible = false;
+                            this.searchPageInfo();
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        this.isAjaxing = false;
+                        Common.printErrorLog(err);
+                    });
+            },
             exportExcel() {
                 let method = this.listUrl.download;
                 let obj = JSON.parse(JSON.stringify(this.queryConditions));
@@ -686,7 +1026,7 @@
             },
             // 拒绝
             handleWorkorders() {
-                // 下发拒绝 handleAppoWorkorders 状态待指派 ORDERSSTATUS11
+                // 下发拒绝 handleAppoWorkorders 状态待响应 ORDERSSTATUS11
                 // 指派拒绝 handleDispWorkorders 状态待维修 ORDERSSTATUS02
                 let mturl = '';
                 switch (this.detailInfo.workordersStatusCode) {
@@ -1033,7 +1373,7 @@
                         this.tableShowType = 1;
                         this.title = '工单指派';
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/dispatch`;
-                        this.typeList = [{ dicCode: '0', dicName: '待指派' }, { dicCode: '1', dicName: '被退回' }, { dicCode: '2', dicName: '已指派' }, { dicCode: '3', dicName: '已催办' }, { dicCode: '4', dicName: '超时' }];
+                        this.typeList = [{ dicCode: '0', dicName: '待响应' }, { dicCode: '1', dicName: '被退回' }, { dicCode: '2', dicName: '已指派' }, { dicCode: '3', dicName: '已催办' }, { dicCode: '4', dicName: '超时' }];
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;
                         break;
@@ -1176,6 +1516,11 @@
                 parentCode: "ORDERSSTATUS"
             }).then(res => {
                 this.stateList = res.resultList || [];
+            });
+
+            //维护单位
+            this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, { "deptOppmType": "OPSDEPTOPPM01" }).then(res => {
+                this.opDeptList = res.resultList || [];
             });
         },
         activated() {

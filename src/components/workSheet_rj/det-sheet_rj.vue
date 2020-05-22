@@ -20,7 +20,7 @@
                 <div>
                     <template v-if="$route.query.isread=='edit'">
                         <!-- 可申请延期：ORDEROPERTYPE05 -->
-                        <!-- 可申请延期：待指派ORDERSSTATUS11，指派已拒绝ORDERSSTATUS13,待维修ORDERSSTATUS02,已驳回ORDERSSTATUS05 -->
+                        <!-- 可申请延期：待响应ORDERSSTATUS11，指派已拒绝ORDERSSTATUS13,待维修ORDERSSTATUS02,已驳回ORDERSSTATUS05 -->
                         <div v-if="((prePage=='工单指派')&&(workStatusCode=='ORDERSSTATUS11'||workStatusCode=='ORDERSSTATUS13'))||((prePage=='维修处置')&&(workStatusCode=='ORDERSSTATUS02'||workStatusCode=='ORDERSSTATUS05'))" class="ej-content-title-btn ej-content-green" @click="showDelay" style="width:56px;">
                             <p>申请延期</p>
                         </div>
@@ -1036,7 +1036,7 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                // 下发拒绝 handleAppoWorkorders 状态待指派 ORDERSSTATUS11，指派已拒绝 ORDERSSTATUS13
+                // 下发拒绝 handleAppoWorkorders 状态待响应 ORDERSSTATUS11，指派已拒绝 ORDERSSTATUS13
                 // 指派拒绝 handleDispWorkorders 状态待维修 ORDERSSTATUS02
                 let mturl = '';
                 switch (this.workStatusCode) {

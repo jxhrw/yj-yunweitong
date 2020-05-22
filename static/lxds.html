@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style type="text/css">
+        html {
+            overflow-y: scroll;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        table tr td {
+            text-align: center;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            font-size: 14px;
+        }
+
+        table tr ._title {
+            text-align: center;
+            padding-left: 10px;
+            padding-right: 10px;
+            width: 40px;
+        }
+
+        table tr ._content {
+            text-align: left;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        table tr .project {
+            width: 90px;
+        }
+
+        img {
+            vertical-align: middle;
+            margin-bottom: 10px;
+            margin-left: 12px;
+        }
+
+        .td-special-time {
+            height: 80px;
+        }
+
+        .td-special-height {
+            vertical-align: top;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="word_demo" v-cloak>
+        <div style="text-align: center;font-size: 24px;letter-spacing: 2px">杭州市公安局交通警察支队</div>
+        <div style="text-align: center;font-size: 30px;letter-spacing: 3px">智能交通施工工作联系单</div>
+        <table border="0" cellspacing="" cellpadding="" style="table-layout: fixed;">
+            <tr>
+                <td style="text-align: left;">
+                    维护类型：<span>{{content.typeName}}</span>
+                </td>
+                <td style="text-align: center;">
+                    辖区：<span>{{content.devDeptName}}</span>
+                </td>
+                <td style="text-align: right;">
+                    <span>申报编号：{{content.workordersId}}</span>
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellspacing="0" cellpadding="0">
+            <tr>
+                <td :rowspan="isOptimize?6:5" class="_title">
+                    <div>基</div>
+                    <div>本</div>
+                    <div>信</div>
+                    <div>息</div>
+                </td>
+                <td class="project">业务来源</td>
+                <td class="">{{content.repSourceName||'自己提出'}}</td>
+                <td class="">申报人</td>
+                <td class="">{{content.repPersonName}}</td>
+                <td class="">联系电话</td>
+                <td class="">{{content.repPersonTel}}</td>
+            </tr>
+            <tr>
+                <td class="project">施工单位</td>
+                <td class="">{{content.oppmDeptName}}</td>
+                <td class="">联系人</td>
+                <td class="">{{opPersonInfo.opPersonName}}</td>
+                <td class="">联系电话</td>
+                <td class="">{{opPersonInfo.contactTel}}</td>
+            </tr>
+            <tr>
+                <td class="project">点位名称</td>
+                <td class="_content" colspan="3">
+                    {{content.devName}}
+                </td>
+                <td class="">所属系统</td>
+                <td class="">{{content.devTypeName}}</td>
+            </tr>
+            <tr>
+                <td class="project">情况描述</td>
+                <td class="_content" colspan="5">
+                    {{content.failureDescrible}}
+                </td>
+            </tr>
+            <tr v-if="isOptimize">
+                <td class="project">优化方案</td>
+                <td class="_content" colspan="5">
+                    {{content.optimeScheme}}
+                </td>
+            </tr>
+            <tr>
+                <td class="project">申报时间</td>
+                <td class="_content" colspan="5">
+                    {{content.repDate}}
+                </td>
+            </tr>
+            <tr v-if="isOptimize">
+                <td class="_title" :rowspan="2">
+                    <div>审</div>
+                    <div>核</div>
+                    <div>信</div>
+                    <div>息</div>
+                </td>
+                <td class="project">科室审核</td>
+                <td class="">审核人</td>
+                <td class="">{{ksshInfo.operPerson}}</td>
+                <td class="">审核意见</td>
+                <td class="" colspan="2">{{ksshInfo.operResult}}<span v-if="ksshInfo.operExplain">（{{ksshInfo.operExplain}}）</span></td>
+            </tr>
+            <tr v-if="isOptimize">
+                <td class="project">处室审核</td>
+                <td class="">审核人</td>
+                <td class="">{{csshInfo.operPerson}}</td>
+                <td class="">审核意见</td>
+                <td class="" colspan="2">{{csshInfo.operResult}}<span v-if="csshInfo.operExplain">（{{csshInfo.operExplain}}）</span></td>
+            </tr>
+            <tr>
+                <td class="_title" :rowspan="5+(postponeList.length||1)*2">
+                    <div>流</div>
+                    <div>程</div>
+                    <div>信</div>
+                    <div>息</div>
+                </td>
+                <td class="project">反馈人</td>
+                <td class="" colspan="5">{{feedbackInfo.operPerson}}</td>
+            </tr>
+            <tr>
+                <td class="project">反馈结果</td>
+                <td class="" colspan="5">{{feedbackInfo.operResult}}<span v-if="feedbackInfo.operExplain">（{{feedbackInfo.operExplain}}）</span></td>
+            </tr>
+            <template v-if="postponeList.length<1">
+                <tr>
+                    <td class="project">是否延期</td>
+                    <td class="">否</td>
+                    <td class="">延期原因</td>
+                    <td class="" colspan="3"></td>
+                </tr>
+                <tr>
+                    <td class="project">延期审核人</td>
+                    <td class=""></td>
+                    <td class="">延期时长</td>
+                    <td class="" colspan="3"></td>
+                </tr>
+            </template>
+            <template v-for="(item, index) in postponeList" :key="index">
+                <tr>
+                    <td class="project">是否延期</td>
+                    <td class="">{{item.operResultCode=='OPERRESULT01'?'是':'否'}}</td>
+                    <td class="">延期原因</td>
+                    <td class="" colspan="3">{{item.operExplain}}</td>
+                </tr>
+                <tr>
+                    <td class="project">延期审核人</td>
+                    <td class="">{{item.operPerson}}</td>
+                    <td class="">延期时长</td>
+                    <td class="" colspan="3">{{item.score?(item.score+'天'):''}}</td>
+                </tr>
+            </template>
+
+            <tr>
+                <td class="project" :rowspan="2">确认信息</td>
+                <td class="">确认人</td>
+                <td class="">确认时间</td>
+                <td class="" colspan="3">确认意见</td>
+            </tr>
+            <tr>
+                <td class="">{{checkOpt.operPerson}}</td>
+                <td class="">{{checkOpt.operDate}}</td>
+                <td class="" colspan="3">{{checkOpt.operResult}}<span v-if="checkOpt.operExplain">（{{checkOpt.operExplain}}）</span></td>
+            </tr>
+            <tr>
+                <td class="project">修复时长</td>
+                <td class="" colspan="5">{{content.consumingTime}}</td>
+            </tr>
+            <tr>
+                <td class="_title" rowspan="2">
+                    <div>施</div>
+                    <div>工</div>
+                    <div>结</div>
+                    <div>果</div>
+                    <div>反</div>
+                    <div>馈</div>
+                </td>
+                <td>
+                    <div>施工后照片</div>
+                    <div>及现场照片</div>
+                </td>
+                <td class="_content" colspan="5">
+                    <div v-for="(item, idx) in photo" style="display: inline-block">
+                        <img width="160" height="120" :src="item" alt="">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div>使用材料</div>
+                    <div>情况</div>
+                </td>
+                <td class="_content" colspan="5">
+                    <table border="0" cellspacing="0" cellpadding="0" style="font-size: 12px">
+                        <tr>
+                            <td class="">序号</td>
+                            <td class="">使用设备名称</td>
+                            <td class="">数量</td>
+                            <td class="">规格</td>
+                        </tr>
+                        <tr v-for="(item, idx) in materialList">
+                            <td class="">{{idx + 1}}</td>
+                            <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialName:''}}</td>
+                            <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialNum:''}}</td>
+                            <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialUnit:''}}</td>
+                            <!-- <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialSpecification:''}}</td> -->
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="_title" rowspan="3" style="text-align: center;">
+                    <div>工</div>
+                    <div>单</div>
+                    <div>确</div>
+                    <div>认</div>
+                </td>
+                <td class="project">单位</td>
+                <td class="">施工单位</td>
+                <td class="">监理单位</td>
+                <td class="">所属大队</td>
+                <td class="" colspan="2">支队</td>
+            </tr>
+            <tr>
+                <td class="project">签字</td>
+                <td class=""></td>
+                <td class=""></td>
+                <td class=""></td>
+                <td class="" colspan="2"></td>
+            </tr>
+            <tr>
+                <td class="project">时间</td>
+                <td class=""></td>
+                <td class=""></td>
+                <td class=""></td>
+                <td class="" colspan="2"></td>
+            </tr>
+        </table>
+        <div style="font-size: 14px;">
+            <p>工单要求：</p>
+            <ol style="margin-left: 25px;">
+                <li>按严格按照《招投标文件》执行；</li>
+            </ol>
+        </div>
+    </div>
+    <script type="text/javascript" src="./static/js/vue.min.js"></script>
+    <script type="text/javascript" src="./static/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript">
+        var docStyle = "html{overflow-y:scroll;}*{margin:0;padding:0;}table{width:100%;border-collapse:collapse;border-spacing:0;}table tr td{text-align:center;padding-top:7px;padding-bottom:7px;font-size:14px;}table tr ._title{text-align:center;padding-left:10px;padding-right:10px;width:40px;}table tr ._content{text-align:left;padding-left:5px;padding-right:5px;}table tr .project{width:90px;}img{vertical-align: middle;margin-bottom: 10px;margin-left: 12px;}.td-special-time{height: 80px;}.td-special-height{vertical-align: top;}";
+        $('.exportBtn').click(function() {
+            $("#word_demo").wordExport('占道施工审批表', docStyle);
+        });
+
+        var app = new Vue({
+            el: '#word_demo',
+            data: {
+                content: {},
+                isOptimize: false,
+                checkOpt: {},
+                ksshInfo: {},
+                csshInfo: {},
+                postponeList: [],
+                confirmInfo: {},
+                feedbackInfo: {},
+                materialList: [],
+                prePhoto: [],
+                photo: [],
+                opPersonInfo: {}, //维护单位信息
+            },
+            created: function() {
+                var _that = this;
+                var id = this.getQueryString('id');
+                var token = this.getQueryString('token');
+                $.ajax({
+                    dataType: "json",
+                    url: "./config.json",
+                    type: "GET",
+                    async: false,
+                    success: function(res, status) {
+                        $.ajax({
+                            dataType: "json",
+                            url: res.efoms_HOST + "/workorders/detailWorkordersContact",
+                            type: "GET",
+                            async: false,
+                            data: {
+                                'workordersId': id,
+                                'token': token
+                            },
+                            success: function(data, status) {
+                                if (data != null) {
+                                    _that.content = data.resultList || {};
+                                    var opt = _that.content.workordersRecordMap || {};
+                                    _that.isOptimize = _that.content.typeCode == 'REPAIRTYPE03';
+                                    // _that.content.materialInfos = _that.content.listMaterialRlt.length > 0 ? _that.content.listMaterialRlt : null;
+
+                                    //施工单位联系人
+                                    opt.dispatch.map(item => {
+                                        // 下发操作的有效数据
+                                        if (item.operResultCode == 'OPERRESULT07') {
+                                            _that.opPersonInfo = {
+                                                opPersonName: item.opPersonName,
+                                                contactTel: item.contactTel,
+                                            }
+                                        }
+                                    });
+
+                                    // 科室审核
+                                    _that.ksshInfo = opt.KSSH[0] || {};
+
+                                    // 处室审核
+                                    _that.csshInfo = opt.CSSH[0] || {};
+
+                                    // 延期信息
+                                    _that.postponeList = opt.postpone || [];
+
+                                    // 确认信息
+                                    _that.checkOpt = opt.confirm[0] || {};
+
+                                    // 反馈信息
+                                    _that.feedbackInfo = opt.feedback[0] || {};
+
+                                    // 材料信息
+                                    _that.materialList = opt.material || [];
+
+                                    var pre = _that.content.fileInfoList || [];
+                                    var arr = [];
+                                    var prePo = [];
+                                    var po = [];
+                                    opt.feedback.map(item => {
+                                        let aw = item.fileInfoList || [];
+                                        arr = [...arr, ...aw];
+                                    });
+                                    pre.map(item => {
+                                        if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName) && item.fileUrl) {
+                                            prePo.push(item.fileUrl);
+                                        }
+                                    });
+                                    arr.map(item => {
+                                        if (/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName) && item.fileUrl) {
+                                            po.push(item.fileUrl);
+                                        }
+                                    });
+                                    _that.prePhoto = prePo;
+                                    _that.photo = [...po];
+                                }
+                            }
+                        });
+                    }
+                });
+            },
+            computed: {
+                priceTotal: function() {
+                    var total = 0
+                    var material = this.content.materialInfos
+                    for (var i = 0; i < material.length; i++) {
+                        total += material[i].materialNum * (material[i].materialUnitPrice || (material[i].materialInfo && material[i].materialInfo.length > 0 ? material[i].materialInfo[0].materialUnitPrice : ''))
+                    }
+                    return total
+                }
+            },
+            filters: {
+                dateFormat: function(value) {
+                    if (!value) return ''
+                    return value.split(' ')[0]
+                },
+                specialFormat: function(value) {
+                    if (!value) return ''
+                    var content = value.split('{#}')[1]
+                    return content === '' ? '同意' : content
+                },
+                materialFormat: function(obj) {
+                    var wd = '';
+                    var ooo = obj.fackbackList || [];
+                    ooo.map(item => {
+                        // 取最后一个工程量提报
+                        if (item.operTypeCode == 'FACILITYOPERTYPE15') {
+                            wd = item.operExplain;
+                        }
+                    });
+                    return wd
+                },
+                numberFormat: function(value) {
+                    return value == parseFloat(value) ? parseFloat(value).toFixed(2) : ''
+                },
+                roadShow(list) {
+                    let arr = [];
+                    list = list || [];
+                    list.map(item => {
+                        arr.push(`${item.roadName}(${item.beginCrossName}-${item.endCrossName})`);
+                    });
+                    return arr.join(',');
+                }
+            },
+            methods: {
+
+                getQueryString(name) {
+                    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                    var r = window.location.search.substr(1).match(reg);
+                    if (r != null) return unescape(r[2]);
+                    return null;
+                },
+            }
+
+        });
+    </script>
+</body>
+
+</html>

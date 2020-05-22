@@ -21,7 +21,7 @@
         height: 100%;
         flex-flow: column;
         overflow: hidden;
-        min-width: 1250px;
+        min-width: 1000px;
     }
 
     .ej-main {

@@ -9,7 +9,7 @@
         <!-- 工单下发页面，并且状态为待下发ORDERSSTATUS01时出现，下发已拒绝ORDERSSTATUS10 -->
         <div v-if="title=='工单下发'&&(scope.row.workStatusCode == 'ORDERSSTATUS01'||scope.row.workStatusCode == 'ORDERSSTATUS10')" class="tab-operation" @click="dataDetail(scope.row,'edit')">下发</div>
         <!-- <div v-if="title=='工单下发'&&(scope.row.workStatusCode == 'ORDERSSTATUS01'||scope.row.workStatusCode == 'ORDERSSTATUS10')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div> -->
-        <!-- 工单指派页面，并且状态为待指派ORDERSSTATUS11时出现,指派已拒绝ORDERSSTATUS13 -->
+        <!-- 工单指派页面，并且状态为待响应ORDERSSTATUS11时出现,指派已拒绝ORDERSSTATUS13 -->
         <div v-if="title=='工单指派'&&(scope.row.workStatusCode == 'ORDERSSTATUS11'||scope.row.workStatusCode == 'ORDERSSTATUS13')" class="tab-operation" @click="dataDetail(scope.row,'edit')">指派</div>
         <!-- 工单指派页面，并且状态为待反馈ORDERSSTATUS02，待处理ORDERSSTATUS05，已到达ORDERSSTATUS14-时出现 -->
         <!-- <div v-if="title=='工单指派'&&(scope.row.workStatusCode == 'ORDERSSTATUS02'||scope.row.workStatusCode == 'ORDERSSTATUS05'||scope.row.workStatusCode == 'ORDERSSTATUS14')" class="tab-operation" @click="dataDetail(scope.row,'edit')">退回</div> -->
