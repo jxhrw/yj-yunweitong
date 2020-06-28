@@ -220,8 +220,8 @@
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        width: 50px;
-                        height: 50px;
+                        width: 100px;
+                        height: 100px;
                         margin-left: 6px;
                         margin-right: 10px;
                         background: #FFFFFF;
@@ -229,13 +229,30 @@
                         position: relative;
                         text-align: center;
 
+                        .img-del-x {
+                            display: block;
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            width: 20px;
+                            height: 20px;
+                            line-height: 20px;
+                            opacity: 0.62;
+                            background: #7a7a7a;
+                            text-align: center;
+                            color: red;
+                            font-size: 16px;
+                            cursor: pointer;
+                        }
+
                         .img-del {
                             opacity: 0.62;
                             background: #7A7A7A;
                             width: 50px;
                             height: 15px;
                             position: absolute;
-                            bottom: 1px;
+                            bottom: 0px;
+                            display: none;
                             left: 0;
 
                             p {
@@ -269,8 +286,8 @@
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        width: 50px;
-                        height: 50px;
+                        width: 100px;
+                        height: 100px;
                         margin-left: 6px;
                         margin-right: 10px;
                         background: #FFFFFF;

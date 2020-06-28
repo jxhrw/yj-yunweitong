@@ -10,15 +10,15 @@
                 <div class="complete-content">
                     <el-row class="content-row-select">
                         <el-col :span="20">
-                            <label style="width: 72px;"><span>*</span>期限完成时间</label>
-                            <el-date-picker style="margin-left: 0px;width: 400px;" v-model="deadlineDate" type="datetime" size='mini' value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期">
-                            </el-date-picker>
+                            <label style="width: 72px;"><span style="left: 17px;">*</span>维护单位</label>
+                            <mInput :list="opDeptList" :code.sync="opDeptCode" :name.sync="opDeptName" showAttr="opsDeptName" getAttr="opsDeptId"></mInput>
                         </el-col>
                     </el-row>
                     <el-row class="content-row-select">
                         <el-col :span="20">
-                            <label style="width: 72px;"><span style="left: 17px;">*</span>维护单位</label>
-                            <mInput :list="opDeptList" :code.sync="opDeptCode" :name.sync="opDeptName" showAttr="opsDeptName" getAttr="opsDeptId"></mInput>
+                            <label style="width: 72px;"><span>*</span>期限完成时间</label>
+                            <el-date-picker style="margin-left: 0px;width: 400px;" v-model="deadlineDate" type="datetime" size='mini' value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期">
+                            </el-date-picker>
                         </el-col>
                     </el-row>
                     <el-row class="content-row-select">
@@ -67,13 +67,28 @@
         mounted() {
             this.token = Common.getQueryString("token");
             this.workordersInfo = this.data || {};
-            // let time = new Date(this.workordersInfo.repDate).getTime() + 2 * 24 * 60 * 60 * 1000;
-            // this.deadlineDate = Common.dateFormat('yyyy-MM-dd hh:mm:ss', new Date(time));
-            this.getDeadlineTime();
+            // this.getDeadlineTime();
             //维护单位
             this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, { "deptOppmType": "OPSDEPTOPPM04" }).then(res => {
                 this.opDeptList = res.resultList || [];
             });
+        },
+        watch: {
+            opDeptCode(val) {
+                if (val) {
+                    this.$api.get(`${this.$config.efoms_HOST}/workordersOther/getWorkordersDeadlineDate`, {
+                            workOtherId: this.workordersInfo.workOtherId,
+                            opDeptId: val
+                        }, { token: this.token })
+                        .then(res => {
+                            if (res.appCode == 0) {
+                                this.deadlineDate = res.resultList || new Date();
+                            }
+                        });
+                } else {
+                    this.deadlineDate = '';
+                }
+            }
         },
         methods: {
             // 确认接口

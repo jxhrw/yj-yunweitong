@@ -44,6 +44,10 @@
             padding-right: 5px;
         }
 
+        table tr ._content table tr+tr td {
+            border-top: 1px solid #808080;
+        }
+
         table tr .project {
             width: 90px;
         }
@@ -74,14 +78,17 @@
         <div style="text-align: center;font-size: 30px;letter-spacing: 3px">智能交通施工工作联系单</div>
         <table border="0" cellspacing="" cellpadding="" style="table-layout: fixed;">
             <tr>
-                <td style="text-align: left;">
-                    维护类型：<span>{{content.typeName}}</span>
+                <td style="text-align: left;" colspan="3">
+                    项目属性：<span>{{content.oppmTypeName||'/'}}</span>
                 </td>
-                <td style="text-align: center;">
-                    辖区：<span>{{content.devDeptName}}</span>
+                <td style="text-align: center;" colspan="2">
+                    维护类型：<span>{{content.typeName||'/'}}</span>
                 </td>
-                <td style="text-align: right;">
-                    <span>申报编号：{{content.workordersId}}</span>
+                <td style="text-align: center;" colspan="3">
+                    所属大队：<span>{{content.devDeptName||'/'}}</span>
+                </td>
+                <td style="text-align: right;" colspan="5">
+                    <span>申报编号：{{content.workordersId||'/'}}</span>
                 </td>
             </tr>
         </table>
@@ -93,45 +100,45 @@
                     <div>信</div>
                     <div>息</div>
                 </td>
-                <td class="project">业务来源</td>
+                <td class="project">申报来源</td>
                 <td class="">{{content.repSourceName||'自己提出'}}</td>
                 <td class="">申报人</td>
-                <td class="">{{content.repPersonName}}</td>
+                <td class="">{{content.repPersonName||'/'}}</td>
                 <td class="">联系电话</td>
-                <td class="">{{content.repPersonTel}}</td>
+                <td class="">{{content.repPersonTel||'/'}}</td>
             </tr>
             <tr>
                 <td class="project">施工单位</td>
-                <td class="">{{content.oppmDeptName}}</td>
+                <td class="">{{content.oppmDeptName||'/'}}</td>
                 <td class="">联系人</td>
-                <td class="">{{opPersonInfo.opPersonName}}</td>
+                <td class="">{{opPersonInfo.opPersonName||'/'}}</td>
                 <td class="">联系电话</td>
-                <td class="">{{opPersonInfo.contactTel}}</td>
+                <td class="">{{opPersonInfo.contactTel||'/'}}</td>
             </tr>
             <tr>
                 <td class="project">点位名称</td>
                 <td class="_content" colspan="3">
-                    {{content.devName}}
+                    {{content.devName||'/'}}
                 </td>
                 <td class="">所属系统</td>
-                <td class="">{{content.devTypeName}}</td>
+                <td class="">{{content.devTypeName||'/'}}</td>
             </tr>
             <tr>
                 <td class="project">情况描述</td>
                 <td class="_content" colspan="5">
-                    {{content.failureDescrible}}
+                    {{content.failureDescrible||'/'}}
                 </td>
             </tr>
             <tr v-if="isOptimize">
                 <td class="project">优化方案</td>
                 <td class="_content" colspan="5">
-                    {{content.optimeScheme}}
+                    {{content.optimeScheme||'/'}}
                 </td>
             </tr>
             <tr>
                 <td class="project">申报时间</td>
                 <td class="_content" colspan="5">
-                    {{content.repDate}}
+                    {{content.repDate||'/'}}
                 </td>
             </tr>
             <tr v-if="isOptimize">
@@ -143,16 +150,16 @@
                 </td>
                 <td class="project">科室审核</td>
                 <td class="">审核人</td>
-                <td class="">{{ksshInfo.operPerson}}</td>
+                <td class="">{{ksshInfo.operPerson||'/'}}</td>
                 <td class="">审核意见</td>
-                <td class="" colspan="2">{{ksshInfo.operResult}}<span v-if="ksshInfo.operExplain">（{{ksshInfo.operExplain}}）</span></td>
+                <td class="" colspan="2">{{ksshInfo.operResult||'/'}}<span v-if="ksshInfo.operExplain">（{{ksshInfo.operExplain}}）</span></td>
             </tr>
             <tr v-if="isOptimize">
                 <td class="project">处室审核</td>
                 <td class="">审核人</td>
-                <td class="">{{csshInfo.operPerson}}</td>
+                <td class="">{{csshInfo.operPerson||'/'}}</td>
                 <td class="">审核意见</td>
-                <td class="" colspan="2">{{csshInfo.operResult}}<span v-if="csshInfo.operExplain">（{{csshInfo.operExplain}}）</span></td>
+                <td class="" colspan="2">{{csshInfo.operResult||'/'}}<span v-if="csshInfo.operExplain">（{{csshInfo.operExplain}}）</span></td>
             </tr>
             <tr>
                 <td class="_title" :rowspan="5+(postponeList.length||1)*2">
@@ -162,24 +169,24 @@
                     <div>息</div>
                 </td>
                 <td class="project">反馈人</td>
-                <td class="" colspan="5">{{feedbackInfo.operPerson}}</td>
+                <td class="_content" colspan="5">{{feedbackInfo.operPerson||'/'}}</td>
             </tr>
             <tr>
                 <td class="project">反馈结果</td>
-                <td class="" colspan="5">{{feedbackInfo.operResult}}<span v-if="feedbackInfo.operExplain">（{{feedbackInfo.operExplain}}）</span></td>
+                <td class="_content" colspan="5">{{feedbackInfo.operResult||'/'}}<span v-if="feedbackInfo.operExplain">（{{feedbackInfo.operExplain}}）</span></td>
             </tr>
             <template v-if="postponeList.length<1">
                 <tr>
                     <td class="project">是否延期</td>
                     <td class="">否</td>
                     <td class="">延期原因</td>
-                    <td class="" colspan="3"></td>
+                    <td class="" colspan="3">/</td>
                 </tr>
                 <tr>
                     <td class="project">延期审核人</td>
-                    <td class=""></td>
+                    <td class="">/</td>
                     <td class="">延期时长</td>
-                    <td class="" colspan="3"></td>
+                    <td class="" colspan="3">/</td>
                 </tr>
             </template>
             <template v-for="(item, index) in postponeList" :key="index">
@@ -187,30 +194,34 @@
                     <td class="project">是否延期</td>
                     <td class="">{{item.operResultCode=='OPERRESULT01'?'是':'否'}}</td>
                     <td class="">延期原因</td>
-                    <td class="" colspan="3">{{item.operExplain}}</td>
+                    <td class="" colspan="3">{{item.operExplain||'/'}}</td>
                 </tr>
                 <tr>
                     <td class="project">延期审核人</td>
-                    <td class="">{{item.operPerson}}</td>
+                    <td class="">{{item.operPerson||'/'}}</td>
                     <td class="">延期时长</td>
-                    <td class="" colspan="3">{{item.score?(item.score+'天'):''}}</td>
+                    <td class="" colspan="3">{{item.score?(item.score+'天'):'/'}}</td>
                 </tr>
             </template>
 
             <tr>
                 <td class="project" :rowspan="2">确认信息</td>
+                <td class="">确认类型</td>
                 <td class="">确认人</td>
                 <td class="">确认时间</td>
-                <td class="" colspan="3">确认意见</td>
+                <td class="" colspan="2">确认意见</td>
             </tr>
             <tr>
-                <td class="">{{checkOpt.operPerson}}</td>
-                <td class="">{{checkOpt.operDate}}</td>
-                <td class="" colspan="3">{{checkOpt.operResult}}<span v-if="checkOpt.operExplain">（{{checkOpt.operExplain}}）</span></td>
+                <td class="">{{checkOpt.failureTypeName||'/'}}</td>
+                <td class="">{{checkOpt.operPerson||'/'}}</td>
+                <td class="">{{checkOpt.operDate||'/'}}</td>
+                <td class="" colspan="2">{{checkOpt.operResult||'/'}}<span v-if="checkOpt.operExplain">（{{checkOpt.operExplain}}）</span></td>
             </tr>
             <tr>
-                <td class="project">修复时长</td>
-                <td class="" colspan="5">{{content.consumingTime}}</td>
+                <td class="project">修复时间</td>
+                <td class="">{{content.repairTime||'/'}}</td>
+                <td class="">修复时长</td>
+                <td class="" colspan="3">{{content.consumingTime||'/'}}</td>
             </tr>
             <tr>
                 <td class="_title" rowspan="2">
@@ -229,14 +240,25 @@
                     <div v-for="(item, idx) in photo" style="display: inline-block">
                         <img width="160" height="120" :src="item" alt="">
                     </div>
+                    <template v-if="photo.length<1">
+                        /
+                    </template>
                 </td>
             </tr>
+            <!-- <tr>
+                <td rowspan="2">
+                    <div>使用材料</div>
+                    <div>情况</div>
+                </td>
+                <td class="">是否使用</td>
+                <td class="" colspan="4">{{materialList.length>0?'是':'否'}}</td>
+            </tr> -->
             <tr>
                 <td>
                     <div>使用材料</div>
                     <div>情况</div>
                 </td>
-                <td class="_content" colspan="5">
+                <td class="_content" colspan="5" style="padding-left: 0;padding-right: 0;">
                     <table border="0" cellspacing="0" cellpadding="0" style="font-size: 12px">
                         <tr>
                             <td class="">序号</td>
@@ -246,15 +268,21 @@
                         </tr>
                         <tr v-for="(item, idx) in materialList">
                             <td class="">{{idx + 1}}</td>
-                            <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialName:''}}</td>
-                            <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialNum:''}}</td>
-                            <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialUnit:''}}</td>
+                            <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialName:'/'}}</td>
+                            <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialNum:'/'}}</td>
+                            <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialUnit:'/..'}}</td>
                             <!-- <td class="">{{item.materialRltList&&item.materialRltList.length>0?item.materialRltList[0].materialSpecification:''}}</td> -->
+                        </tr>
+                        <tr v-if="materialList.length<1">
+                            <td class="">/</td>
+                            <td class="">/</td>
+                            <td class="">/</td>
+                            <td class="">/</td>
                         </tr>
                     </table>
                 </td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <td class="_title" rowspan="3" style="text-align: center;">
                     <div>工</div>
                     <div>单</div>
@@ -280,7 +308,7 @@
                 <td class=""></td>
                 <td class=""></td>
                 <td class="" colspan="2"></td>
-            </tr>
+            </tr> -->
         </table>
         <div style="font-size: 14px;">
             <p>工单要求：</p>

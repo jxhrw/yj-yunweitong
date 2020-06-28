@@ -21,11 +21,12 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="downloadUrl" label="下载地址" show-overflow-tooltip min-width="200"></el-table-column>
-                    <el-table-column prop="versionSize" label="APK大小" show-overflow-tooltip>
-                        <!-- <template slot-scope="scope">
-                            {{scope.row.versionSize>0?`${scope.row.versionSize}MB`:''}}
-                        </template> -->
+                    <el-table-column label="类型" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            {{scope.row.isAndroid=='0'?'iOS':'Android'}}
+                        </template>
                     </el-table-column>
+                    <!-- <el-table-column prop="versionSize" label="APK大小" show-overflow-tooltip></el-table-column> -->
                     <el-table-column prop="description" label="更新文案" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip min-width="120">
                         <template slot-scope="scope">
@@ -51,10 +52,19 @@
                     <el-radio v-model="addInfo.versionInstall" label="1">是</el-radio>
                     <el-radio v-model="addInfo.versionInstall" label="0">否</el-radio>
                 </div>
-                <div class="revoke-reason">
-                    <label class="dialog-label"><span>*</span>apk上传</label>
+                <div class="revoke-reason" style="line-height:28px;">
+                    <label class="dialog-label">类型</label>
+                    <el-radio v-model="addInfo.isAndroid" label="1">Android</el-radio>
+                    <el-radio v-model="addInfo.isAndroid" label="0">iOS</el-radio>
+                </div>
+                <div class="revoke-reason" v-show="addInfo.isAndroid=='0'">
+                    <label class="dialog-label">iOS地址</label>
+                    <el-input v-model="addInfo.iosDownloadUrl" size='mini' class="dialog-select" clearable></el-input>
+                </div>
+                <div class="revoke-reason" v-show="addInfo.isAndroid=='1'">
+                    <label class="dialog-label">安卓上传</label>
                     <div class="ds-flex">
-                        <div v-if="addInfo.downloadUrl" class="img-preview">
+                        <div v-if="addInfo.androidDownloadUrl" class="img-preview">
                             <i class="el-icon-goods"></i>
                             <div class="img-del" @click="delImg()">
                                 <p>删除</p>
@@ -65,7 +75,6 @@
                             <input type="file" id="apkFile" name="" style="display:none" ref="imgFile" @change="upload()" multiple="multiple">
                         </div>
                     </div>
-
                 </div>
                 <div class="revoke-reason">
                     <label class="dialog-label">更新文案</label>
@@ -113,7 +122,6 @@
                 totalPage: 1,
                 queryConditions: {},
                 detailInfo: {},
-
                 isAjaxing: false,
                 detailVisible: false,
                 addInfo: {
@@ -122,7 +130,12 @@
                     versionInstall: '',
                     downloadUrl: '',
                     versionSize: '',
-                    description: ''
+                    description: '',
+                    androidDownloadUrl: '',
+                    androidVersionSize: '',
+                    iosDownloadUrl: '',
+                    iosVersionSize: '',
+                    isAndroid: '1',
                 },
             };
         },
@@ -163,6 +176,7 @@
                 Object.keys(this.addInfo).forEach((key) => {
                     this.addInfo[key] = '';
                 });
+                this.addInfo.isAndroid = '1';
             },
             saveItem() {
                 if (this.isAjaxing) {
@@ -181,10 +195,15 @@
                     Common.ejMessage("warning", "强制更新必选");
                     return;
                 }
-                if (this.addInfo.downloadUrl == '') {
-                    Common.ejMessage("warning", "请上传apk");
-                    return;
+                if (this.addInfo.isAndroid == '1') {
+                    this.addInfo.downloadUrl = this.addInfo.androidDownloadUrl;
+                } else {
+                    this.addInfo.downloadUrl = this.addInfo.iosDownloadUrl;
                 }
+                // if (this.addInfo.downloadUrl == '') {
+                //     Common.ejMessage("warning", "请上传apk");
+                //     return;
+                // }
 
                 this.isAjaxing = true;
                 this.$api.post(`${this.$config.efoms_HOST}/api/version/create`, this.addInfo, { token: this.token }).then(res => {
@@ -215,8 +234,8 @@
 
                 this.$api.post(`${this.$config.efoms_HOST}/file/uploadFile`, formData, header).then(res => {
                         if (res.appCode == 0) {
-                            this.addInfo.versionSize = size;
-                            this.addInfo.downloadUrl = res.resultList.downloadPath;
+                            this.addInfo.androidVersionSize = size;
+                            this.addInfo.androidDownloadUrl = res.resultList.downloadPath;
                         } else {
                             Common.printErrorLog(res);
                         }
@@ -226,7 +245,7 @@
                     });
             },
             delImg() {
-                this.addInfo.downloadUrl = '';
+                this.addInfo.androidDownloadUrl = '';
             },
             currentSelect(e) {
                 console.log(e);

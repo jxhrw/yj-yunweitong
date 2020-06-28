@@ -67,6 +67,7 @@
                                             <div class="img-del" @click="delImg(index,'imgScene')">
                                                 <p>删除</p>
                                             </div>
+                                            <div class="img-del-x el-icon-close" @click="delImg(index,'imgScene')"></div>
                                         </div>
                                     </template>
                                     <div class="img-add" @click="$refs.imgFile.click()" v-if="!isOnlyRead">

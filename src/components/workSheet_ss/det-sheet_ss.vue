@@ -84,7 +84,7 @@
                                 </el-col>
                                 <el-col :span="9">
                                     <label>申报人</label>
-                                    <span>{{workordersInfo.repPersonName}}</span>
+                                    <span>{{workordersInfo.repPersonName}} {{workordersInfo.repPersonTel}}</span>
                                 </el-col>
                                 <el-col :span="9" class="detail-warning">
                                     <label>当前状态</label>
@@ -99,7 +99,7 @@
                                     <span>{{workordersInfo.devAreaName}}</span>
                                 </el-col> -->
                                 <el-col :span="9">
-                                    <label>详细地址</label>
+                                    <label>申报地址</label>
                                     <span>{{workordersInfo.detailAddr}}</span>
                                 </el-col>
                             </el-row>
@@ -412,18 +412,26 @@
                                                 <div class="content">
                                                     <label for="">申请材料</label>
                                                     <span :title="item.materialRltList|materialShow" class="width2">{{item.materialRltList|materialShow}}</span>
+                                                    <label for="">总金额</label>
+                                                    <span class="width1">{{item.operResult}}</span>
                                                     <label for="">备注</label>
-                                                    <span class="width3">{{item.operExplain}}</span>
+                                                    <span class="width2">{{item.operExplain}}</span>
                                                 </div>
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
                                                     <span class="file-name width5">
-                                                        <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
-                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
-                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
-                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
-                                                            <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
+                                                        <div v-for="(item1,index) in item.photoList" :key="index+'img'" class="file-single">
+                                                            <el-image class="img-preview" :key="index" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1}&token=${token}`:item1" :preview-src-list="item.photoList.slice(index).concat(item.photoList.slice(0,index))" fit="fill">
+                                                            </el-image>
                                                         </div>
+                                                        <template v-for="(item1,index) in item.fileInfoList">
+                                                            <div v-if="item1.fileMode!='0'" :key="index" class="file-single">
+                                                                <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                                <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
+                                                                <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
+                                                                <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
+                                                            </div>
+                                                        </template>
                                                     </span>
                                                 </div>
                                             </template>
@@ -461,12 +469,18 @@
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
                                                     <span class="file-name width5">
-                                                        <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
-                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
-                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
-                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
-                                                            <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
+                                                        <div v-for="(item1,index) in item.photoList" :key="index+'img'" class="file-single">
+                                                            <el-image class="img-preview" :key="index" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1}&token=${token}`:item1" :preview-src-list="item.photoList.slice(index).concat(item.photoList.slice(0,index))" fit="fill">
+                                                            </el-image>
                                                         </div>
+                                                        <template v-for="(item1,index) in item.fileInfoList">
+                                                            <div v-if="item1.fileMode!='0'" :key="index" class="file-single">
+                                                                <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                                <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
+                                                                <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
+                                                                <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
+                                                            </div>
+                                                        </template>
                                                     </span>
                                                 </div>
                                             </template>
@@ -475,23 +489,29 @@
                                             <template v-else>
                                                 <div class="content">
                                                     <label for="">操作类型</label>
-                                                    <span class="width1">{{item.operResult}}</span>
+                                                    <span class="width2">{{item.operResult}}</span>
                                                     <!-- <label for="">故障类型</label>
                                                     <span>{{item.failureTypeName}}</span> -->
-                                                    <label for="">故障原因</label>
-                                                    <span class="width1">{{item.failureReason}}</span>
+                                                    <!-- <label for="">故障原因</label>
+                                                    <span class="width1">{{item.failureReason}}</span> -->
                                                     <label for="">结果反馈</label>
                                                     <span class="width3">{{item.operExplain}}</span>
                                                 </div>
                                                 <div class="content file-info">
                                                     <label for="">附件</label>
                                                     <span class="file-name width5">
-                                                        <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
-                                                            <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
-                                                            <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
-                                                            <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
-                                                            <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
+                                                        <div v-for="(item1,index) in item.photoList" :key="index+'img'" class="file-single">
+                                                            <el-image class="img-preview" :key="index" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1}&token=${token}`:item1" :preview-src-list="item.photoList.slice(index).concat(item.photoList.slice(0,index))" fit="fill">
+                                                            </el-image>
                                                         </div>
+                                                        <template v-for="(item1,index) in item.fileInfoList">
+                                                            <div v-if="item1.fileMode!='0'" :key="index" class="file-single">
+                                                                <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                                <a v-else-if="/\.(doc|docx|DOC|DOCX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-doc" :href="item1.fileUrl"></a>
+                                                                <a v-else-if="/\.(xls|xlsx|XLS|XLSX)$/.test(item1.fileName)" :title="item1.fileName" class="icon-file file-xls" :href="item1.fileUrl"></a>
+                                                                <a v-else :title="item1.fileName" class="icon-file file-other" :href="item1.fileUrl"></a>
+                                                            </div>
+                                                        </template>
                                                     </span>
                                                 </div>
                                             </template>
@@ -522,6 +542,19 @@
                                                 <span>{{item.operDate}}</span> -->
                                                 <label for="">确认意见</label>
                                                 <span class="width3">{{item.operExplain}}</span>
+                                            </div>
+                                            <!-- 监理审核 -->
+                                            <div v-if="item.operTypeCode=='FACILITYOPERTYPE17'" class="content file-info">
+                                                <label for="">审核图片</label>
+                                                <span class="file-name width5">
+                                                    <div v-for="(item1,index) in item.photoList" :key="index+'img'" class="file-single">
+                                                        <el-image class="img-preview" :key="index" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1}&token=${token}`:item1" :preview-src-list="item.photoList.slice(index).concat(item.photoList.slice(0,index))" fit="fill">
+                                                        </el-image>
+                                                    </div>
+                                                    <!-- <div v-for="(item1,index) in item.fileInfoList" :key="index" class="file-single">
+                                                        <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item1.fileName)" :src="$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl" :preview-src-list="[$config.baseimgs?`${$config.baseimgs}?path=${item1.fileUrl}&token=${token}`:item1.fileUrl]" fit="fill"></el-image>
+                                                    </div> -->
+                                                </span>
                                             </div>
                                         </template>
                                     </li>
@@ -1012,12 +1045,13 @@
                     alert('数据请求中，请稍等！');
                     return;
                 }
-                // 下发拒绝  状态待指派 FACILITYSTATUS07，指派已拒绝 FACILITYSTATUS08
-                // 指派拒绝  状态待维修 FACILITYSTATUS09
+                // 下发拒绝  状态待指派 FACILITYSTATUS07，指派已拒绝 FACILITYSTATUS08, 维修驳回 FACILITYSTATUS10
+                // 指派拒绝  状态待维修 FACILITYSTATUS09 
                 let mturl = `${this.$config.efoms_HOST}/signsWorkordersRecord/handleAppoWorkorders`;
                 switch (this.workordersStatusCode) {
                     case 'FACILITYSTATUS07':
                     case 'FACILITYSTATUS08':
+                    case 'FACILITYSTATUS10':
                         mturl = `${this.$config.efoms_HOST}/signsWorkordersRecord/rejectDispWorkorders`;
                         break;
                     case 'FACILITYSTATUS09':

@@ -185,9 +185,11 @@
                         entrance = '维修处置';
                         break;
                     case 'NOTICECLASS05':
+                    case 'NOTICECLASS34': //待确认(个人)
                         entrance = '工单确认';
                         break;
                     case 'NOTICECLASS27':
+                    case 'NOTICECLASS35': //待评价(个人)
                         entrance = '工单评价';
                         break;
                     case 'NOTICECLASS09':

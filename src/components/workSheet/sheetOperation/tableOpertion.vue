@@ -1,15 +1,15 @@
 <template>
     <div class="unit-tab-operation">
-        <!-- 维修申报页面，并且状态为待下发ORDERSSTATUS01时出现，下发已拒绝ORDERSSTATUS10（取消） -->
-        <div v-if="(title=='维修申报')&&(scope.row.workordersStatusCode == 'ORDERSSTATUS01')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
-        <!-- 优化申报页面，并且状态为科室待审核REPAIRSTATUS05时出现 -->
-        <div v-if="(title=='优化申报')&&(scope.row.workordersStatusCode == 'REPAIRSTATUS05')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
+        <!-- 维修申报页面，并且状态为待下发ORDERSSTATUS01时出现，下发已拒绝ORDERSSTATUS10（取消），待响应ORDERSSTATUS11时出现,指派已拒绝ORDERSSTATUS13 -->
+        <div v-if="(title=='维修申报')&&(scope.row.workordersStatusCode == 'ORDERSSTATUS01'||scope.row.workordersStatusCode == 'ORDERSSTATUS10'||scope.row.workordersStatusCode == 'ORDERSSTATUS11'||scope.row.workordersStatusCode == 'ORDERSSTATUS13')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
+        <!-- 优化申报页面，并且状态为科室待审核REPAIRSTATUS05时出现， 处所待审核REPAIRSTATUS06，待下发ORDERSSTATUS01，下发已拒绝ORDERSSTATUS10（取消），待响应ORDERSSTATUS11时出现,指派已拒绝ORDERSSTATUS13 -->
+        <div v-if="(title=='优化申报')&&(scope.row.workordersStatusCode == 'REPAIRSTATUS05'||scope.row.workordersStatusCode == 'REPAIRSTATUS06'||scope.row.workordersStatusCode == 'ORDERSSTATUS01'||scope.row.workordersStatusCode == 'ORDERSSTATUS10'||scope.row.workordersStatusCode == 'ORDERSSTATUS11'||scope.row.workordersStatusCode == 'ORDERSSTATUS13')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
         <!-- 科室审核页面+处室审核页面，并且状态为待审核时出现 -->
-        <div v-if="(title=='科室审核'&&scope.row.repStatusCode == 'REPAIRSTATUS05')||(title=='处室审核'&&scope.row.repStatusCode == 'REPAIRSTATUS06')" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
+        <div v-if="(title=='科室审核'&&scope.row.workordersStatusCode == 'REPAIRSTATUS05')||(title=='处室审核'&&scope.row.workordersStatusCode == 'REPAIRSTATUS06')" class="tab-operation" @click="dataDetail(scope.row,'edit')">审核</div>
         <!-- 工单下发页面，并且状态为待下发ORDERSSTATUS01时出现，下发已拒绝ORDERSSTATUS10 -->
         <div v-if="title=='工单下发'&&(scope.row.workordersStatusCode == 'ORDERSSTATUS01'||scope.row.workordersStatusCode == 'ORDERSSTATUS10')" class="tab-operation" @click="dataDetail(scope.row,'edit')">下发</div>
-        <!-- 工单指派页面，并且状态为待响应ORDERSSTATUS11时出现,指派已拒绝ORDERSSTATUS13 -->
-        <div v-if="title=='工单指派'&&(scope.row.workordersStatusCode == 'ORDERSSTATUS11'||scope.row.workordersStatusCode == 'ORDERSSTATUS13')" class="tab-operation" @click="dataDetail(scope.row,'edit')">指派</div>
+        <!-- 工单指派页面，并且状态为待响应ORDERSSTATUS11时出现,指派已拒绝ORDERSSTATUS13，已响应ORDERSSTATUS19 -->
+        <div v-if="title=='工单指派'&&(scope.row.workordersStatusCode == 'ORDERSSTATUS11'||scope.row.workordersStatusCode == 'ORDERSSTATUS13'||scope.row.workordersStatusCode == 'ORDERSSTATUS19')" class="tab-operation" @click="dataDetail(scope.row,'edit')">指派</div>
         <!-- 工单指派页面，并且状态为待反馈ORDERSSTATUS02，待处理ORDERSSTATUS05，已到达ORDERSSTATUS14-时出现 -->
         <div v-if="title=='工单指派'&&(scope.row.workordersStatusCode == 'ORDERSSTATUS02'||scope.row.workordersStatusCode == 'ORDERSSTATUS05'||scope.row.workordersStatusCode == 'ORDERSSTATUS14')" class="tab-operation" @click="dataDetail(scope.row,'edit')">退回</div>
         <!-- 维修处置页面，并且状态为待反馈ORDERSSTATUS02，待处理ORDERSSTATUS05，已到达ORDERSSTATUS14-时出现 -->

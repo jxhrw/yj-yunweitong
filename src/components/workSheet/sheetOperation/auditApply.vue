@@ -8,6 +8,13 @@
             </div>
             <div class="operation-content">
                 <div class="complete-content">
+                    <el-row class="content-row-select" v-if="$route.query.pre=='科室审核'">
+                        <el-col :span="20">
+                            <label>维修期限</label>
+                            <el-input type="text" placeholder="请输入天数" class="content-textarea-fix height" v-model="dayNum" resize="none"></el-input>
+                            <span>天</span>
+                        </el-col>
+                    </el-row>
                     <el-row class="content-row-select">
                         <el-col :span="20">
                             <label style="float: left;margin-right: 17px;">审核意见</label>
@@ -40,16 +47,30 @@
                 isShow: false,
                 workordersInfo: {},
                 operExplain: '',
+                dayNum: '',
                 isAjaxing: false
             };
         },
         mounted() {
             this.token = Common.getQueryString("token");
             this.workordersInfo = this.data || {};
+            if (this.$route.query.pre == '科室审核') {
+                this.getDeadlineTime();
+            }
         },
         methods: {
             // 审核接口
             auditMRepairs(isPass) {
+                if (this.dayNum) {
+                    if (!(/^\d+(\.\d{1})?$/.test(this.dayNum))) {
+                        Common.ejMessage("warning", "延期天数最多一位小数");
+                        return;
+                    }
+                    if (!(parseFloat(this.dayNum) > 0)) {
+                        Common.ejMessage("warning", "延期天数需大于零");
+                        return;
+                    }
+                }
                 if (isPass == 0 && this.operExplain == '') {
                     Common.ejMessage("warning", "拒绝请填写审核意见");
                     return;
@@ -63,7 +84,8 @@
                 this.$api.putByQs(`${this.$config.efoms_HOST}/repairs/auditRepairsInfo`, {
                         repairsId: this.workordersInfo.repairsId,
                         isPass: isPass,
-                        operExplain: this.operExplain
+                        operExplain: this.operExplain,
+                        dayNum: this.dayNum
                     }, { token: this.token })
                     .then(res => {
                         this.isAjaxing = false;
@@ -82,7 +104,30 @@
             },
             close() {
                 this.isShow = false;
-            }
+            },
+            // 获取默认完成时间
+            getDeadlineTime() {
+                this.$api.get(`${this.$config.efoms_HOST}/workorderDeadline/selectDeadlineConfList`, {
+                        devTypeCode: this.workordersInfo.devTypeCode,
+                        typeCode: this.workordersInfo.typeCode,
+                        isUse: 1,
+                        workType: 1, // 工单类型：1、设备；2、设施；3、系统、4其他
+                    }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            let num = 24;
+                            if (res.resultList && res.resultList.length > 0) {
+                                num = res.resultList[0].deadlineTime || 24;
+                            }
+                            this.dayNum = Math.round(num / 24 * 10) / 10;
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
+            },
         }
     };
 </script>
@@ -100,6 +145,13 @@
 
                 /deep/ .el-textarea__inner {
                     resize: none;
+                }
+
+                &.height {
+                    /deep/ .el-input__inner {
+                        height: 30px;
+                        font-size: 12px;
+                    }
                 }
             }
 

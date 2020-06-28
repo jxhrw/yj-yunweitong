@@ -85,7 +85,7 @@
                                 </el-col>
                                 <el-col :span="9">
                                     <label>申报人</label>
-                                    <span>{{workordersInfo.repPersonName}}</span>
+                                    <span>{{workordersInfo.repPersonName}} {{workordersInfo.repPersonTel}}</span>
                                 </el-col>
                                 <el-col :span="9">
                                     <label>所属系统</label>
@@ -114,7 +114,7 @@
                                         </el-col>
 
                                         <el-col :span="9">
-                                            <label>详细地址</label>
+                                            <label>申报地址</label>
                                             <span>{{workordersInfo.detailAddr}}</span>
                                         </el-col>
 
@@ -238,7 +238,17 @@
                                                 <span class="width5">{{item.operExplain}}</span>
                                             </div>
                                         </template>
-
+                                        <!-- 科室审核 -->
+                                        <template v-if="item.operTypeCode=='REPOPERTYPE07'">
+                                            <div class="content">
+                                                <label for="">审核结果</label>
+                                                <span class="width1">{{item.operResult}}</span>
+                                                <label for="">维修期限</label>
+                                                <span class="width1">{{item.operReasonCode?`${item.operReasonCode}天`:''}}</span>
+                                                <label for="">审核意见</label>
+                                                <span class="width3">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
                                         <template v-else>
                                             <div class="content">
                                                 <label for="">审核结果</label>

@@ -19,7 +19,7 @@
                     margin-right: 10px;
                     position: relative;
                     background: #fff;
-                    z-index: 2;
+                    // z-index: 2;
 
                     &::before {
                         content: '';
@@ -28,7 +28,7 @@
                         width: 10px;
                         height: 1px;
                         background: #C0C4CC;
-                        z-index: 1;
+                        // z-index: 1;
                         top: 50%;
                         right: -11px;
                     }
@@ -68,6 +68,11 @@
         }
 
         &.ej-content-yellow {
+            background: #DB0000;
+            border-color: #DB0000;
+        }
+
+        &.ej-content-red {
             background: #d89d00;
             border-color: #d89d00;
         }
@@ -319,6 +324,16 @@
         &.confirm-info {
             &::before {
                 content: "\786E\8BA4";
+            }
+
+            .file-single {
+                margin-right: 10px;
+
+                /deep/ .el-image {
+                    width: 20px;
+                    height: 20px;
+                    display: block;
+                }
             }
         }
 

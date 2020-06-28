@@ -48,7 +48,7 @@
                                 </el-col>
                                 <el-col :span="9">
                                     <label>申报人</label>
-                                    <span>{{workordersInfo.repPersonName}}</span>
+                                    <span>{{workordersInfo.repPersonName}} {{workordersInfo.repPersonTel}}</span>
                                 </el-col>
                                 <el-col :span="9" class="detail-warning">
                                     <label>当前状态</label>

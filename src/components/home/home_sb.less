@@ -53,6 +53,8 @@
                         padding-left: 34%;
                         font-size: 14px;
                         background: url('../../assets/images/home_sb/icon_sbnum_new.png') no-repeat left 15px center/120px;
+                        width: 100%;
+                        box-sizing: border-box;
 
                         .num {
                             .txt-futura;
@@ -135,6 +137,10 @@
                                             font-style: normal;
                                             margin-top: 2px;
                                             white-space: nowrap;
+
+                                            &.red {
+                                                color: #ca0000;
+                                            }
                                         }
                                     }
 
@@ -278,6 +284,23 @@
                 flex: 1;
                 box-sizing: border-box;
                 position: relative;
+
+                .full-screen-btn {
+                    position: absolute;
+                    width: 28px;
+                    height: 28px;
+                    right: 90px;
+                    top: 14px;
+                    background: url('../../assets/images/home_sb/full-screen.png') no-repeat center/100%;
+                    cursor: pointer;
+                    z-index: 1;
+
+                    &.isActive {
+                        position: fixed;
+                        z-index: 101;
+                        background-image: url('../../assets/images/home_sb/cancel-full-screen.png');
+                    }
+                }
 
                 .h-rt-map {
                     position: absolute;
@@ -635,6 +658,11 @@
                     left: 0;
                     right: 0;
                     padding: 0 0;
+
+                    &.full-screen {
+                        position: fixed;
+                        z-index: 100;
+                    }
                 }
 
                 .m-fault-list {
@@ -1069,6 +1097,50 @@
                 align-items: center;
                 // justify-content: space-between;
 
+                &.between {
+                    justify-content: space-between;
+
+                    .screen-li {
+
+                        &+.screen-li {
+                            margin-left: 0;
+                        }
+                    }
+                }
+
+                &.classrk {
+                    .screen-li {
+                        label {
+                            width: 60px;
+                            text-align: right;
+                            display: inline-block;
+                        }
+
+                        .multSlt /deep/ .content-select,
+                        .dialog-select {
+                            width: 140px;
+
+                            &.button {
+                                background: #2488FF;
+                                box-shadow: 0 10px 35px 0 rgba(78, 88, 105, 0.12);
+                                height: 30px;
+                                border: 0;
+                                color: #fff;
+                                outline: none;
+                                cursor: pointer;
+                            }
+                        }
+
+                        .icon {
+                            cursor: pointer;
+                        }
+
+                        .transparent {
+                            opacity: 0;
+                        }
+                    }
+                }
+
                 .screen-li {
                     position: relative;
 
@@ -1216,6 +1288,11 @@
                         // margin-right: 10px;
                         margin-bottom: 10px;
 
+                        &.otherColor {
+                            background-image: linear-gradient(180deg, #0469a0 0%, #024391 100%);
+                            box-shadow: 0 8px 12px -4px rgba(0, 95, 207, 0.51);
+                        }
+
                         .p1 {
                             font-family: PingFangSC-Medium;
                             font-size: 14px;
@@ -1224,6 +1301,7 @@
                             line-height: 20px;
                             padding-top: 9px;
                             white-space: nowrap;
+                            overflow: hidden;
                         }
 
                         .p2 {
@@ -1353,6 +1431,10 @@
                 .table-box {
                     margin-top: 0;
                     height: 499px;
+
+                    /deep/ .el-scrollbar__wrap {
+                        overflow-x: hidden;
+                    }
 
                     .dialog-table {
                         width: 100%;
@@ -2654,6 +2736,11 @@
     .layout .dialog-sb .dialog-content .screen .screen-li .multSlt /deep/ .content-select,
     .layout .dialog-sb .dialog-content .screen .screen-li .dialog-select {
         width: 170px;
+    }
+
+    .layout .dialog-sb .dialog-content .screen.classrk .screen-li .multSlt /deep/ .content-select,
+    .layout .dialog-sb .dialog-content .screen.classrk .screen-li .dialog-select {
+        width: 112px;
     }
 
     .layout .dialog-sb .dialog-content .info .info-dept .dept {

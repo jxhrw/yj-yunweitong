@@ -329,7 +329,7 @@
             this.token = Common.getQueryString("token");
             //申报部门(交警部门+维护单位)
             let a1 = this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {});
-            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptInfoV2.htm`, {});
+            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {});
             Promise.all([a1, a2]).then(res => {
                 let arr0 = res[0].resultList || [];
                 let arr1 = res[1].resultList || [];

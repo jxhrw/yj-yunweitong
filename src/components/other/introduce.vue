@@ -19,8 +19,8 @@
                                     <p>下载</p>
                                 </div>
                             </a>
-                            <!-- <img class="app-code" :src="require('../../assets/images/introduce/code.png')" alt=""> -->
-                            <canvas id="andQRCode" class="app-code"></canvas>
+                            <img v-show="$config.appAndroidCode" class="app-code" :src="$config.appAndroidCode" alt="">
+                            <canvas v-show="!$config.appAndroidCode" id="andQRCode" class="app-code"></canvas>
                         </div>
                         <div class="code-android-outer">
                             <a @click="downloadIos">
@@ -30,7 +30,8 @@
                                     <p>下载</p>
                                 </div>
                             </a>
-                            <canvas id="iosQRCode" class="app-code"></canvas>
+                            <img v-show="$config.appIosCode" class="app-code" :src="$config.appIosCode" alt="">
+                            <canvas v-show="!$config.appIosCode" id="iosQRCode" class="app-code"></canvas>
                         </div>
                     </div>
 
@@ -142,6 +143,7 @@
                         height: auto !important;
                         min-width: 185px;
                         min-height: 185px;
+                        margin-left: 23px;
                     }
 
                     a {

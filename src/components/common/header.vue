@@ -78,12 +78,20 @@
                 let token = Common.getQueryString("token");
                 this.$api.getMethod(host, method, {}, token).then(res => {
                         // if (res) {
-                        location.reload();
+                        try {
+                            top.location.reload();
+                        } catch (aa) {
+                            top.location.href = document.referrer;
+                        }
                         // }
                     })
                     .catch(err => {
                         if (err.response.status == 403) {
-                            location.reload();
+                            try {
+                                top.location.reload();
+                            } catch (aa) {
+                                top.location.href = document.referrer;
+                            }
                         } else {
                             Common.printErrorLog(err);
                         }

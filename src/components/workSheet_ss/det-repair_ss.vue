@@ -42,7 +42,7 @@
                                 </el-col> -->
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
-                                    <label>详细地址</label>
+                                    <label>申报地址</label>
                                     <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
                                         <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="handleIconClick" style="font-size:16px;">
                                         </i>
@@ -100,6 +100,7 @@
                                             <div class="img-del" @click="delImg(index,'imgScene')">
                                                 <p>删除</p>
                                             </div>
+                                            <div class="img-del-x el-icon-close" @click="delImg(index,'imgScene')"></div>
                                         </div>
                                     </template>
                                     <div class="img-add" @click="$refs.imgFile.click()" v-if="!isOnlyRead">
@@ -138,6 +139,7 @@
                                             <div class="img-del" @click="delImg(index,'imgOpt')">
                                                 <p>删除</p>
                                             </div>
+                                            <div class="img-del-x el-icon-close" @click="delImg(index,'imgOpt')"></div>
                                         </div>
                                     </template>
                                     <div class="img-add" @click="$refs.imgFileY.click()" v-if="!isOnlyRead">
@@ -341,7 +343,7 @@
                     return;
                 }
                 if (this.address == "") {
-                    Common.ejMessage("warning", "详细地址必填");
+                    Common.ejMessage("warning", "申报地址必填");
                     return;
                 }
                 if (this.facTypeList.length <= 0) {
@@ -633,15 +635,19 @@
             getCrossInfo(val) {
                 let _this = this;
                 return new Promise(function(resolve, reject) {
-                    //路口点位,在设备类别已有的情况下
-                    _this.getDicInfo(`${_this.$config.ubms_HOST}/RoadBlockCrossRlt/getRoadBlockCrossRlt.htm`, {
-                        "rltType": "RBCRLTTYPE02",
-                        "roadId": val
-                    }).then(res => {
-                        resolve(res.resultList || []);
-                    }).catch(err => {
+                    if (val) {
+                        //路口点位,在设备类别已有的情况下
+                        _this.getDicInfo(`${_this.$config.ubms_HOST}/RoadBlockCrossRlt/getRoadBlockCrossRlt.htm`, {
+                            "rltType": "RBCRLTTYPE02",
+                            "roadId": val
+                        }).then(res => {
+                            resolve(res.resultList || []);
+                        }).catch(err => {
+                            resolve([]);
+                        });
+                    } else {
                         resolve([]);
-                    });
+                    }
                 });
             },
             // 给出路口信息

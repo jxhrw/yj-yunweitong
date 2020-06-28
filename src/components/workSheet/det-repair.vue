@@ -50,7 +50,7 @@
                                 </el-col> -->
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
-                                    <label style="white-space: nowrap;">现管理单位</label>
+                                    <label style="white-space: nowrap;">所属部门</label>
                                     <mInput :list="departList" :code.sync="departCode" :name.sync="departName" showAttr="deptName" getAttr="deptId" :disabled="devTypeCode!='REPDEVTYPE17'"></mInput>
                                 </el-col>
 
@@ -62,14 +62,14 @@
                                 </el-col>
                                 <el-col :span="9" v-if="$config.cityName == 'hangzhou'">
                                     <i class="redStar">*</i>
-                                    <label>详细地址</label>
+                                    <label>申报地址</label>
                                     <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
                                         <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="handleIconClick" style="font-size:16px;">
                                         </i>
                                     </el-input>
                                 </el-col>
                                 <el-col :span="9" v-else>
-                                    <label>详细地址</label>
+                                    <label>申报地址</label>
                                     <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
                                         <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="handleIconClick" style="font-size:16px;">
                                         </i>
@@ -105,7 +105,7 @@
                                     <span>{{devInfo.oppmDeptName}}</span>
                                 </el-col>
                                 <el-col :span="9">
-                                    <label>现管理单位</label>
+                                    <label>所属部门</label>
                                     <span>{{devInfo.devDeptName}}</span>
                                 </el-col>
                                 <el-col :span="9">
@@ -155,6 +155,7 @@
                                             <div class="img-del" @click="delImg(index,'imgScene')">
                                                 <p>删除</p>
                                             </div>
+                                            <div class="img-del-x el-icon-close" @click="delImg(index,'imgScene')"></div>
                                         </div>
                                     </template>
                                     <div class="img-add" @click="$refs.imgFile.click()" v-if="!isOnlyRead">
@@ -442,7 +443,7 @@
             // this.getDicInfo(`${this.$config.ubms_HOST}/RegionInfo/getRegionInfo.htm`, {}).then(res => {
             //     this.areaList = res.resultList || [];
             // });
-            //现管理单位
+            //所属部门
             this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {}).then(res => {
                 this.departList = res.resultList || [];
             });

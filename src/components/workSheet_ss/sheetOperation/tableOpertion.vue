@@ -1,6 +1,6 @@
 <template>
     <div class="unit-tab-operation">
-        <!-- 维修申报页面，并且状态为大队道管待审核FACILITYSTATUS01时出现，设施科待审核FACILITYSTATUS03 -->
+        <!-- 维修申报页面，并且状态为大队道管待审核FACILITYSTATUS01时出现，设施科待审核FACILITYSTATUS03-->
         <div v-if="(title=='维修申报'||title=='抢修申报'||title=='优化申报')&&(scope.row.workordersStatusCode == 'FACILITYSTATUS01'||scope.row.workordersStatusCode == 'FACILITYSTATUS03')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
         <!-- 数字城管页面，并且状态为待下发FACILITYSTATUS06时出现 -->
         <div v-if="(title=='数字城管')&&(scope.row.workordersStatusCode == 'FACILITYSTATUS06')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>

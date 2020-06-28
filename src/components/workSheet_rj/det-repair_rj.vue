@@ -53,7 +53,7 @@
                                 </el-col> -->
                                 <el-col :span="9">
                                     <i class="redStar">*</i>
-                                    <label>详细地址</label>
+                                    <label>申报地址</label>
                                     <el-input v-model="address" placeholder="" size='mini' class="content-select" :disabled="isOnlyRead">
                                         <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="handleIconClick" style="font-size:16px;">
                                         </i>
@@ -78,6 +78,7 @@
                                             <div class="img-del" @click="delImg(index,'imgScene')">
                                                 <p>删除</p>
                                             </div>
+                                            <div class="img-del-x el-icon-close" @click="delImg(index,'imgScene')"></div>
                                         </div>
                                     </template>
                                     <div class="img-add" @click="$refs.imgFile.click()" v-if="!isOnlyRead">

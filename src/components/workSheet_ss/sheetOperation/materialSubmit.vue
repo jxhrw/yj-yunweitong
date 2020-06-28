@@ -6,7 +6,7 @@
                 <label for>材料提交</label>
                 <i class="close" @click="close">X</i>
             </div>
-            <div class="operation-content" style="height: 420px;">
+            <div class="operation-content" style="height: 520px;">
                 <div class="complete-content">
                     <el-row class="content-row-select">
                         <el-col :span="18" class="col-flex">
@@ -79,6 +79,7 @@
                                     <div class="img-del" @click="delImg(index,'imgScene')">
                                         <p>删除</p>
                                     </div>
+                                    <div class="img-del-x el-icon-close" @click="delImg(index,'imgScene')"></div>
                                 </div>
                             </template>
                             <div class="img-add" @click="$refs.imgFile.click()">
@@ -100,6 +101,7 @@
                                     <div class="img-del" @click="delImg(index,'imgOpt')">
                                         <p>删除</p>
                                     </div>
+                                    <div class="img-del-x el-icon-close" @click="delImg(index,'imgOpt')"></div>
                                 </div>
                             </template>
                             <div class="img-add" @click="$refs.imgFileY.click()">
@@ -225,7 +227,7 @@
                     arr.map(item => {
                         num += item.materialUnitPrice * (item.materialNum || 0)
                     });
-                    _THIS.money = num;
+                    _THIS.money = Math.round(num * 100) / 100;
                 },
                 deep: true
             }
@@ -441,7 +443,9 @@
                 this.queryConditions = {
                     pageSize: 10,
                     currentPage: 1,
-                    materialName: this.name
+                    materialName: this.name,
+                    regionId: this.workordersInfo.devDeptId || '',
+                    devTypeCode: this.workordersInfo.devTypeCode || '',
                 };
                 this.searchPage();
             },

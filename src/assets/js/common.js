@@ -210,7 +210,11 @@ var Common = {
             if (!isAlert) {
                 isAlert = true;
                 alert('登录失效，请重新登录！');
-                location.reload();
+                try {
+                    top.location.reload();
+                } catch (aa) {
+                    top.location.href = document.referrer;
+                }
             }
         } else {
             Vue.prototype.$message({

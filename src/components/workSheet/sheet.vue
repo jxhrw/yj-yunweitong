@@ -1,6 +1,6 @@
 <template>
     <div class="ej-main">
-        <WkLayout ref="layout" :title="title" :queryConditions="queryConditions" :totalPage="totalPage" :totalCount="totalCount" :searchMore="1" :typeTableData="typeTableData" :multipleSelection.sync="multipleSelection" @searchTable="searchTableInfo" @searchPage="searchPageInfo">
+        <WkLayout ref="layout" :title="setSpecialTitle(title)" :queryConditions="queryConditions" :totalPage="totalPage" :totalCount="totalCount" :searchMore="1" :typeTableData="typeTableData" :multipleSelection.sync="multipleSelection" @searchTable="searchTableInfo" @searchPage="searchPageInfo">
             <template slot="pageBtn" v-if="$route.query.type=='0'">
                 <div class="ej-content-goto" @click="gotoEqpm">
                     <p>创建工单</p>
@@ -189,6 +189,7 @@
                     <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                            {{(scope.row.isDefer&&$config.cityName=='jiujiang')?'(延期申请中)':''}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
@@ -222,6 +223,7 @@
                     <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                            {{(scope.row.isDefer&&$config.cityName=='jiujiang')?'(延期申请中)':''}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
@@ -253,6 +255,7 @@
                     <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                            {{(scope.row.isDefer&&$config.cityName=='jiujiang')?'(延期申请中)':''}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
@@ -287,6 +290,7 @@
                     <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                            {{(scope.row.isDefer&&$config.cityName=='jiujiang')?'(延期申请中)':''}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
@@ -321,6 +325,7 @@
                     <el-table-column prop="workordersStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                            {{(scope.row.isDefer&&$config.cityName=='jiujiang')?'(延期申请中)':''}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
@@ -1373,7 +1378,7 @@
                         this.tableShowType = 1;
                         this.title = '工单指派';
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/dispatch`;
-                        this.typeList = [{ dicCode: '0', dicName: '待响应' }, { dicCode: '1', dicName: '被退回' }, { dicCode: '2', dicName: '已指派' }, { dicCode: '3', dicName: '已催办' }, { dicCode: '4', dicName: '超时' }];
+                        this.typeList = [{ dicCode: '5', dicName: '待响应' }, { dicCode: '6', dicName: '已响应' }, { dicCode: '1', dicName: '被退回' }, { dicCode: '2', dicName: '已指派' }, { dicCode: '3', dicName: '已催办' }, { dicCode: '4', dicName: '超时' }];
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;
                         break;
@@ -1426,11 +1431,27 @@
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;
                         break;
+                    case 'n12':
+                        this.tableShowType = 4;
+                        this.title = '工单确认'; // 实际是：个人确认
+                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/confirm`;
+                        this.typeList = [{ dicCode: '2', dicName: '待确认' }, { dicCode: '3', dicName: '已确认' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        this.typeName = this.typeList[0].dicName;
+                        break;
                     case '13':
                         this.tableShowType = 4;
                         this.title = '工单评价';
                         this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/score`;
                         this.typeList = [{ dicCode: '0', dicName: '待评价' }, { dicCode: '1', dicName: '已评价' }];
+                        this.typeCode = this.typeList[0].dicCode;
+                        this.typeName = this.typeList[0].dicName;
+                        break;
+                    case 'n13':
+                        this.tableShowType = 4;
+                        this.title = '工单评价'; // 实际是：个人评价
+                        this.listUrl.table = `${this.$config.efoms_HOST}/opr/search/page/score`;
+                        this.typeList = [{ dicCode: '2', dicName: '待评价' }, { dicCode: '3', dicName: '已评价' }];
                         this.typeCode = this.typeList[0].dicCode;
                         this.typeName = this.typeList[0].dicName;
                         break;
@@ -1471,13 +1492,22 @@
                 }
 
                 this.searchTableInfo();
+            },
+            setSpecialTitle(title) {
+                let str = '';
+                if (this.$route.query.type == 'n12') {
+                    str = '个人确认';
+                } else if (this.$route.query.type == 'n13') {
+                    str = '个人评价';
+                }
+                return str || title;
             }
         },
         mounted() {
             this.token = Common.getQueryString("token");
             //申报部门(交警部门+维护单位)
             let a1 = this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {});
-            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptInfoV2.htm`, {});
+            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {});
             Promise.all([a1, a2]).then(res => {
                 let arr0 = res[0].resultList || [];
                 let arr1 = res[1].resultList || [];

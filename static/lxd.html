@@ -114,7 +114,7 @@
                     {{content.listSignsWorkordersRoad|roadShow}}
                 </td>
             </tr>
-            <tr v-if="content.materialInfos == null">
+            <tr v-if="content.workordersRecordMap.fackbackList.length==0">
                 <td class="project">现场照片</td>
                 <td class="_content" colspan="5">
                     <div v-for="item in prePhoto">
@@ -170,7 +170,7 @@
             <%--<td class="">2018-12-11</td>--%>
             <%--<td class="" colspan="3">同意</td>--%>
         <%--</tr>--%> -->
-            <tr v-if="content.materialInfos">
+            <tr v-if="content.workordersRecordMap.fackbackList.length>0">
                 <td class="_title" rowspan="2">
                     <div>施</div>
                     <div>工</div>
@@ -191,7 +191,7 @@
                     </div>
                 </td>
             </tr>
-            <tr v-if="content.materialInfos">
+            <tr v-if="content.workordersRecordMap.fackbackList.length>0">
                 <td>
                     <div>工</div>
                     <div>程</div>
@@ -313,7 +313,7 @@
                                 if (data != null) {
                                     _that.content = data.resultList || {};
                                     var opt = _that.content.workordersRecordMap || {};
-                                    _that.content.materialInfos = _that.content.listMaterialRlt.length > 0 ? _that.content.listMaterialRlt : null;
+                                    _that.content.materialInfos = _that.content.listMaterialRlt.length > 0 ? _that.content.listMaterialRlt : [];
                                     _that.checkOpt = opt.checkList;
 
                                     opt.dispatchList.map(item => {
@@ -399,7 +399,7 @@
                     return this.checkOpt.length + 1
                 },
                 isShowPhoto: function() {
-                    return this.content.materialInfos ? 5 : 6
+                    return this.content.workordersRecordMap.fackbackList.length > 0 ? 5 : 6
                 },
                 priceTotal: function() {
                     var total = 0

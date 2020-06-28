@@ -17,6 +17,9 @@ const app = resolve => require(['components/workSheet/app'], resolve);
 const knowledge = resolve => require(['components/workSheet/knowledge'], resolve);
 const detKnow = resolve => require(['components/workSheet/det-know'], resolve);
 const contact = resolve => require(['components/workSheet/contact'], resolve);
+const punishAnalysis = resolve => require(['components/workSheet/punishAnalysis'], resolve);
+const punishSearch = resolve => require(['components/workSheet/punishSearch'], resolve);
+
 
 // 设施
 const sheetss = resolve => require(['components/workSheet_ss/sheet_ss'], resolve);
@@ -26,6 +29,14 @@ const detsheetss = resolve => require(['components/workSheet_ss/det-sheet_ss'], 
 export default new Router({
     mode: 'hash',
     routes: [{
+        path: '/punishAnalysis',
+        name: 'punishAnalysis',
+        component: punishAnalysis
+    },{
+        path: '/punishSearch',
+        name: 'punishSearch',
+        component: punishSearch
+    },{
         path: '/contact',
         name: 'contact',
         component: contact,

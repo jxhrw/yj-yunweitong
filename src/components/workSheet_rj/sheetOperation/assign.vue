@@ -123,8 +123,9 @@
                 let arr1 = [{ opsDeptId: opDeptId, opsDeptName: this.opDeptName }];
                 let arr2 = res.resultList || [];
 
-                this.groupList = [...arr1, ...arr2];
-                this.groupCode = opDeptId;
+                this.groupList = [...arr2, ...arr1];
+                // this.groupCode = opDeptId;
+                this.groupCode = this.groupList[0].opsDeptId;
             });
         },
         methods: {

@@ -3,7 +3,7 @@
         <WkLayout ref="layout" :title="title" :queryConditions="queryConditions" :totalPage="totalPage" :totalCount="totalCount" :searchMore="1" @searchTable="searchTableInfo" @searchPage="searchPageInfo">
             <template slot="condFirst">
                 <el-col :span="7">
-                    <label>申报时间</label>
+                    <label>{{$route.query.type=='3'?'验收时间':'申报时间'}}</label>
                     <el-date-picker v-model="times" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" size='mini' class="content-date" value-format="yyyy-MM-dd" @keyup.enter.native="searchTableInfo">
                     </el-date-picker>
                 </el-col>
@@ -34,6 +34,10 @@
                     <label>设施类别</label>
                     <mInput :list="facTypeList" :code.sync="facTypeCode" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
+                <el-col :span="7" v-if="$route.query.type=='1'">
+                    <label>状态</label>
+                    <mInput :list="workordersStatusList" :code.sync="workordersStatusCode" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
             </template>
 
             <template slot="tableBtn">
@@ -55,13 +59,15 @@
                     </el-table-column>
                     <el-table-column prop="typeName" label="维修类型" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="devTypeName" label="设施类别" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="deadlineTime" label="期限完成时间" show-overflow-tooltip min-width="120"></el-table-column>
                     <el-table-column prop="workordersStatusName" label="状态" show-overflow-tooltip></el-table-column>
+                    <el-table-column v-if="$route.query.type=='2'||$route.query.type=='3'" prop="materialCost" label="总金额" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="aaaaa" label="打印状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.isPrintDetail?'已打印':'未打印'}}
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" show-overflow-tooltip :min-width="$route.query.type=='3'?150:100">
+                    <el-table-column label="操作" show-overflow-tooltip :min-width="$route.query.type=='3'?150:120">
                         <template slot-scope="scope">
                             <div class="tab-operation" @click="printing(scope.row,scope)">打印</div>
                             <div v-if="$route.query.type!='1'" class="tab-operation" @click="handleAnnex(scope.row)">附件</div>
@@ -78,8 +84,8 @@
                     <div class="dialog-main">
                         <el-scrollbar class="dia-height">
                             <ul class="fx-ul">
-                                <li v-if="!detailInfo.fileInfoList || detailInfo.fileInfoList.length<=0" style="justify-content:center;">该工单无附件文件</li>
-                                <li v-for="(item,index) in detailInfo.fileInfoList" :key="index">
+                                <li v-if="!fileList || fileList.length<=0" style="justify-content:center;">该工单无附件文件</li>
+                                <li v-for="(item,index) in fileList" :key="index">
                                     <el-image v-if="/\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/.test(item.fileName)" class="img-preview" :src="item.fileUrl" :preview-src-list="[item.fileUrl]" fit="fill">
                                     </el-image>
                                     <div v-else class="img-preview">
@@ -173,6 +179,8 @@
                 reptypeList: [],
                 facTypeCode: '',
                 facTypeList: [],
+                workordersStatusCode: '',
+                workordersStatusList: [],
 
                 isTableLoading: false,
                 tableData: [],
@@ -196,16 +204,27 @@
                 };
                 let obj = {
                     contactStatus: this.$route.query.type, //联系单状态(1待处理、2已修复、3已验收)
-                    repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
-                    repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
                     workordersIdKey: this.declareId,
                     roadName: this.roadName,
                     devDeptId: this.battalionCode,
                     squadron: this.squadronCode,
                     repairType: this.reptypeCode, // 维修类型
                     devTypeCode: this.facTypeCode, //设施类别
+                    workordersStatusCode: this.workordersStatusCode,
                 };
-                this.queryConditions = { ...this.queryConditions, ...obj }
+                let time = {};
+                if (this.$route.query.type == '3') {
+                    time = {
+                        checkStartTime: this.times ? `${this.times[0]} 00:00:00` : "",
+                        checkEndTime: this.times ? `${this.times[1]} 23:59:59` : "",
+                    };
+                } else {
+                    time = {
+                        repStartDate: this.times ? `${this.times[0]} 00:00:00` : "",
+                        repEndDate: this.times ? `${this.times[1]} 23:59:59` : "",
+                    };
+                }
+                this.queryConditions = { ...this.queryConditions, ...obj, ...time }
                 this.searchPageInfo();
             },
             searchPageInfo() {
@@ -260,6 +279,19 @@
             },
             handleAnnex(item) {
                 this.dialogAnnexVisible = true;
+                this.$api.get(`${this.$config.efoms_HOST}/workordersRecord/selectWorkordersRecordList`, { workordersId: item.signsWorkordersId, operTypeCode: 'FACILITYOPERTYPE15' }, { token: this.token })
+                    .then(res => {
+                        if (res.appCode == 0) {
+                            let arr = res.resultList || [];
+                            let length = arr.length;
+                            this.fileList = length > 0 ? (arr[length - 1].fileInfoList || []) : [];
+                        } else {
+                            Common.printErrorLog(res);
+                        }
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
             },
             //归档和取消归档
             handlePlace(item) {
@@ -281,6 +313,17 @@
                             Common.printErrorLog(err);
                         });
                 }).catch(() => {});
+            },
+            exportExcel() {
+                let method = this.listUrl.download;
+                let obj = JSON.parse(JSON.stringify(this.queryConditions));
+                this.$api.get(method, obj, { token: this.token })
+                    .then(res => {
+                        window.open(res.path + '&token=' + this.token);
+                    })
+                    .catch(err => {
+                        Common.printErrorLog(err);
+                    });
             },
             // 字典类型接口
             getDicInfo(url, obj) {
@@ -306,6 +349,7 @@
                 this.squadronCode = '';
                 this.reptypeCode = '';
                 this.facTypeCode = '';
+                this.workordersStatusCode = '';
 
                 this.queryConditions = {};
                 this.tableData = [];
@@ -319,12 +363,15 @@
                 switch (pageType) {
                     case '1':
                         this.title = '待处理联系单';
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportSignsContactManage`;
                         break;
                     case '2':
                         this.title = '已修复联系单';
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportSignsContactManage`;
                         break;
                     case '3':
                         this.title = '已验收联系单';
+                        this.listUrl.download = `${this.$config.efoms_HOST}/export/exportSignsContactManage`;
                         break;
                     default:
                         break;
@@ -344,6 +391,8 @@
             this.reptypeList = [{ dicCode: 'REPAIRTYPE01', dicName: '维修' }, { dicCode: 'REPAIRTYPE02', dicName: '抢修' }, { dicCode: 'REPAIRTYPE03', dicName: '优化' }, { dicCode: 'REPAIRTYPE04', dicName: '数字城管' }];
             // 设施类别
             this.facTypeList = [{ dicCode: 'REPDEVTYPE24', dicName: '电子设施' }, { dicCode: 'REPDEVTYPE21', dicName: '交通标线' }, { dicCode: 'REPDEVTYPE22', dicName: '交通护栏' }, { dicCode: 'REPDEVTYPE23', dicName: '交通标志' }, { dicCode: 'REPDEVTYPE25', dicName: '临时设施' }, { dicCode: 'REPDEVTYPE26', dicName: '其他设施' }];
+            // 工单状态
+            this.workordersStatusList = [{ dicCode: 'FACILITYSTATUS07', dicName: '待指派' }, { dicCode: 'FACILITYSTATUS08', dicName: '指派已拒绝' }, { dicCode: 'FACILITYSTATUS09', dicName: '待维修' }, { dicCode: 'FACILITYSTATUS10', dicName: '维修驳回' }, { dicCode: 'FACILITYSTATUS11', dicName: '已到达' }, { dicCode: 'FACILITYSTATUS12', dicName: '工程量待提报' }, { dicCode: 'FACILITYSTATUS13', dicName: '工程量驳回' }];
             //所属大队
             this.getDataInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptRank: 'DEPTRANK04' }).then(res => {
                 this.battalionList = res.resultList || [];
@@ -442,6 +491,7 @@
         .icon-file {
             width: 100%;
             height: 100%;
+            display: block;
 
             &.file-doc {
                 background: url("../../assets/images/file-word.png") no-repeat center/100%;

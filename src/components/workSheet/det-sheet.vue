@@ -28,8 +28,8 @@
                             <p>材料申请</p>
                         </div>
                         <!-- 可申请延期：ORDEROPERTYPE05 -->
-                        <!-- 可申请延期：待响应ORDERSSTATUS11，指派已拒绝ORDERSSTATUS13,待维修ORDERSSTATUS02,已驳回ORDERSSTATUS05 -->
-                        <div v-if="((prePage=='工单指派')&&(workordersStatusCode=='ORDERSSTATUS11'||workordersStatusCode=='ORDERSSTATUS13'))||((prePage=='维修处置')&&(workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05'))" class="ej-content-title-btn ej-content-green" @click="showDelay" style="width:56px;">
+                        <!-- 可申请延期：待响应ORDERSSTATUS11，指派已拒绝ORDERSSTATUS13,已响应ORDERSSTATUS19，待维修ORDERSSTATUS02,已驳回ORDERSSTATUS05 -->
+                        <div v-if="((prePage=='工单指派')&&(workordersStatusCode=='ORDERSSTATUS11'||workordersStatusCode=='ORDERSSTATUS13'||workordersStatusCode=='ORDERSSTATUS19'))||((prePage=='维修处置')&&(workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05'))" class="ej-content-title-btn ej-content-green" @click="showDelay" style="width:56px;">
                             <p>申请延期</p>
                         </div>
                         <!-- 可催办：ORDEROPERTYPE03，REPOPERTYPE03 -->
@@ -44,6 +44,10 @@
                         <!-- 待反馈ORDERSSTATUS02，待处理ORDERSSTATUS05，已到达ORDERSSTATUS14- -->
                         <div v-if="(prePage=='工单指派')&&(workordersStatusCode=='ORDERSSTATUS02'||workordersStatusCode=='ORDERSSTATUS05'||workordersStatusCode=='ORDERSSTATUS14')" class="ej-content-title-btn ej-content-yellow" @click="showReturn">
                             <p>退回</p>
+                        </div>
+                        <!-- 待反馈ORDERSSTATUS02，待处理ORDERSSTATUS05，已到达ORDERSSTATUS14- -->
+                        <div v-if="(prePage=='工单指派')&&(operatCode.indexOf('ORDEROPERTYPE28')>-1)" class="ej-content-title-btn ej-content-green" @click="showrResponse">
+                            <p>响应</p>
                         </div>
                         <!-- 可撤销/关闭： ORDEROPERTYPE02，REPOPERTYPE02-->
                         <!-- "ORDEROPERTYPE02", "关闭"；"ORDEROPERTYPE27", "撤销-->
@@ -93,7 +97,7 @@
                                 </el-col>
                                 <el-col :span="9">
                                     <label>申报人</label>
-                                    <span>{{workordersInfo.repPersonName}}</span>
+                                    <span>{{workordersInfo.repPersonName}} {{workordersInfo.repPersonTel}}</span>
                                 </el-col>
                                 <el-col :span="9" class="detail-warning">
                                     <label>当前状态</label>
@@ -108,7 +112,7 @@
                                     <span>{{workordersInfo.devAreaName}}</span>
                                 </el-col>
                                 <el-col :span="9">
-                                    <label>详细地址</label>
+                                    <label>申报地址</label>
                                     <span>{{workordersInfo.detailAddr}}</span>
                                 </el-col>
                             </el-row>
@@ -250,7 +254,17 @@
                                                 <span class="width5">{{item.operExplain}}</span>
                                             </div>
                                         </template>
-
+                                        <!-- 科室审核 -->
+                                        <template v-if="item.operTypeCode=='REPOPERTYPE07'">
+                                            <div class="content">
+                                                <label for="">审核结果</label>
+                                                <span class="width1">{{item.operResult}}</span>
+                                                <label for="">维修期限</label>
+                                                <span class="width1">{{item.operReasonCode?`${item.operReasonCode}天`:''}}</span>
+                                                <label for="">审核意见</label>
+                                                <span class="width3">{{item.operExplain}}</span>
+                                            </div>
+                                        </template>
                                         <template v-else>
                                             <div class="content">
                                                 <label for="">审核结果</label>
@@ -331,6 +345,10 @@
                                                 <label for="">备注</label>
                                                 <span class="width5">{{item.operExplain}}</span>
                                             </div>
+                                        </template>
+                                        <!-- 响应 -->
+                                        <template v-else-if="item.operTypeCode == 'ORDEROPERTYPE28'">
+                                            <!-- 还想显示东西？产品说“你tm在想屁吃！” -->
                                         </template>
 
                                         <!-- 延期申请 -->
@@ -656,10 +674,14 @@
                             </el-option>
                         </el-select>
                     </div>
-                    <div>
+                    <div class="revoke-reason">
                         <label class="dialog-label">备注</label>
                         <el-input rows="6" type="textarea" placeholder="请输入" v-model="operExplain4Cancel" class="dialog-textarea" style="width:290px;">
                         </el-input>
+                    </div>
+                    <div>
+                        <label class="dialog-label">设备停用</label>
+                        <el-checkbox v-model="isStopUsing" style="line-height:28px;">停用</el-checkbox>
                     </div>
                 </div>
                 <div slot="footer" class="dialog-footer">
@@ -872,6 +894,7 @@
                 operExplain4Backout: "",
                 cancelReasonList: [],
                 operRefuseExplain: "",
+                isStopUsing: false,
                 operReturnExplain: "",
                 delayTime: '',
                 delayExplain: '',
@@ -1013,6 +1036,23 @@
                         this.isAjaxing = false;
                         Common.printErrorLog(err);
                     });
+
+                if (this.isStopUsing) {
+                    let obj = {
+                        devIdAndType: [{ devId: this.workordersInfo.devId, devTypeCode: this.workordersInfo.devTypeCode }],
+                        deviceStatusCode: 'DEVICESTATUS02',
+                    };
+                    this.$api.post(`${this.$config.ubms_HOST}/Device/editDeviceInfoBatch.htm`, obj, { token: this.token }).then(res => {
+                            if (res.appCode == 0) {
+                                console.log('设备置为停用，成功了');
+                            } else {
+                                console.log('设备置为停用，失败了');
+                            }
+                        })
+                        .catch(err => {
+                            console.log('设备置为停用，失败了');
+                        });
+                }
             },
             // 撤销
             backoutWorkorders() {
@@ -1201,6 +1241,29 @@
             async showReturn() {
                 if (!(await this.stopOpertion())) return;
                 this.dialogReturnVisible = true;
+            },
+            async showrResponse() {
+                if (!(await this.stopOpertion())) return;
+                this.$confirm('是否确认响应该工单?', '响应确认', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api.putByQs(`${this.$config.efoms_HOST}/workordersRecord/responseDispWorkorders`, {
+                            workordersId: this.workordersInfo.workordersId || this.workordersInfo.repairsId
+                        }, { token: this.token })
+                        .then(res => {
+                            if (res.appCode == 0) {
+                                Common.ejMessage("success");
+                                this.dataDetail();
+                            } else {
+                                Common.printErrorLog(res);
+                            }
+                        })
+                        .catch(err => {
+                            Common.printErrorLog(err);
+                        });
+                }).catch(() => {});
             },
             showUrge() {
                 this.dialogUrgeVisible = true;

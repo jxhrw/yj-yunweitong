@@ -6,7 +6,7 @@
                 <label for>反馈操作</label>
                 <i class="close" @click="close">X</i>
             </div>
-            <div class="operation-content">
+            <div class="operation-content" style="height: 294px;">
                 <div class="complete-content">
                     <el-row class="content-row-select">
                         <el-col :span="9">
@@ -38,6 +38,7 @@
                                     <div class="img-del" @click="delImg(index,'imgScene')">
                                         <p>删除</p>
                                     </div>
+                                    <div class="img-del-x el-icon-close" @click="delImg(index,'imgScene')"></div>
                                 </div>
                             </template>
                             <div class="img-add" @click="$refs.imgFile.click()">

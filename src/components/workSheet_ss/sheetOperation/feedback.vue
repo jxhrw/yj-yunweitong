@@ -6,7 +6,7 @@
                 <label for>反馈操作</label>
                 <i class="close" @click="close">X</i>
             </div>
-            <div class="operation-content">
+            <div class="operation-content" style="height:294px;">
                 <div class="complete-content">
                     <el-row class="content-row-select">
                         <!-- <el-col :span="9">
@@ -23,10 +23,10 @@
                         </el-col>
                     </el-row>
                     <el-row class="content-row-select">
-                        <el-col :span="9">
+                        <!-- <el-col :span="9">
                             <label class="content-label"><span>*</span>故障描述</label>
                             <el-input type="textarea" :rows="3" placeholder="请输入内容" class="content-textarea" v-model="failureReason" resize="none"></el-input>
-                        </el-col>
+                        </el-col> -->
                         <el-col :span="9">
                             <label class="content-label"><span>*</span>结果反馈</label>
                             <el-input type="textarea" :rows="3" placeholder="请输入内容" class="content-textarea" v-model="operExplain" resize="none"></el-input>
@@ -42,6 +42,7 @@
                                     <div class="img-del" @click="delImg(index,'imgScene')">
                                         <p>删除</p>
                                     </div>
+                                    <div class="img-del-x el-icon-close" @click="delImg(index,'imgScene')"></div>
                                 </div>
                             </template>
                             <div class="img-add" @click="$refs.imgFile.click()">
@@ -134,10 +135,10 @@
                     Common.ejMessage("warning", "维修结果必填");
                     return;
                 }
-                if (this.failureReason == '') {
-                    Common.ejMessage("warning", "故障描述必填");
-                    return;
-                }
+                // if (this.failureReason == '') {
+                //     Common.ejMessage("warning", "故障描述必填");
+                //     return;
+                // }
                 if (this.operExplain == '') {
                     Common.ejMessage("warning", "结果反馈必填");
                     return;

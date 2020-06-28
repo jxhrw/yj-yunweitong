@@ -51,10 +51,17 @@
                     <label>设施类别</label>
                     <mInput :list="facTypeList" :code.sync="facTypeCode" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
+                <!-- <el-col :span="7" v-show="title=='工单查询'||title=='标注工单管理'">
+                    <label>所属中队</label>
+                    <mTree :tree="battalionList" :code.sync="battalionCode" showAttr="text" getAttr="id" :clearable="true"></mTree>
+                </el-col> -->
+                <el-col :span="7" v-show="title=='工单查询'||title=='标注工单管理'">
+                    <label>所属大队</label>
+                    <mInput :list="battalionList" :code.sync="battalionCode" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mInput>
+                </el-col>
                 <el-col :span="7" v-show="title=='工单查询'||title=='标注工单管理'">
                     <label>所属中队</label>
-                    <!-- <mInput :list="battalionList" :code.sync="battalionCode" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mInput> -->
-                    <mTree :tree="battalionList" :code.sync="battalionCode" showAttr="text" getAttr="id" :clearable="true"></mTree>
+                    <mInput :list="squadronList" :code.sync="squadronCode" showAttr="deptName" getAttr="deptId" @keyup.enter.native="searchTableInfo"></mInput>
                 </el-col>
                 <!-- <el-col :span="7" v-show="title=='工单查询'||title=='维修申报'">
                     <label>申报来源</label>
@@ -404,7 +411,7 @@
                     arr.push(`${item.roadName}(${item.beginCrossName}-${item.endCrossName})`);
                 });
                 return arr.join(',');
-            }
+            },
         },
         watch: {
             $route(newVal, oldVal) {
@@ -420,7 +427,18 @@
                     // }
                     sessionStorage.setItem('sheetssPageType', newVal.query.type);
                 }
-            }
+            },
+            battalionCode(val) {
+                this.squadronCode = '';
+                if (val == '') {
+                    this.squadronList = [];
+                } else {
+                    //所属中队
+                    this.$api.get(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { parentId: val }, { token: this.token }).then(res => {
+                        this.squadronList = res.resultList || [];
+                    });
+                }
+            },
         },
         data() {
             return {
@@ -441,8 +459,10 @@
                 reptypeList: [],
                 facTypeCode: '',
                 facTypeList: [],
-                battalionCode: [],
+                battalionCode: '',
                 battalionList: [],
+                squadronCode: '',
+                squadronList: [],
                 sourceCode: '',
                 sourceList: [],
 
@@ -496,7 +516,9 @@
                         workordersIdKey: this.declareId,
                         repairType: this.reptypeCode, // 维修类型
                         devTypeCode: this.facTypeCode, //设施类别
-                        squadron: this.battalionCode.slice(-1).join(','), // 所属大队,取数组最后一位
+                        devDeptId: this.battalionCode,
+                        squadron: this.squadronCode,
+                        // squadron: this.battalionCode.slice(-1).join(','), // 所属大队,取数组最后一位
                         repSourceCode: this.sourceCode,
                         // workordersStatusCode: this.title == '停用查询' ? 'ORDERSSTATUS08' : this.stateCode,
                     };
@@ -513,7 +535,9 @@
                         workordersIdKey: this.declareId,
                         repairType: this.reptypeCode, // 维修类型
                         devTypeCode: this.facTypeCode, //设施类别
-                        squadron: this.battalionCode.slice(-1).join(','), // 所属大队
+                        devDeptId: this.battalionCode,
+                        squadron: this.squadronCode,
+                        // squadron: this.battalionCode.slice(-1).join(','), // 所属大队
                         repSourceCode: this.sourceCode,
                     };
                     this.queryConditions = { ...this.queryConditions, ...obj }
@@ -923,7 +947,8 @@
                 this.stateCode = [];
                 this.reptypeCode = "";
                 this.typeCode = '';
-                this.battalionCode = [];
+                this.battalionCode = '';
+                this.squadronCode = '';
                 this.sourceCode = '';
                 this.facTypeCode = '';
 
@@ -1089,14 +1114,14 @@
                     case 's5':
                         this.tableShowType = 5;
                         this.title = '工程量提报';
-                        this.typeList = [{ dicCode: 'GCL001', dicName: '工程量提报' }];
+                        this.typeList = [{ dicCode: 'GCL001', dicName: '工程量提报' }, { dicCode: 'GCL002', dicName: '工程量驳回' }];
                         this.typeCode = this.typeList[0].dicCode;
                         break;
 
                     case 's6':
                         this.tableShowType = 4;
                         this.title = '经理审核';
-                        this.typeList = [{ dicCode: 'MJ002', dicName: '待审核' }, { dicCode: 'MJ005', dicName: '审核通过' }, { dicCode: 'MJ006', dicName: '审核不通过' }];
+                        this.typeList = [{ dicCode: 'MJ002', dicName: '待审核' }, { dicCode: 'MJ003', dicName: '已驳回' }, { dicCode: 'MJ005', dicName: '审核通过' }, { dicCode: 'MJ006', dicName: '审核不通过' }];
                         // this.typeList = [{ dicCode: 'MJ001', dicName: '全部' }, { dicCode: 'MJ002', dicName: '待审核' }, { dicCode: 'MJ003', dicName: '审核通过' }, { dicCode: 'MJ004', dicName: '审核不通过' }];
                         this.typeCode = this.typeList[0].dicCode;
                         break;
@@ -1190,7 +1215,7 @@
             this.token = Common.getQueryString("token");
             //申报部门(交警部门+维护单位)
             let a1 = this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {});
-            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptInfoV2.htm`, {});
+            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {});
             Promise.all([a1, a2]).then(res => {
                 let arr0 = res[0].resultList || [];
                 let arr1 = res[1].resultList || [];
@@ -1210,12 +1235,12 @@
             // 设施类别
             this.facTypeList = [{ dicCode: 'REPDEVTYPE24', dicName: '电子设施' }, { dicCode: 'REPDEVTYPE21', dicName: '交通标线' }, { dicCode: 'REPDEVTYPE22', dicName: '交通护栏' }, { dicCode: 'REPDEVTYPE23', dicName: '交通标志' }, { dicCode: 'REPDEVTYPE25', dicName: '临时设施' }, { dicCode: 'REPDEVTYPE26', dicName: '其他设施' }];
             //所属大队
-            // this.$api.get(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptRank: 'DEPTRANK04' }, { token: this.token }).then(res => {
-            //     this.battalionList = res.resultList || [];
-            // });
-            this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptTree.htm`, {}).then(res => {
+            this.$api.get(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfoV2.htm`, { deptRank: 'DEPTRANK04' }, { token: this.token }).then(res => {
                 this.battalionList = res.resultList || [];
             });
+            // this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptTree.htm`, {}).then(res => {
+            //     this.battalionList = res.resultList || [];
+            // });
             //申报来源
             // this.getDicInfo(`${this.$config.ubms_HOST}/DeviceDic/getDeviceDic.htm`, {
             //     parentCode: "REPAIRSSOURCE"

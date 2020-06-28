@@ -91,14 +91,18 @@
                     <el-table-column prop="repStatusName" label="当前状态" show-overflow-tooltip>
                         <template slot-scope="scope">
                             {{scope.row.workordersStatusName||scope.row.repStatusName}}
+                            {{(scope.row.isDefer&&$config.cityName=='jiujiang')?'(延期申请中)':''}}
                         </template>
                     </el-table-column>
                     <el-table-column prop="pressTimes" label="催办次数" show-overflow-tooltip></el-table-column>
                     <el-table-column label="操作" min-width="100">
-                        <template slot-scope="scope">
-                            <!-- 优化申报页面，并且状态为科室待审核REPAIRSTATUS05时出现 -->
+                        <!-- <template slot-scope="scope">
+                            优化申报页面，并且状态为科室待审核REPAIRSTATUS05时出现
                             <div v-if="(scope.row.workordersStatusCode == 'REPAIRSTATUS05')" class="tab-operation" @click="dataDetail(scope.row,'edit')">撤销</div>
                             <div class="tab-operation" @click="dataDetail(scope.row)">详情</div>
+                        </template> -->
+                        <template slot-scope="scope">
+                            <TableOpertion :title="title" :scope="scope" :queryConditions="queryConditions"></TableOpertion>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -145,11 +149,13 @@
     import mInput from "components/common/selectDrop";
     import Common from "@/assets/js/common.js";
     import mSelectMult from "@/components/common/selectMult";
+    import TableOpertion from "./sheetOperation/tableOpertion.vue";
     export default {
         components: {
             WkLayout,
             mInput,
-            mSelectMult
+            mSelectMult,
+            TableOpertion
         },
         watch: {
             $route(newVal, oldVal) {
@@ -383,7 +389,7 @@
             this.token = Common.getQueryString("token");
             //申报部门(交警部门+维护单位)
             let a1 = this.getDicInfo(`${this.$config.ubms_HOST}/DeptInfo/getDeptInfo.htm`, {});
-            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptInfoV2.htm`, {});
+            let a2 = this.getDicInfo(`${this.$config.ubms_HOST}/OpsDeptInfo/getOpsDeptTreeRoot.htm`, {});
             Promise.all([a1, a2]).then(res => {
                 let arr0 = res[0].resultList || [];
                 let arr1 = res[1].resultList || [];
